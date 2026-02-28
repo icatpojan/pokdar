@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Pendaftaran - Pokdar Kamtibmas Polres Tangerang Selatan</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="bg-light">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark custom-navbar sticky-top">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="index.php">
+                <img src="assets/image.png" alt="Logo Polri" class="logo-img" style="height: 45px;">
+                <div class="logo-text d-flex flex-column">
+                    <span class="main-title text-white fw-bold" style="font-size: 1.1rem; letter-spacing: 1px;">POKDAR
+                        KAMTIBMAS</span>
+                    <span class="sub-title" style="color: #1e40af; font-size: 0.8rem;">Polres Tangerang Selatan</span>
+                </div>
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto gap-lg-3 align-items-center">
+                    <li class="nav-item"><a class="nav-link text-white-50" href="index.php">Beranda</a></li>
+                    <li class="nav-item"><a class="nav-link text-white-50" href="index.php#berita">Berita</a></li>
+                    <li class="nav-item"><a class="nav-link text-white-50" href="index.php#struktur">Struktur</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="admin.php">Admin</a></li>
+                    <li class="nav-item">
+                        <a href="login.php"
+                            class="btn btn-accent rounded-pill px-4 fw-bold text-white d-none d-lg-block"
+                            style="background: #1e40af;">Login</a>
+                        <a href="login.php" class="nav-link d-lg-none"
+                            style="color: #1e40af; font-weight: 700;">Login</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="py-5">
+        <div class="container">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden animate-up mx-auto" style="max-width: 900px;">
+                <div class="card-header bg-white border-0 text-center py-5 px-4">
+                    <img src="assets/image.png" alt="Logo" class="mb-3" style="height: 80px;">
+                    <h2 class="fw-bold mb-2">Formulir Pendaftaran Anggota</h2>
+                    <p class="text-muted mb-0">Silakan lengkapi data di bawah ini dengan benar untuk pengajuan
+                        keanggotaan.</p>
+                </div>
+
+                <div class="card-body p-4 p-md-5 bg-white">
+                    <form id="registration-form">
+                        <div class="mb-4">
+                            <h5 class="fw-bold text-primary border-start border-4 border-warning ps-3 mb-4">Data
+                                Identitas</h5>
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label class="form-label fw-bold">Nomor Registrasi (Otomatis)</label>
+                                    <input type="text" id="reg-number"
+                                        class="form-control form-control-lg bg-light fw-bold" readonly>
+                                    <div class="form-text mt-2">Nomor ini dihasilkan secara otomatis oleh sistem sebagai
+                                        identitas unik Anda.</div>
+                                </div>
+                                <div class="col-12">
+                                    <label for="full-name" class="form-label fw-bold">Nama Lengkap (Sesuai KTP)</label>
+                                    <input type="text" id="full-name" name="full-name"
+                                        class="form-control form-control-lg rounded-3"
+                                        placeholder="Masukkan nama lengkap" required>
+                                </div>
+                                <div class="col-12">
+                                    <label for="address" class="form-label fw-bold">Alamat Domisili</label>
+                                    <textarea id="address" name="address" class="form-control form-control-lg rounded-3"
+                                        rows="3" placeholder="Masukkan alamat lengkap" required></textarea>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label fw-bold d-block mb-3">Jenis Kelamin</label>
+                                    <div class="d-flex gap-4">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="gender" value="Laki-laki"
+                                                id="genderL" checked>
+                                            <label class="form-check-label" for="genderL">Laki-laki</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="gender" value="Perempuan"
+                                                id="genderP">
+                                            <label class="form-check-label" for="genderP">Perempuan</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4 mt-5">
+                            <h5 class="fw-bold text-primary border-start border-4 border-warning ps-3 mb-4">Data
+                                Penempatan</h5>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="sector" class="form-label fw-bold">Sektor (Wilayah)</label>
+                                    <select id="sector" name="sector" class="form-select form-select-lg rounded-3"
+                                        required>
+                                        <option value="">Pilih Sektor</option>
+                                        <option value="1">Sektor 1</option>
+                                        <option value="2">Sektor 2</option>
+                                        <option value="3">Sektor 3</option>
+                                        <option value="4">Sektor 4</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="subsector" class="form-label fw-bold">Sub Sektor (Lingkungan)</label>
+                                    <select id="subsector" name="subsector" class="form-select form-select-lg rounded-3"
+                                        required>
+                                        <option value="">Pilih Sub Sektor</option>
+                                        <option value="1">Sub Sektor 1</option>
+                                        <option value="2">Sub Sektor 2</option>
+                                        <option value="3">Sub Sektor 3</option>
+                                        <option value="4">Sub Sektor 4</option>
+                                        <option value="5">Sub Sektor 5</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-5 mt-5">
+                            <h5 class="fw-bold text-primary border-start border-4 border-warning ps-3 mb-4">Dokumen
+                                Pendukung</h5>
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Upload Formulir yang Telah Diisi & KTP</label>
+                                <div class="upload-area border border-2 border-dashed rounded-4 p-5 text-center bg-light"
+                                    id="reg-drop-zone" style="cursor: pointer;">
+                                    <div class="fs-1 mb-3">📄</div>
+                                    <p class="mb-1 text-muted fw-bold">Klik atau seret file ke sini</p>
+                                    <span class="text-muted small">Format yang didukung: PDF, JPG, atau PNG (Maksimal
+                                        5MB)</span>
+                                    <input type="file" id="reg-file-input" hidden>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-5">
+                            <button type="submit"
+                                class="btn btn-accent btn-lg w-100 py-3 rounded-pill fw-bold text-dark fs-5">Kirim
+                                Pengajuan Keanggotaan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="py-5 bg-dark text-white text-center mt-5">
+        <div class="container">
+            <p class="mb-0 opacity-50 small">&copy; 2026 Pokdar Kamtibmas Polres Tangerang Selatan. Layanan Pendaftaran
+                Online Masyarakat.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/script.js"></script>
+    <script>
+        // Specific logic for registration page
+        document.addEventListener('DOMContentLoaded', () => {
+            const regNumInput = document.getElementById('reg-number');
+            if (regNumInput) {
+                const date = new Date();
+                const random = Math.floor(1000 + Math.random() * 9000);
+                const regNum = `PKDT-TS-${date.getFullYear()}${(date.getMonth() + 1).toString().padStart(2, '0')}-${random}`;
+                regNumInput.value = regNum;
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,23 @@
+[
+    {
+        "reg_number": "PKDT-TS-202602-8391",
+        "full_name": "fauzan",
+        "address": "pamulang",
+        "gender": "Laki-laki",
+        "sector": "2",
+        "subsector": "1",
+        "timestamp": "2026-02-02 10:49:13",
+        "file_path": "uploads\/1770029353_8324-19962-1-PB (1).pdf"
+    },
+    {
+        "reg_number": "WEB-1771907368641",
+        "full_name": "irsyad fauzan",
+        "address": "pamulang",
+        "gender": "Laki-laki",
+        "sector": "mana kek",
+        "subsector": "jakkarta selatan",
+        "timestamp": "2026-02-24 04:29:28",
+        "file_path": "uploads\/1771907368_hengki26,+623-633+Hindarto.pdf",
+        "status": "Approved"
+    }
+]

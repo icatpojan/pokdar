@@ -1,0 +1,98 @@
+{
+    "pimpinan": {
+        "ketua": {
+            "name": "JOHNI ELGANIF, St, M.",
+            "position": "Ketua"
+        },
+        "wakil_ketua": [
+            {
+                "name": "MUHIDIN",
+                "position": "Wakil Ketua"
+            },
+            {
+                "name": "RULI PURNAMA",
+                "position": "Wakil Ketua"
+            },
+            {
+                "name": "GUGUN NUGRAHA",
+                "position": "Wakil Ketua"
+            }
+        ]
+    },
+    "sekretariat": {
+        "sekretaris": {
+            "name": "SUMARYANTO, S.Psi.",
+            "position": "Sekretaris"
+        },
+        "wakil_sekretaris": {
+            "name": "IING RICKY KHAERUDIN",
+            "position": "Wakil Sekretaris"
+        }
+    },
+    "bendahara": {
+        "bendahara": {
+            "name": "H. JOHNIE",
+            "position": "Bendahara"
+        },
+        "wakil_bendahara": {
+            "name": "HARIYANTO",
+            "position": "Wakil Bendahara"
+        }
+    },
+    "pelaksana": [
+        {
+            "dept": "OKK",
+            "lead": "H. NURHASAN",
+            "sub": "Drs. H. HAMDAN MALIK",
+            "sub_pos": "Wakil OKK"
+        },
+        {
+            "dept": "WAS/KUM",
+            "lead": "MT. DIANSYAH",
+            "sub": "H. SUGIONO",
+            "sub_pos": "Wakil WAS/KUM"
+        },
+        {
+            "dept": "SATGAS",
+            "lead": "SUMARDI",
+            "sub": "SUPRIANTO",
+            "sub_pos": "Wakil SATGAS"
+        },
+        {
+            "dept": "EKONOMI DAN USAHA",
+            "lead": "GATUT SUDARTO",
+            "sub": "M. FIRDAUS, ST",
+            "sub_pos": "Wakil EKONOMI DAN USAHA"
+        },
+        {
+            "dept": "BINBANG",
+            "lead": "SUHARSONO",
+            "sub": "MA'SUM",
+            "sub_pos": "Wakil BINBANG"
+        },
+        {
+            "dept": "HUMAS",
+            "lead": "AAN HERNAWAN",
+            "sub": "ABDUL KHOLIK",
+            "sub_pos": "Wakil HUMAS"
+        },
+        {
+            "dept": "RING OPS",
+            "lead": "YASMIN SUWIRNO",
+            "sub": "AGUS PURWANTO",
+            "sub_pos": "Wakil RING OPS"
+        },
+        {
+            "dept": "SOSIAL",
+            "lead": "AHMAD SULAEMI",
+            "sub": "TONO SURYADI",
+            "sub_pos": "Wakil SOSIAL"
+        }
+    ],
+    "pendukung": {
+        "pembina": "DEWAN PEMBINA",
+        "penasehat": "DEWAN PENASEHAT",
+        "kehormatan": "DEWAN KEHORMATAN"
+    },
+    "footer_title": "KETUA - KETUA TINGKAT RESOR"
+}

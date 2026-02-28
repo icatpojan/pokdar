@@ -1,0 +1,19 @@
+{
+    "badge": "Kamtibmas Kondusif",
+    "welcome_text": "Selamat Datang",
+    "title_primary": "Pokdar Kamtibmas Bhayangkara",
+    "lead_text": "Kelompok Sadar Keamanan dan Ketertiban Masyarakat wilayah hukum Polres Tangerang Selatan. Menjadi mitra Polri dalam menjaga kondusivitas wilayah.",
+    "buttons": [
+        {
+            "text": "Pelajari Lebih Lanjut",
+            "link": "#tentang",
+            "class": "btn btn-accent btn-hero"
+        },
+        {
+            "text": "Lihat Kegiatan",
+            "link": "#kegiatan",
+            "class": "btn btn-outline-dark btn-hero rounded-pill px-4 fw-bold shadow-sm"
+        }
+    ],
+    "video_link": "https://www.youtube.com/embed/M961GUfbyec?si=eEHDCqfY5ManItta"
+}

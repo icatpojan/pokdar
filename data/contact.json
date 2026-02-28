@@ -1,0 +1,34 @@
+{
+    "map_address": "Mapolres Tangerang Selatan, Jl. Promance, Serpong.",
+    "footer_address": "Mapolres Tangerang Selatan<br>Jl. Promance, Serpong, Lengkong Gudang Timur., Kec. Serpong, Kota Tangerang Selatan, Banten 15310",
+    "email": "admin@pokdartangsel.org",
+    "phone_display": "Pokdar Kamtibmas Bhayangkara Tangerang Selatan",
+    "phone_wa": "628123456789",
+    "social": [
+        {
+            "icon": "fab fa-facebook",
+            "link": "#"
+        },
+        {
+            "icon": "fab fa-instagram",
+            "link": "#"
+        },
+        {
+            "icon": "fab fa-twitter",
+            "link": "#"
+        },
+        {
+            "icon": "fab fa-youtube",
+            "link": "#"
+        }
+    ],
+    "partners": [
+        "",
+        "assets\/client-1.png",
+        "assets\/client-2.png",
+        "assets\/client-3.png",
+        "assets\/client-4.png",
+        "assets\/client-5.png",
+        "assets\/client-6.png"
+    ]
+}

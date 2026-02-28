@@ -1,0 +1,81 @@
+{
+    "badge": "TENTANG",
+    "title": "Tentang <span class=\"text-accent\">Pokdar Bhayangkara</span>",
+    "cards": [
+        {
+            "icon": "fas fa-university",
+            "title": "Nama, Kedudukan, & Waktu",
+            "mobile_content": [
+                "<strong>Nama:</strong> Organisasi ini dinamakan POKDARKAMTIBMAS BHAYANGKARA",
+                "<strong>Tempat Kedudukan:</strong> Berkedudukan di wilayah hukum NKRI.",
+                "<strong>Waktu:</strong> Didirikan pada 17 November 2021."
+            ],
+            "full_content": [
+                "<strong>Nama:</strong> Organisasi ini dinamakan POKDARKAMTIBMAS BHAYANGKARA (Kelompok Sadar Keamanan dan Ketertiban Masyarakat)",
+                "<strong>Tempat Kedudukan:</strong> Berkedudukan di wilayah hukum Negara Kesatuan Republik Indonesia.",
+                "<strong>Waktu:</strong> Untuk tingkat Nasional, didirikan pada 17 November 2021 untuk jangka waktu yang tidak terbatas."
+            ]
+        },
+        {
+            "icon": "fas fa-layer-group",
+            "title": "Azas, Landasan & Sifat",
+            "mobile_content": [
+                "<strong>Azas & Landasan:</strong> Berazaskan PANCASILA dan UUD 1945.",
+                "<strong>Sifat:</strong> Independen, Kekeluargaan, Sosial, Mitra POLRI."
+            ],
+            "full_content": [
+                "<strong>Azas & Landasan:</strong> Berazaskan PANCASILA dan Undang-Undang Dasar 1945.",
+                "<strong>Sifat:</strong> Independen, Kekeluargaan, dan sosial Masyarakat, serta sebagai Mitra POLRI dan Pemerintah."
+            ]
+        },
+        {
+            "icon": "fas fa-balance-scale",
+            "title": "Dasar Hukum",
+            "is_list": true,
+            "mobile_content": [
+                "UUD 1945 pasal 30 ayat 1.",
+                "TAP MPR RI No. II/1998.",
+                "UU No.2 Tahun 2002.",
+                "SKEP Kapolri No: SKEP/831/XI/2005."
+            ],
+            "full_content": [
+                "UUD 1945 pasal 30 ayat 1 tentang Pertahanan & Keamanan Negara.",
+                "TAP MPR RI No. II/1998 tentang GBHN Keamanan.",
+                "UU No.2 Tahun 2002 tentang POLRI.",
+                "SKEP Kapolri No: SKEP/831/XI/2005 tentang Pembinaan Pokdar.",
+                "Hasil MUNAS I 17 Nov 2021 di Jakarta."
+            ]
+        },
+        {
+            "icon": "fas fa-globe-asia",
+            "title": "Wilayah Operasional",
+            "mobile_intro": "Sesuai wilayah hukum Polda Banten.",
+            "full_intro": "Sesuai dengan wilayah hukum Polda Banten:",
+            "content": [
+                "1) Resor Serang Kabupaten",
+                "2) Resor Pandeglang",
+                "3) Resor Lebak",
+                "4) Resor Cilegon",
+                "5) Resorta Serang",
+                "6) Resorta Tangerang"
+            ],
+            "buttons": [
+                {
+                    "text": "Download AD/ART",
+                    "link": "#",
+                    "class": "btn btn-sm btn-accent w-100"
+                },
+                {
+                    "text": "PO-1",
+                    "link": "#",
+                    "class": "btn btn-sm btn-outline-accent w-50"
+                },
+                {
+                    "text": "PO-2",
+                    "link": "#",
+                    "class": "btn btn-sm btn-outline-accent w-50"
+                }
+            ]
+        }
+    ]
+}

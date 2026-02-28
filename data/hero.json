@@ -1,0 +1,19 @@
+{
+    "badge": "POKDAR KAMTIBMAS BHAYANGKARA",
+    "welcome_text": "",
+    "title_primary": "Menjaga Keamanan, Membangun Kepercayaan.",
+    "lead_text": "Sinergi Masyarakat dan POLRI untuk menciptakan lingkungan yang aman, tertib, dan kondusif melalui kemitraan yang strategis dan layanan yang prima.",
+    "buttons": [
+        {
+            "text": "GABUNG BERSAMA KAMI",
+            "link": "#pendaftaran",
+            "class": "btn btn-hero-primary"
+        },
+        {
+            "text": "Pelajari Selengkapnya",
+            "link": "#tentang",
+            "class": "btn btn-hero-link"
+        }
+    ],
+    "video_link": "https://www.youtube.com/embed/M961GUfbyec?si=eEHDCqfY5ManItta"
+}
