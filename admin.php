@@ -249,6 +249,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                                         <button class="nav-link text-start" data-bs-toggle="pill" onclick="loadCMS('tentang')"><i class="fas fa-info-circle me-2 me-lg-3 text-accent"></i> Tentang Kami</button>
                                         <button class="nav-link text-start" data-bs-toggle="pill" onclick="loadCMS('sejarah')"><i class="fas fa-history me-2 me-lg-3 text-accent"></i> Sejarah & Timeline</button>
                                         <button class="nav-link text-start" data-bs-toggle="pill" onclick="loadCMS('structure')"><i class="fas fa-users me-2 me-lg-3 text-accent"></i> Struktur Organisasi</button>
+                                        <button class="nav-link text-start" data-bs-toggle="pill" onclick="loadCMS('news')"><i class="fas fa-newspaper me-2 me-lg-3 text-accent"></i> Berita & Artikel</button>
                                         <button class="nav-link text-start" data-bs-toggle="pill" onclick="loadCMS('kegiatan')"><i class="fas fa-camera-retro me-2 me-lg-3 text-accent"></i> Galeri Kegiatan</button>
                                         <button class="nav-link text-start" data-bs-toggle="pill" onclick="loadCMS('faq')"><i class="fas fa-question-circle me-2 me-lg-3 text-accent"></i> Tanya Jawab (FAQ)</button>
                                         <button class="nav-link text-start" data-bs-toggle="pill" onclick="loadCMS('contact')"><i class="fas fa-address-book me-2 me-lg-3 text-accent"></i> Kontak & Media</button>

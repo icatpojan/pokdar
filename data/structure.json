@@ -2,41 +2,49 @@
     "pimpinan": {
         "ketua": {
             "name": "JOHNI ELGANIF, St, M.",
-            "position": "Ketua"
+            "position": "Ketua",
+            "image": "assets/kegiatan/giat_1772244558_8649.jpeg"
         },
         "wakil_ketua": [
             {
                 "name": "MUHIDIN",
-                "position": "Wakil Ketua"
+                "position": "Wakil Ketua",
+                "image": "assets/kegiatan/giat_1772244964_9901.jpeg"
             },
             {
                 "name": "RULI PURNAMA",
-                "position": "Wakil Ketua"
+                "position": "Wakil Ketua",
+                "image": "assets/kegiatan/giat_1772244969_7585.jpeg"
             },
             {
                 "name": "GUGUN NUGRAHA",
-                "position": "Wakil Ketua"
+                "position": "Wakil Ketua",
+                "image": "assets/kegiatan/giat_1772244973_3902.jpeg"
             }
         ]
     },
     "sekretariat": {
         "sekretaris": {
             "name": "SUMARYANTO, S.Psi.",
-            "position": "Sekretaris"
+            "position": "Sekretaris",
+            "image": "assets/kegiatan/giat_1772244980_4886.jpeg"
         },
         "wakil_sekretaris": {
             "name": "IING RICKY KHAERUDIN",
-            "position": "Wakil Sekretaris"
+            "position": "Wakil Sekretaris",
+            "image": "assets/kegiatan/giat_1772244985_9047.jpeg"
         }
     },
     "bendahara": {
         "bendahara": {
             "name": "H. JOHNIE",
-            "position": "Bendahara"
+            "position": "Bendahara",
+            "image": "assets/kegiatan/giat_1772244992_1987.jpeg"
         },
         "wakil_bendahara": {
             "name": "HARIYANTO",
-            "position": "Wakil Bendahara"
+            "position": "Wakil Bendahara",
+            "image": "assets/kegiatan/giat_1772244998_2271.jpeg"
         }
     },
     "pelaksana": [
@@ -44,49 +52,57 @@
             "dept": "OKK",
             "lead": "H. NURHASAN",
             "sub": "Drs. H. HAMDAN MALIK",
-            "sub_pos": "Wakil OKK"
+            "sub_pos": "Wakil OKK",
+            "image": "assets/kegiatan/giat_1772245002_3997.jpeg"
         },
         {
             "dept": "WAS/KUM",
             "lead": "MT. DIANSYAH",
             "sub": "H. SUGIONO",
-            "sub_pos": "Wakil WAS/KUM"
+            "sub_pos": "Wakil WAS/KUM",
+            "image": "assets/user.png"
         },
         {
             "dept": "SATGAS",
             "lead": "SUMARDI",
             "sub": "SUPRIANTO",
-            "sub_pos": "Wakil SATGAS"
+            "sub_pos": "Wakil SATGAS",
+            "image": "assets/user.png"
         },
         {
             "dept": "EKONOMI DAN USAHA",
             "lead": "GATUT SUDARTO",
             "sub": "M. FIRDAUS, ST",
-            "sub_pos": "Wakil EKONOMI DAN USAHA"
+            "sub_pos": "Wakil EKONOMI DAN USAHA",
+            "image": "assets/user.png"
         },
         {
             "dept": "BINBANG",
             "lead": "SUHARSONO",
             "sub": "MA'SUM",
-            "sub_pos": "Wakil BINBANG"
+            "sub_pos": "Wakil BINBANG",
+            "image": "assets/user.png"
         },
         {
             "dept": "HUMAS",
             "lead": "AAN HERNAWAN",
             "sub": "ABDUL KHOLIK",
-            "sub_pos": "Wakil HUMAS"
+            "sub_pos": "Wakil HUMAS",
+            "image": "assets/user.png"
         },
         {
             "dept": "RING OPS",
             "lead": "YASMIN SUWIRNO",
             "sub": "AGUS PURWANTO",
-            "sub_pos": "Wakil RING OPS"
+            "sub_pos": "Wakil RING OPS",
+            "image": "assets/user.png"
         },
         {
             "dept": "SOSIAL",
             "lead": "AHMAD SULAEMI",
             "sub": "TONO SURYADI",
-            "sub_pos": "Wakil SOSIAL"
+            "sub_pos": "Wakil SOSIAL",
+            "image": "assets/kegiatan/giat_1772245009_9235.jpeg"
         }
     ],
     "pendukung": {
