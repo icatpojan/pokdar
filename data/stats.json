@@ -1,22 +1,22 @@
 [
     {
         "icon": "fas fa-smile",
-        "number": "1000",
+        "number": "4212",
         "label": "Pengunjung"
     },
     {
         "icon": "fas fa-clipboard-list",
-        "number": "1000",
+        "number": "932",
         "label": "Survey"
     },
     {
         "icon": "fas fa-headset",
-        "number": "1000",
+        "number": "234",
         "label": "Pusat Informasi"
     },
     {
         "icon": "fas fa-users-cog",
-        "number": "1000",
+        "number": "433",
         "label": "Dukungan Bantuan"
     }
 ]

@@ -170,6 +170,74 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
             .logo-text span.main-title { font-size: 0.85rem !important; }
             .logo-text span.sub-title { font-size: 0.6rem !important; }
         }
+
+        /* Premium Toast Styling */
+        .toast-container {
+            position: fixed;
+            top: 25px;
+            right: 25px;
+            z-index: 9999;
+        }
+
+        .custom-toast {
+            background: #ffffff;
+            color: #1f2937;
+            padding: 16px 24px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            min-width: 320px;
+            max-width: 450px;
+            border-left: 5px solid #10b981;
+            transform: translateX(120%);
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            opacity: 0;
+        }
+
+        .custom-toast.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .custom-toast.error { border-left-color: #ef4444; }
+        .custom-toast.warning { border-left-color: #f59e0b; }
+        .custom-toast.info { border-left-color: #3b82f6; }
+
+        .custom-toast-icon {
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .custom-toast-content {
+            flex-grow: 1;
+        }
+
+        .custom-toast-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .custom-toast-message {
+            font-size: 0.85rem;
+            color: #6b7280;
+            line-height: 1.4;
+        }
+
+        .custom-toast-close {
+            background: none;
+            border: none;
+            color: #9ca3af;
+            cursor: pointer;
+            padding: 4px;
+            transition: color 0.2s;
+        }
+
+        .custom-toast-close:hover { color: #4b5563; }
     </style>
 </head>
 <body class="bg-light">
@@ -245,14 +313,14 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                                 <div class="col-lg-3 scroll-wrapper">
                                     <div class="nav nav-pills" id="cms-pills-tab" role="tablist">
                                         <button class="nav-link active text-start" data-bs-toggle="pill" onclick="loadCMS('hero')"><i class="fas fa-rocket me-2 me-lg-3 text-accent"></i> Hero Section</button>
-                                        <button class="nav-link text-start" data-bs-toggle="pill" onclick="loadCMS('stats')"><i class="fas fa-chart-bar me-2 me-lg-3 text-accent"></i> Statistik Utama</button>
-                                        <button class="nav-link text-start" data-bs-toggle="pill" onclick="loadCMS('tentang')"><i class="fas fa-info-circle me-2 me-lg-3 text-accent"></i> Tentang Kami</button>
-                                        <button class="nav-link text-start" data-bs-toggle="pill" onclick="loadCMS('sejarah')"><i class="fas fa-history me-2 me-lg-3 text-accent"></i> Sejarah & Timeline</button>
-                                        <button class="nav-link text-start" data-bs-toggle="pill" onclick="loadCMS('structure')"><i class="fas fa-users me-2 me-lg-3 text-accent"></i> Struktur Organisasi</button>
                                         <button class="nav-link text-start" data-bs-toggle="pill" onclick="loadCMS('news')"><i class="fas fa-newspaper me-2 me-lg-3 text-accent"></i> Berita & Artikel</button>
+                                        <button class="nav-link text-start" data-bs-toggle="pill" onclick="loadCMS('tentang')"><i class="fas fa-info-circle me-2 me-lg-3 text-accent"></i> Tentang Kami</button>
+                                        <!-- <button class="nav-link text-start" data-bs-toggle="pill" onclick="loadCMS('sejarah')"><i class="fas fa-history me-2 me-lg-3 text-accent"></i> Sejarah & Timeline</button> -->
+                                        <button class="nav-link text-start" data-bs-toggle="pill" onclick="loadCMS('structure')"><i class="fas fa-users me-2 me-lg-3 text-accent"></i> Struktur Organisasi</button>
                                         <button class="nav-link text-start" data-bs-toggle="pill" onclick="loadCMS('kegiatan')"><i class="fas fa-camera-retro me-2 me-lg-3 text-accent"></i> Galeri Kegiatan</button>
                                         <button class="nav-link text-start" data-bs-toggle="pill" onclick="loadCMS('faq')"><i class="fas fa-question-circle me-2 me-lg-3 text-accent"></i> Tanya Jawab (FAQ)</button>
                                         <button class="nav-link text-start" data-bs-toggle="pill" onclick="loadCMS('contact')"><i class="fas fa-address-book me-2 me-lg-3 text-accent"></i> Kontak & Media</button>
+                                        <button class="nav-link text-start" data-bs-toggle="pill" onclick="loadCMS('stats')"><i class="fas fa-chart-bar me-2 me-lg-3 text-accent"></i> Statistik Utama</button>
                                     </div>
                                 </div>
                                 <div class="col-lg-9">
@@ -563,6 +631,52 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/script.js"></script>
     <script>
+        // Custom Premium Toast System
+        function showToast(message, type = 'success', title = '') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `custom-toast ${type}`;
+            
+            if (!title) {
+                if (type === 'success') title = 'Berhasil';
+                else if (type === 'error') title = 'Terjadi Kesalahan';
+                else if (type === 'warning') title = 'Peringatan';
+                else title = 'Informasi';
+            }
+
+            const icons = {
+                success: 'fa-check-circle text-success',
+                error: 'fa-exclamation-circle text-danger',
+                warning: 'fa-exclamation-triangle text-warning',
+                info: 'fa-info-circle text-info'
+            };
+
+            toast.innerHTML = `
+                <div class="custom-toast-icon">
+                    <i class="fas ${icons[type] || icons.info}"></i>
+                </div>
+                <div class="custom-toast-content">
+                    <span class="custom-toast-title">${title}</span>
+                    <p class="custom-toast-message mb-0">${message}</p>
+                </div>
+                <button class="custom-toast-close" onclick="this.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+
+            container.appendChild(toast);
+            
+            // Force reflow for animation
+            toast.offsetHeight;
+            toast.classList.add('show');
+
+            // Auto remove
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 500);
+            }, 2000);
+        }
+
         // Global Data for Dropdowns
         let polsekData = [];
         let kelurahanData = [];
@@ -762,12 +876,12 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                         // Success Feedback
                         bootstrap.Modal.getInstance(document.getElementById('detailModal')).hide();
                         await loadMembers();
-                        alert('✅ Data anggota berhasil diperbarui!');
+                        showToast('Data anggota berhasil diperbarui!', 'success');
                     } else {
-                        alert('❌ Error: ' + result.message);
+                        showToast(result.message, 'error');
                     }
                 } catch (err) {
-                    alert('❌ Gagal menghubungi server');
+                    showToast('Gagal menghubungi server', 'error');
                 } finally {
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = '<i class="fas fa-save me-2 text-accent"></i> Simpan Data Saja';
@@ -789,12 +903,12 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                 if (result.status === 'success') {
                     bootstrap.Modal.getInstance(document.getElementById('detailModal')).hide();
                     await loadMembers();
-                    alert(`✅ Pendaftaran Berhasil ${status === 'Approved' ? 'Disetujui' : 'Ditolak'}!`);
+                    showToast(`Pendaftaran Berhasil ${status === 'Approved' ? 'Disetujui' : 'Ditolak'}!`, 'success');
                 } else {
-                    alert('❌ Error: ' + result.message);
+                    showToast(result.message, 'error');
                 }
             } catch (err) {
-                alert('❌ Gagal menghubungi server');
+                showToast('Gagal menghubungi server', 'error');
             }
         }
 
@@ -874,10 +988,10 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                 if(result.status === 'success') {
                     await loadMembers();
                 } else {
-                    alert('❌ Gagal menghapus: ' + result.message);
+                    showToast(result.message, 'error', 'Gagal Menghapus');
                 }
             } catch (err) {
-                alert('❌ Gagal menghubungi server');
+                showToast('Gagal menghubungi server', 'error');
             }
         }
 
@@ -929,9 +1043,9 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                 if(result.status === 'success') {
                     await loadTrash();
                     await loadMembers();
-                    alert('✅ Anggota berhasil dipulihkan!');
+                    showToast('Anggota berhasil dipulihkan!', 'success');
                 }
-            } catch (err) { alert('❌ Gagal menghubungi server'); }
+            } catch (err) { showToast('Gagal menghubungi server', 'error'); }
         }
 
         async function permanentDelete(reg) {
@@ -946,9 +1060,9 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                 const result = await resp.json();
                 if(result.status === 'success') {
                     await loadTrash();
-                    alert('🗑️ Data telah dihapus secara permanen.');
+                    showToast('Data telah dihapus secara permanen.', 'info', 'Terhapus');
                 }
-            } catch (err) { alert('❌ Gagal menghubungi server'); }
+            } catch (err) { showToast('Gagal menghubungi server', 'error'); }
         }
 
         // All logic unified in loadCMS for premium UX
@@ -1013,14 +1127,13 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                 });
                 const result = await resp.json();
                 if (result.status === 'success') {
-                    // Show a nicer toast instead of alert if possible, for now alert is fine
-                    alert('✅ Data ' + type + ' berhasil diperbarui!');
+                    showToast(`Data ${type} berhasil diperbarui!`, 'success');
                 } else {
-                    alert('❌ Gagal menyimpan: ' + result.message);
+                    showToast(result.message, 'error', 'Gagal Menyimpan');
                 }
                 return result;
             } catch (err) {
-                alert('❌ Terjadi kesalahan koneksi');
+                showToast('Terjadi kesalahan koneksi', 'error');
                 console.error(err);
             }
         }
@@ -1046,7 +1159,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                                 <p class="small text-muted mb-0">Sesuaikan konten bagian ini dengan mudah dan cepat.</p>
                             </div>
                             <button class="btn btn-dark rounded-pill px-4 fw-bold shadow-sm py-2 px-sm-4" onclick="saveCMS('${type}')">
-                                <i class="fas fa-save me-2 text-accent"></i> Simpan Perubahan
+                                <i class="fas fa-save me-2 text-white"></i> Simpan Perubahan
                             </button>
                         </div>
                         <form id="cms-form-${type}" class="cms-premium-form">
@@ -1239,7 +1352,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                     await loadCMS(type);
                 }
             } catch (err) {
-                alert('❌ Gagal menyimpan perubahan: ' + err.message);
+                showToast(err.message, 'error', 'Gagal Menyimpan');
                 console.error(err);
             } finally {
                 saveBtn.disabled = false;
@@ -1282,10 +1395,10 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                         await saveCMS(type); 
                     }
                 } else {
-                    alert('❌ Gagal upload: ' + result.message);
+                    showToast(result.message, 'error', 'Gagal Upload');
                 }
             } catch (err) {
-                alert('❌ Kesalahan upload: ' + err.message);
+                showToast(err.message, 'error', 'Kesalahan Upload');
             } finally {
                 originalBtn.disabled = false;
                 originalBtn.innerHTML = originalHtml;
@@ -1333,7 +1446,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                 }
             } catch (err) {
                 console.error(err);
-                alert('❌ Gagal menambah item: ' + err.message);
+                showToast(err.message, 'error', 'Gagal Menambah Item');
             } finally {
                 if (btn) btn.disabled = false;
             }
@@ -1371,7 +1484,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                 }
             } catch (err) {
                 console.error(err);
-                alert('❌ Gagal menghapus item: ' + err.message);
+                showToast(err.message, 'error', 'Gagal Menghapus Item');
             } finally {
                 if (btn) btn.disabled = false;
             }
@@ -1390,5 +1503,6 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
             </div>
         </footer>
     </div>
+    <div id="toast-container" class="toast-container"></div>
 </body>
 </html>

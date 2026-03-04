@@ -1,4 +1,5 @@
 <?php
+session_start();
 // Load data
 $newsData = json_decode(file_get_contents('data/news.json'), true);
 $structureData = json_decode(file_get_contents('data/structure.json'), true);
@@ -70,8 +71,12 @@ $pelaksana = $structureData['pelaksana'];
                         <a href="#" class="util-link">Email</a>
                         <a href="#" class="util-link">Anggota</a>
                         <a href="#" class="util-link">Polri</a>
-                        <a href="#" class="util-link">Masyarakat</a>
-                        <a href="login.php" class="util-link">Login Admin</a>
+                        <a href="Masyarakat" class="util-link">Masyarakat</a>
+                        <?php if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true): ?>
+                            <a href="admin.php" class="util-link">Dashboard</a>
+                        <?php else: ?>
+                            <a href="login.php" class="util-link">Login Admin</a>
+                        <?php endif; ?>
                     </div>
                 </div>
                 
@@ -117,7 +122,11 @@ $pelaksana = $structureData['pelaksana'];
                     <li class="nav-item"><a class="nav-link-ugm py-2 d-block" href="#berita" data-bs-dismiss="offcanvas">Berita Terbaru</a></li>
                     <li class="nav-item"><a class="nav-link-ugm py-2 d-block" href="#kontak" data-bs-dismiss="offcanvas">Hubungi Kami</a></li>
                     <li class="nav-item mt-4 pt-4 border-top border-white border-opacity-10">
-                        <a href="login.php" class="btn btn-hero-primary w-100 py-3" style="font-size: 0.8rem;">LOGIN ADMIN</a>
+                        <?php if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true): ?>
+                            <a href="admin.php" class="btn btn-hero-primary w-100 py-3" style="font-size: 0.8rem;">DASHBOARD</a>
+                        <?php else: ?>
+                            <a href="login.php" class="btn btn-hero-primary w-100 py-3" style="font-size: 0.8rem;">LOGIN ADMIN</a>
+                        <?php endif; ?>
                     </li>
                 </ul>
             </div>
