@@ -673,7 +673,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                             <button class="nav-link active py-3 px-4" id="pendaftaran-tab" data-bs-toggle="tab" data-bs-target="#pendaftaran" type="button" role="tab">Database Anggota</button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link py-3 px-4 text-danger" id="trash-tab" data-bs-toggle="tab" data-bs-target="#trash-section" type="button" role="tab" onclick="loadTrash()">Arsip Keluar 🗑️</button>
+                            <button class="nav-link py-3 px-4 text-danger" id="trash-tab" data-bs-toggle="tab" data-bs-target="#trash-section" type="button" role="tab" onclick="loadTrash()"><i class="fas fa-door-open me-2"></i>Anggota Keluar</button>
                         </li>
                     </ul>
                 </div>
@@ -733,10 +733,11 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                                     <tbody id="member-table-body" class="border-top-0">
                                         <?php if ($total > 0): ?>
                                             <?php foreach (array_reverse($data) as $row): ?>
+                                                <?php $isKhusus = ($row['member_type'] ?? '') === 'Khusus'; ?>
                                                 <tr>
                                                     <td class="d-none d-md-table-cell"><code class="bg-light p-1 rounded"><?php echo htmlspecialchars($row['no_anggota'] ?: $row['reg_number']); ?></code></td>
                                                     <td>
-                                                        <div class="fw-bold"><?php echo htmlspecialchars($row['full_name']); ?></div>
+                                                        <div class="fw-bold text-uppercase"><?php echo htmlspecialchars($row['full_name']); ?></div>
                                                         <div class="d-md-none small text-muted"><?php echo htmlspecialchars($row['no_anggota'] ?: $row['reg_number']); ?></div>
                                                     </td>
                                                     <td class="d-none d-sm-table-cell"><span class="badge bg-light text-dark"><?php echo htmlspecialchars($row['gender'] === 'Laki-laki' ? 'L' : 'P'); ?></span></td>
@@ -748,13 +749,15 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                                                             if($status === 'Approved') $badgeClass = 'bg-success-subtle text-success';
                                                             if($status === 'Rejected') $badgeClass = 'bg-danger-subtle text-danger';
                                                         ?>
-                                                        <span class="badge <?php echo $badgeClass; ?> border px-2"><?php echo $status; ?></span>
+                                                        <div class="d-flex flex-wrap gap-1 align-items-center">
+                                                            <span class="badge <?php echo $badgeClass; ?> border px-2"><?php echo $status; ?></span>
+                                                            <?php if($isKhusus): ?><span class="badge bg-warning text-dark px-2"><i class="fas fa-star me-1"></i>Khusus</span><?php endif; ?>
+                                                        </div>
                                                     </td>
                                                     <td class="text-end">
-                                                        <div class="btn-group rounded-pill shadow-sm">
-                                                            <button class="btn btn-outline-primary px-3" 
-                                                                    data-bs-toggle="modal" 
-                                                                    data-bs-target="#detailModal" 
+                                                        <div class="d-flex gap-1 justify-content-end">
+                                                            <button class="btn btn-sm btn-outline-primary rounded-3" title="Review"
+                                                                    data-bs-toggle="modal" data-bs-target="#detailModal"
                                                                     data-reg="<?php echo htmlspecialchars($row['reg_number']); ?>"
                                                                     data-name="<?php echo htmlspecialchars($row['full_name']); ?>"
                                                                     data-gender="<?php echo htmlspecialchars($row['gender']); ?>"
@@ -764,9 +767,19 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                                                                     data-address="<?php echo htmlspecialchars($row['address']); ?>"
                                                                     data-status="<?php echo htmlspecialchars($row['status'] ?? 'Pending'); ?>"
                                                                     data-file="<?php echo htmlspecialchars($row['file_path'] ?? ''); ?>">
-                                                                Review
+                                                                <i class="fas fa-search"></i>
                                                             </button>
-                                                            <button onclick="moveToTrash('<?php echo $row['reg_number']; ?>')" class="btn btn-outline-danger px-3">Hapus</button>
+                                                            <button class="btn btn-sm btn-outline-secondary rounded-3" title="Print Kartu Anggota" onclick="printMemberCard('<?php echo htmlspecialchars($row['reg_number']); ?>')">
+                                                                <i class="fas fa-print"></i>
+                                                            </button>
+                                                            <?php if($status === 'Approved'): ?>
+                                                            <button class="btn btn-sm rounded-3 <?php echo $isKhusus ? 'btn-warning' : 'btn-outline-warning'; ?>" title="<?php echo $isKhusus ? 'Edit Rekomendasi' : 'Rekomendasikan sebagai Anggota Khusus'; ?>" onclick="openRekomendasiModal('<?php echo htmlspecialchars($row['reg_number']); ?>', '<?php echo htmlspecialchars($row['full_name']); ?>', '<?php echo htmlspecialchars(addslashes($row['rekomendasi_alasan'] ?? '')); ?>')">
+                                                                <i class="fas fa-star"></i>
+                                                            </button>
+                                                            <?php endif; ?>
+                                                            <button class="btn btn-sm btn-outline-danger rounded-3" title="Keluarkan Anggota" onclick="moveToTrash('<?php echo $row['reg_number']; ?>')">
+                                                                <i class="fas fa-sign-out-alt"></i>
+                                                            </button>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -781,12 +794,12 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                             </div>
                         </div>
 
-                        <!-- Tab Arsip Keluar -->
+                        <!-- Tab Anggota Keluar -->
                         <div class="tab-pane fade" id="trash-section" role="tabpanel">
                             <div class="d-flex justify-content-between align-items-center mb-4">
                                 <div>
-                                    <h4 class="fw-bold mb-1">Arsip Anggota Keluar</h4>
-                                    <p class="text-muted small mb-0">Daftar anggota yang telah dihapus. Anda dapat memulihkan atau menghapus permanen.</p>
+                                    <h4 class="fw-bold mb-1">Anggota Keluar</h4>
+                                    <p class="text-muted small mb-0">Daftar anggota yang telah dikeluarkan. Anda dapat memulihkan atau menghapus permanen.</p>
                                 </div>
                             </div>
 
@@ -1386,6 +1399,19 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                     const sectorName = pObj ? pObj.nama : (row.sector || '-');
                     const subsectorName = kObj ? kObj.nama : (row.subsector || '-');
 
+                    const isKhusus = (row.member_type || '') === 'Khusus';
+                    const isApproved = status === 'Approved';
+                    const khususBadge = isKhusus ? `<span class="badge bg-warning text-dark small px-2 py-1"><i class="fas fa-star me-1"></i>Anggota Khusus</span>` : '';
+                    // Rekomendasi button only for Approved members
+                    let rekBtn = '';
+                    if (isApproved) {
+                        const safeAlasan = (row.rekomendasi_alasan || '').replace(/'/g, "\\'" ).replace(/\n/g, '\\n');
+                        const safeName = row.full_name.replace(/'/g, "\\'");
+                        rekBtn = isKhusus
+                            ? `<button class="btn btn-sm btn-warning rounded-3" title="Edit Rekomendasi Anggota Khusus" onclick="openRekomendasiModal('${row.reg_number}', '${safeName}', '${safeAlasan}')"><i class="fas fa-star"></i></button>`
+                            : `<button class="btn btn-sm btn-outline-warning rounded-3" title="Rekomendasikan sebagai Anggota Khusus" onclick="openRekomendasiModal('${row.reg_number}', '${safeName}', '')"><i class="fas fa-star"></i></button>`;
+                    }
+
                     html += `
                         <tr>
                             <td class="d-none d-md-table-cell"><code class="bg-light p-1 rounded">${row.no_anggota || row.reg_number}</code></td>
@@ -1398,12 +1424,16 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                                 <div class="fw-bold">${sectorName}</div>
                                 <div class="text-muted small">${subsectorName}</div>
                             </td>
-                            <td class="d-none d-lg-table-cell">${statusBadge}</td>
+                            <td class="d-none d-lg-table-cell">
+                                <div class="d-flex flex-wrap gap-1 align-items-center">
+                                    ${statusBadge}
+                                    ${khususBadge}
+                                </div>
+                            </td>
                             <td class="text-end">
-                                <div class="btn-group btn-group-sm rounded-pill shadow-sm">
-                                    <button class="btn btn-outline-primary px-2 px-sm-3" 
-                                            data-bs-toggle="modal" 
-                                            data-bs-target="#detailModal" 
+                                <div class="d-flex gap-1 justify-content-end">
+                                    <button class="btn btn-sm btn-outline-primary rounded-3" title="Review"
+                                            data-bs-toggle="modal" data-bs-target="#detailModal"
                                             data-reg="${row.reg_number}"
                                             data-name="${row.full_name}"
                                             data-gender="${row.gender}"
@@ -1413,9 +1443,15 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                                             data-address="${row.address}"
                                             data-status="${status}"
                                             data-file="${row.file_path || ''}">
-                                        Review
+                                        <i class="fas fa-search"></i>
                                     </button>
-                                    <button onclick="moveToTrash('${row.reg_number}')" class="btn btn-outline-danger px-2 px-sm-3">Hapus</button>
+                                    <button class="btn btn-sm btn-outline-secondary rounded-3" title="Print Kartu Anggota" onclick="printMemberCard('${row.reg_number}')">
+                                        <i class="fas fa-print"></i>
+                                    </button>
+                                    ${rekBtn}
+                                    <button class="btn btn-sm btn-outline-danger rounded-3" title="Keluarkan Anggota" onclick="moveToTrash('${row.reg_number}')">
+                                        <i class="fas fa-sign-out-alt"></i>
+                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -1427,8 +1463,155 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
             }
         }
 
+        function openRekomendasiModal(regNumber, memberName, existingAlasan = '') {
+            document.getElementById('rek-reg-number').value = regNumber;
+            document.getElementById('rek-member-name').textContent = memberName.toUpperCase();
+            // Pre-fill existing reason if already Anggota Khusus
+            const alasanField = document.getElementById('rek-alasan');
+            alasanField.value = existingAlasan ? existingAlasan.replace(/\\n/g, '\n') : '';
+
+            // Update modal subtitle based on whether already khusus
+            const subtitle = document.querySelector('#rekomendasiModal .modal-header small');
+            if (subtitle) {
+                subtitle.textContent = existingAlasan
+                    ? 'Edit alasan rekomendasi Anggota Khusus'
+                    : 'Jadikan anggota biasa sebagai Anggota Khusus';
+            }
+            const modal = new bootstrap.Modal(document.getElementById('rekomendasiModal'));
+            modal.show();
+
+        }
+
+        async function saveRekomendasi() {
+            const reg = document.getElementById('rek-reg-number').value;
+            const alasan = document.getElementById('rek-alasan').value.trim();
+            if (!alasan) {
+                document.getElementById('rek-alasan').classList.add('is-invalid');
+                document.getElementById('rek-alasan').focus();
+                return;
+            }
+            document.getElementById('rek-alasan').classList.remove('is-invalid');
+
+            try {
+                const formData = new FormData();
+                formData.append('reg_number', reg);
+                formData.append('member_type', 'Khusus');
+                formData.append('rekomendasi_alasan', alasan);
+
+                const resp = await fetch('update_member.php', { method: 'POST', body: formData });
+                const result = await resp.json();
+
+                bootstrap.Modal.getInstance(document.getElementById('rekomendasiModal')).hide();
+
+                if (result.status === 'success') {
+                    showToast('Anggota berhasil dijadikan Anggota Khusus!', 'success', 'Rekomendasi Berhasil');
+                    await loadMembers();
+                } else {
+                    showToast(result.message || 'Gagal menyimpan rekomendasi.', 'error', 'Gagal');
+                }
+            } catch (err) {
+                showToast('Gagal menghubungi server.', 'error');
+            }
+        }
+
+        function printMemberCard(reg) {
+            const member = allMembersData.find(m => m.reg_number === reg);
+            if (!member) {
+                showToast('Data anggota tidak ditemukan.', 'error');
+                return;
+            }
+
+            const pObj = polsekData.find(p => p.id === member.sector || p.kode === member.sector);
+            const kObj = kelurahanData.find(k => (k.polsek_id === member.sector || k.polsek_id.startsWith(member.sector + '-')) && k.kode === member.subsector);
+            const sectorName = pObj ? pObj.nama : (member.sector || '-');
+            const subsectorName = kObj ? kObj.nama : (member.subsector || '-');
+            const isKhusus = (member.member_type || '') === 'Khusus';
+            const baseUrl = window.location.href.replace('admin.php', '').replace(/\?.*$/, '');
+            const photoSrc = member.photo_path || member.profile_path || 'assets/img/avatar-placeholder.png';
+            const fullPhotoSrc = baseUrl + photoSrc.replace(/\\/g, '/');
+
+            // ── Two card designs ──────────────────────────────────
+            const cardBg = isKhusus
+                ? 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)'
+                : 'linear-gradient(135deg, #1e3a5f 0%, #0d2137 100%)';
+
+            const accentColor = isKhusus ? '#f59e0b' : 'rgba(255,255,255,0.25)';
+
+            const specialTopStrip = isKhusus
+                ? `<div style="background:linear-gradient(90deg,#f59e0b,#d97706);height:5px;margin:-14px -14px 10px -14px;"></div>`
+                : '';
+
+            const memberTypeLabel = isKhusus
+                ? `<div style="display:inline-flex;align-items:center;gap:4px;background:#f59e0b;color:#111;font-size:7px;font-weight:700;padding:2px 8px;border-radius:4px;letter-spacing:0.5px;margin:3px 0;">
+                       ★ ANGGOTA KHUSUS
+                   </div>`
+                : `<div style="font-size:6.5px;color:rgba(255,255,255,0.5);letter-spacing:0.5px;margin:3px 0;">ANGGOTA BIASA</div>`;
+
+            const idBg = isKhusus
+                ? 'linear-gradient(90deg,rgba(245,158,11,0.2),rgba(245,158,11,0.05))'
+                : 'rgba(255,255,255,0.1)';
+            const idBorder = isKhusus ? 'border: 1px solid rgba(245,158,11,0.4)' : '';
+
+            const cardHTML = `<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><title>Kartu Anggota - ${member.full_name || ''}</title>
+            <style>
+                @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+                * { margin:0; padding:0; box-sizing:border-box; }
+                body { font-family:'Inter',Arial,sans-serif; background:#e8ecf0; display:flex; flex-direction:column; justify-content:center; align-items:center; min-height:100vh; gap:10px; }
+                .card-wrap { width:85.6mm; }
+                .card { width:85.6mm; min-height:54mm; background:${cardBg}; border-radius:12px; padding:14px; color:white; display:flex; gap:12px; box-shadow:0 10px 40px rgba(0,0,0,0.4); position:relative; overflow:hidden; }
+                .card::before { content:''; position:absolute; top:-30px; right:-30px; width:120px; height:120px; background:${accentColor}; border-radius:50%; opacity:0.12; }
+                .card::after { content:''; position:absolute; bottom:-40px; left:30px; width:160px; height:160px; background:${accentColor}; border-radius:50%; opacity:0.07; }
+                .photo { width:68px; height:80px; border-radius:8px; object-fit:cover; border:2px solid ${isKhusus ? '#f59e0b' : 'rgba(255,255,255,0.3)'}; flex-shrink:0; position:relative; z-index:1; }
+                .info { flex:1; display:flex; flex-direction:column; justify-content:space-between; position:relative; z-index:1; }
+                .org { font-size:6px; text-transform:uppercase; letter-spacing:1.5px; opacity:0.6; }
+                .org-name { font-size:9px; font-weight:700; }
+                .divider { height:1px; background:${isKhusus ? 'rgba(245,158,11,0.5)' : 'rgba(255,255,255,0.2)'}; margin:5px 0; }
+                .name { font-size:11.5px; font-weight:900; text-transform:uppercase; line-height:1.2; }
+                .field-label { font-size:6px; opacity:0.55; text-transform:uppercase; letter-spacing:0.6px; margin-top:4px; }
+                .field-value { font-size:8px; font-weight:600; }
+                .id-box { font-size:8px; font-weight:700; font-family:'Courier New',monospace; background:${idBg}; ${idBorder}; padding:3px 8px; border-radius:5px; letter-spacing:1px; display:inline-block; margin-top:2px; }
+                @media print {
+                    body { background:white; }
+                    .no-print { display:none; }
+                }
+            </style></head><body>
+            <div class="card-wrap">
+                <div class="card">
+                    ${specialTopStrip}
+                    <img class="photo" src="${fullPhotoSrc}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2268%22 height=%2280%22><rect fill=%22%23334155%22 width=%2268%22 height=%2280%22 rx=%228%22/><circle fill=%22%2364748b%22 cx=%2234%22 cy=%2228%22 r=%2212%22/><ellipse fill=%22%2364748b%22 cx=%2234%22 cy=%2270%22 rx=%2220%22 ry=%2212%22/></svg>'">
+                    <div class="info">
+                        <div>
+                            <div class="org">Pokdar Kamtibmas</div>
+                            <div class="org-name">Kota Tangerang Selatan</div>
+                            <div class="divider"></div>
+                            <div class="name">${(member.full_name || '-').toUpperCase()}</div>
+                            ${memberTypeLabel}
+                        </div>
+                        <div>
+                            <div class="field-label">NIK</div>
+                            <div class="field-value">${member.nik || '-'}</div>
+                            <div class="field-label">Sektor / Kelurahan</div>
+                            <div class="field-value">${sectorName} / ${subsectorName}</div>
+                            ${member.position ? `<div class="field-label">Jabatan</div><div class="field-value">${member.position}</div>` : ''}
+                        </div>
+                        <div class="id-box">${member.no_anggota || member.reg_number}</div>
+                    </div>
+                </div>
+            </div>
+            <script>window.onload = function() { window.print(); }<\/script>
+            </body></html>`;
+
+            const printWin = window.open('', '_blank', 'width=420,height=320');
+            if (printWin) {
+                printWin.document.write(cardHTML);
+                printWin.document.close();
+            } else {
+                showToast('Pop-up diblokir browser. Izinkan pop-up untuk mencetak kartu.', 'warning');
+            }
+        }
+
         async function moveToTrash(reg) {
-            if(!confirm('Pindahkan anggota ini ke sampah?')) return;
+            if(!confirm('Keluarkan anggota ini dari daftar?')) return;
             try {
                 const resp = await fetch('delete.php?reg=' + encodeURIComponent(reg) + '&ajax=1');
                 const result = await resp.json();
@@ -1441,6 +1624,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                 showToast('Gagal menghubungi server', 'error');
             }
         }
+
 
         async function loadTrash() {
             const tableBody = document.getElementById('trash-table-body');
@@ -2506,6 +2690,47 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
         });
     </script>
         </main>
+
+    <!-- Rekomendasi Anggota Khusus Modal -->
+    <div class="modal fade" id="rekomendasiModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="modal-header border-bottom py-3 px-4" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="bg-white bg-opacity-25 p-2 rounded-3">
+                            <i class="fas fa-star fs-5 text-white"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-0 text-white">Rekomendasi Anggota Khusus</h5>
+                            <small class="text-white text-opacity-75">Jadikan anggota biasa sebagai Anggota Khusus</small>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <input type="hidden" id="rek-reg-number">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-muted small text-uppercase">Nama Anggota</label>
+                        <div id="rek-member-name" class="fw-bold fs-5 text-dark"></div>
+                    </div>
+                    <div class="alert alert-warning border-0 rounded-3 small">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Anggota yang direkomendasikan akan mendapatkan status <strong>Anggota Khusus</strong> dan akan ditandai dengan ikon bintang di daftar anggota.
+                    </div>
+                    <div class="mb-3">
+                        <label for="rek-alasan" class="form-label fw-semibold">Alasan Rekomendasi <span class="text-danger">*</span></label>
+                        <textarea id="rek-alasan" class="form-control border-0 bg-light rounded-3" rows="4" placeholder="Tuliskan alasan mengapa anggota ini layak mendapatkan status Anggota Khusus..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-top px-4 pb-4 pt-3 gap-2">
+                    <button type="button" class="btn btn-light rounded-3 px-4" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-warning rounded-3 px-5 fw-bold" onclick="saveRekomendasi()">
+                        <i class="fas fa-star me-2"></i>SIMPAN REKOMENDASI
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Add Member Modal -->
     <div class="modal fade" id="addMemberModal" tabindex="-1" aria-hidden="true">
