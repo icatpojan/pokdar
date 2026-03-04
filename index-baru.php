@@ -121,30 +121,36 @@ $pelaksana = $structureData['pelaksana'];
         </div>
     </header>
 
-    <!-- Hero Section with Three.js -->
+    <!-- Hero Section with Parallax & Professional Layout -->
     <section id="home" class="hero">
         <canvas id="three-canvas"></canvas>
-        <div class="decor-shape shape-1"></div>
-        <div class="decor-shape shape-2"></div>
-        
-        <div class="container hero-content">
-            <div class="row justify-content-center text-center py-5 my-5">
-                <div class="col-lg-10 mt-5">
-                    <img src="assets/image.png" alt="Logo" class="logo-img mb-2" style="height: 80px;">
-                    <p class="hero-subtext text-uppercase mb-2" style="letter-spacing: 4px; font-weight: 600; color: #475569;"><?php echo $heroData['badge']; ?></p>
-                    <h1 class="hero-title display-2 mb-4" style="font-family: 'Playfair Display', serif; font-weight: 700;">
+        <div class="container hero-content mt-5">
+            <div class="row justify-content-center text-center mt-5">
+                <div class="col-lg-10">
+                    <div class="hero-badge-wrapper fade-up mb-4">
+                        <span class="badge bg-warning text-dark px-3 py-2 rounded-pill fw-bold text-uppercase" style="letter-spacing: 2px;"><?php echo $heroData['badge']; ?></span>
+                    </div>
+                    <h1 class="hero-title display-1 mb-4 fade-up">
                         <?php echo $heroData['title_primary']; ?>
                     </h1>
-                    <p class="hero-lead mx-auto mb-5" style="max-width: 800px; font-size: 1.15rem;">
-                        <?php echo $heroData['lead_text']; ?>
+                    <p class="hero-lead mx-auto mb-5 fade-up">
+                        <?php echo $heroData['lead_text'] ?? 'Membangun sinergi antara Polri dan masyarakat demi terciptanya keamanan dan ketertiban yang kondusif di wilayah Tangerang Selatan.'; ?>
                     </p>
-                    <div class="d-flex flex-column flex-sm-row gap-4 justify-content-center align-items-center">
-                        <a href="#join" class="btn btn-hero-primary px-5 py-3 rounded-pill fw-bold">GABUNG BERSAMA KAMI</a>
-                        <a href="#about" class="btn btn-hero-link fw-bold">Pelajari Selengkapnya <i class="fas fa-arrow-right ms-2"></i></a>
+                    <div class="d-flex flex-column flex-sm-row gap-4 justify-content-center align-items-center fade-up">
+                        <a href="#pendaftaran" class="btn btn-hero-primary px-5 py-3 rounded-pill">GABUNG SEKARANG</a>
+                        <a href="#tentang" class="btn btn-hero-link">
+                            <span>Pelajari Visi Kami</span>
+                            <i class="fas fa-arrow-right ms-2"></i>
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
+        <!-- Scroll Down Indicator -->
+            <!-- <div class="scroll-indicator fade-up">
+                <div class="mouse"></div>
+                <p class="small text-white opacity-50 mt-2">Scroll Down</p>
+            </div> -->
     </section>
 
     <!-- Quick Stats Bar -->

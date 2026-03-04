@@ -372,12 +372,17 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
             <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
                 <div class="modal-header bg-white border-bottom py-3 px-4">
                     <div class="d-flex align-items-center gap-3">
-                        <div class="bg-accent p-2 rounded-3 text-dark">
+                        <div class="bg-accent p-2 rounded-3 text-white">
                             <i class="fas fa-user-check fs-5"></i>
                         </div>
                         <div>
                             <h5 class="fw-bold mb-0">Review Pendaftaran Anggota</h5>
-                            <small class="text-muted" id="m-reg-display">REG-000</small>
+                            <div class="d-flex align-items-center mt-1">
+                                <small class="text-muted me-3" id="m-reg-display">REG-000</small>
+                                <div class="border-start ps-3" id="m-status-badge">
+                                    <!-- Status badge populated by JS -->
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -404,57 +409,138 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                                 <input type="hidden" name="reg_number" id="m-reg-val">
                                 <input type="hidden" name="status" id="m-status-val">
 
-                                <div class="section-badge mb-3">Informasi Profil</div>
+                                <div class="section-badge mb-3">Data Calon Anggota</div>
+
+                                <div class="text-center mb-4">
+                                    <div class="position-relative d-inline-block">
+                                        <img id="m-photo-preview" src="assets/img/avatar-placeholder.png" class="rounded-4 border shadow-sm" style="width: 120px; height: 160px; object-fit: cover; background-color: #f8f9fa;">
+                                        <div class="position-absolute bottom-0 end-0 bg-primary text-white rounded-circle p-2 shadow-sm" style="transform: translate(25%, 25%);">
+                                            <i class="fas fa-camera fa-xs"></i>
+                                        </div>
+                                    </div>
+                                    <p class="small text-muted mt-2 mb-0">Pas Foto Anggota</p>
+                                </div>
                                 
-                                <div class="mb-3">
-                                    <label class="small fw-bold text-muted mb-1">Nama Lengkap</label>
-                                    <input type="text" name="full_name" id="m-name" class="form-control bg-light border-0 rounded-3 fs-6 px-3 py-2 fw-bold" required>
+                                <div class="row g-3 mb-3">
+                                    <div class="col-12">
+                                        <label class="small fw-bold text-muted mb-1">NAMA LENGKAP</label>
+                                        <input type="text" name="full_name" id="m-name" class="form-control bg-light border-0 rounded-3 fs-6 px-3 py-2 fw-bold" required>
+                                    </div>
                                 </div>
 
                                 <div class="row g-3 mb-3">
                                     <div class="col-6">
-                                        <label class="small fw-bold text-muted mb-1">Jenis Kelamin</label>
-                                        <select name="gender" id="m-gender" class="form-select bg-light border-0 rounded-3 fs-6 px-3 h-auto py-2">
-                                            <option value="Laki-laki">Laki-laki</option>
-                                            <option value="Perempuan">Perempuan</option>
-                                            <option value="N/A">N/A</option>
+                                        <label class="small fw-bold text-muted mb-1">TEMPAT LAHIR</label>
+                                        <input type="text" name="birth_place" id="m-birth-place" class="form-control bg-light border-0 rounded-3 fs-6 px-3 py-2">
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="small fw-bold text-muted mb-1">TANGGAL LAHIR</label>
+                                        <input type="date" name="birth_date" id="m-birth-date" class="form-control bg-light border-0 rounded-3 fs-6 px-3 py-2">
+                                    </div>
+                                </div>
+
+                                <div class="row g-3 mb-3">
+                                    <div class="col-6">
+                                        <label class="small fw-bold text-muted mb-1">JENIS KELAMIN</label>
+                                        <select name="gender" id="m-gender" class="form-select bg-light border-0 rounded-3 fs-6 px-3 py-2">
+                                            <option value="Laki-laki">L</option>
+                                            <option value="Perempuan">P</option>
                                         </select>
                                     </div>
                                     <div class="col-6">
-                                        <label class="small fw-bold text-muted mb-1">Status</label>
-                                        <div id="m-status-badge"></div>
+                                        <label class="small fw-bold text-muted mb-1">PENDIDIKAN</label>
+                                        <select name="education" id="m-education" class="form-select bg-light border-0 rounded-3 fs-6 px-3 py-2">
+                                            <option value="SD">SD</option>
+                                            <option value="SMP">SMP</option>
+                                            <option value="SMA">SMA</option>
+                                            <option value="S1">S1</option>
+                                            <option value="S2">S2</option>
+                                            <option value="S3">S3</option>
+                                        </select>
                                     </div>
                                 </div>
 
                                 <div class="row g-3 mb-3">
                                     <div class="col-6">
-                                        <label class="small fw-bold text-muted mb-1">Sektor</label>
-                                        <input type="text" name="sector" id="m-sector" class="form-control bg-light border-0 rounded-3 fs-6 px-3 py-2">
+                                        <label class="small fw-bold text-muted mb-1">PEKERJAAN</label>
+                                        <select name="occupation" id="m-occupation" class="form-select bg-light border-0 rounded-3 fs-6 px-3 py-2">
+                                            <option value="PNS">PNS</option>
+                                            <option value="PENSIUN">PENSIUN</option>
+                                            <option value="KARYAWAN SWASTA">KARYAWAN SWASTA</option>
+                                            <option value="SECURITY">SECURITY</option>
+                                            <option value="WIRASWASTA">WIRASWASTA</option>
+                                            <option value="IRT">IRT</option>
+                                        </select>
                                     </div>
                                     <div class="col-6">
-                                        <label class="small fw-bold text-muted mb-1">Sub Sektor</label>
-                                        <input type="text" name="subsector" id="m-subsector" class="form-control bg-light border-0 rounded-3 fs-6 px-3 py-2">
+                                        <label class="small fw-bold text-muted mb-1">NIK</label>
+                                        <input type="text" name="nik" id="m-nik" class="form-control bg-light border-0 rounded-3 fs-6 px-3 py-2">
+                                    </div>
+                                </div>
+
+                                <div class="row g-3 mb-3">
+                                    <div class="col-12">
+                                        <label class="small fw-bold text-muted mb-1">HP</label>
+                                        <input type="text" name="phone" id="m-phone" class="form-control bg-light border-0 rounded-3 fs-6 px-3 py-2">
+                                    </div>
+                                </div>
+
+                                <div class="row g-3 mb-3">
+                                    <div class="col-6">
+                                        <label class="small fw-bold text-muted mb-1">KECAMATAN</label>
+                                        <select name="sector" id="m-sector" class="form-select bg-light border-0 rounded-3 fs-6 px-3 py-2" onchange="updateKelurahanDropdown(this.value)">
+                                            <!-- Options will be populated by JS -->
+                                        </select>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="small fw-bold text-muted mb-1">KELURAHAN</label>
+                                        <select name="subsector" id="m-subsector" class="form-select bg-light border-0 rounded-3 fs-6 px-3 py-2" onchange="updateMemberId()">
+                                            <!-- Options will be populated by JS -->
+                                        </select>
                                     </div>
                                 </div>
 
                                 <div class="mb-3">
-                                    <label class="small fw-bold text-muted mb-1">Alamat Domisili</label>
-                                    <textarea name="address" id="m-address" class="form-control bg-light border-0 rounded-3 fs-6 px-3" rows="3"></textarea>
+                                    <label class="small fw-bold text-muted mb-1">ALAMAT LENGKAP</label>
+                                    <textarea name="address" id="m-address" class="form-control bg-light border-0 rounded-3 fs-6 px-3" rows="2"></textarea>
                                 </div>
 
+                                <div class="row g-3 mb-3">
+                                    <div class="col-12">
+                                        <label class="small fw-bold text-muted mb-1">NO ANGGOTA</label>
+                                        <input type="text" name="no_anggota" id="m-id-number" class="form-control bg-light border-0 rounded-3 fs-6 px-3 py-2 fw-bold" placeholder="Otomatis..." readonly>
+                                    </div>
+                                </div>
+
+                                <div class="row g-3 mb-3">
+                                    <div class="col-6">
+                                        <label class="small fw-bold text-muted mb-1">JABATAN</label>
+                                        <input type="text" name="position" id="m-position" class="form-control bg-light border-0 rounded-3 fs-6 px-3 py-2">
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="small fw-bold text-muted mb-1">KODE PANGGIL</label>
+                                        <input type="text" name="call_code" id="m-call-code" class="form-control bg-light border-0 rounded-3 fs-6 px-3 py-2">
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="small fw-bold text-muted mb-1">UPLOUD POTO</label>
+                                    <input type="file" name="photo" id="m-photo" class="form-control bg-light border-0 rounded-3 fs-6 px-3 py-2">
+                                </div>
+
+                                <div class="section-badge mb-3">REKOMENDASI CETAK KARTU</div>
                                 <div class="mb-4">
-                                    <label class="small fw-bold text-muted mb-1">Waktu Pendaftaran</label>
-                                    <input type="text" id="m-date" class="form-control bg-light border-0 rounded-3 fs-7 px-3 py-2 text-muted" readonly>
+                                    <textarea name="card_recommendation" id="m-card-recommendation" class="form-control bg-light border-0 rounded-4 p-3" rows="3"></textarea>
                                 </div>
 
                                 <div class="d-grid gap-2 pt-3 border-top">
-                                    <button type="submit" class="btn btn-dark rounded-3 py-2 fw-bold">
-                                        <i class="fas fa-save me-2 text-accent"></i> Simpan Data Saja
+                                    <button type="submit" class="btn btn-primary rounded-pill py-2 fw-bold text-uppercase" style="background-color: #4472c4; border: none;">
+                                        AKTIFKAN
                                     </button>
                                     <div class="row gx-2">
                                         <div class="col-6">
                                             <button type="button" onclick="setMemberStatus('Approved')" class="btn btn-success w-100 rounded-3 py-2 fw-bold small">
-                                                <i class="fas fa-check-circle me-1"></i> Setujui
+                                                <i class="fas fa-check-circle me-1"></i> Approve
                                             </button>
                                         </div>
                                         <div class="col-6">
@@ -477,42 +563,183 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/script.js"></script>
     <script>
+        // Global Data for Dropdowns
+        let polsekData = [];
+        let kelurahanData = [];
+        let allMembersData = [];
+
+        async function loadDropdownData() {
+            try {
+                const [polsekRes, kelurahanRes, membersRes] = await Promise.all([
+                    fetch('data/polsek.json'),
+                    fetch('data/kelurahan.json'),
+                    fetch('data/pendaftaran.json?v=' + Date.now())
+                ]);
+                polsekData = await polsekRes.json();
+                kelurahanData = await kelurahanRes.json();
+                allMembersData = await membersRes.json();
+                
+                populatePolsekDropdown();
+            } catch (err) {
+                console.error('Gagal memuat data:', err);
+            }
+        }
+
+        function populatePolsekDropdown() {
+            const select = document.getElementById('m-sector');
+            if(!select) return;
+            select.innerHTML = '<option value="">Pilih Kecamatan</option>';
+            polsekData.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p.kode;
+                opt.textContent = p.nama;
+                select.appendChild(opt);
+            });
+        }
+
+        function updateKelurahanDropdown(polsekKode, selectedKeluarahan = '') {
+            const select = document.getElementById('m-subsector');
+            if(!select) return;
+            select.innerHTML = '<option value="">Pilih Kelurahan</option>';
+            
+            const filtered = kelurahanData.filter(k => k.polsek === polsekKode);
+            filtered.forEach(k => {
+                const opt = document.createElement('option');
+                opt.value = k.kode;
+                opt.textContent = k.nama;
+                if(k.kode === selectedKeluarahan) opt.selected = true;
+                select.appendChild(opt);
+            });
+            
+            if (!selectedKeluarahan) {
+                updateMemberId();
+            }
+        }
+
+        function updateMemberId() {
+            const polsek = document.getElementById('m-sector').value;
+            const kelurahan = document.getElementById('m-subsector').value;
+            const idInput = document.getElementById('m-id-number');
+            const currentReg = document.getElementById('m-reg-val').value;
+            
+            if(polsek && kelurahan) {
+                // Count existing members with same polsek and kelurahan, excluding current one
+                const sameAreaMembers = allMembersData.filter(m => 
+                    m.sector === polsek && 
+                    m.subsector === kelurahan && 
+                    m.reg_number !== currentReg
+                );
+                
+                const nextSeq = (sameAreaMembers.length + 1).toString().padStart(3, '0');
+                // Format: 07 (Polda) + 41 (Polres) + Polsek + Kelurahan + Seq
+                idInput.value = '0741' + polsek + kelurahan + nextSeq;
+            } else {
+                idInput.value = '';
+            }
+        }
+
+        // Initialize dropdown data
+        loadDropdownData();
+
+        // Helper functions for safe DOM updates
+        const setVal = (id, val) => {
+            const el = document.getElementById(id);
+            if (el) el.value = val || '';
+        };
+        const setHTML = (id, html) => {
+            const el = document.getElementById(id);
+            if (el) el.innerHTML = html || '';
+        };
+        const setSrc = (id, src) => {
+            const el = document.getElementById(id);
+            if (el) el.src = src || '';
+        };
+
         // Modal Population for Edit
         const detailModal = document.getElementById('detailModal');
         if (detailModal) {
-            detailModal.addEventListener('show.bs.modal', event => {
+            detailModal.addEventListener('show.bs.modal', async (event) => {
                 const btn = event.relatedTarget;
-                document.getElementById('m-name').value = btn.getAttribute('data-name');
-                document.getElementById('m-reg-display').textContent = btn.getAttribute('data-reg');
-                document.getElementById('m-reg-val').value = btn.getAttribute('data-reg');
-                document.getElementById('m-gender').value = btn.getAttribute('data-gender');
-                document.getElementById('m-sector').value = btn.getAttribute('data-sector').replace('Sektor ', '');
-                document.getElementById('m-subsector').value = btn.getAttribute('data-subsector').replace('Sub ', '');
-                document.getElementById('m-date').value = btn.getAttribute('data-date');
-                document.getElementById('m-address').value = btn.getAttribute('data-address');
-                document.getElementById('m-status-val').value = btn.getAttribute('data-status') || 'Pending';
+                const regNum = btn.getAttribute('data-reg');
                 
-                // Status Badge update
-                const status = btn.getAttribute('data-status') || 'Pending';
-                let badgeClass = 'bg-warning-subtle text-warning';
-                if(status === 'Approved') badgeClass = 'bg-success-subtle text-success';
-                if(status === 'Rejected') badgeClass = 'bg-danger-subtle text-danger';
-                document.getElementById('m-status-badge').innerHTML = `<span class="badge ${badgeClass} border fw-bold w-100 py-2">${status}</span>`;
+                // Reset form first
+                const form = document.getElementById('editMemberForm');
+                if (form) form.reset();
+                
+                // Reload data to ensure sequence is accurate
+                await loadDropdownData();
+                
+                const member = allMembersData.find(m => m.reg_number === regNum);
 
-                const filePath = btn.getAttribute('data-file');
-                const pdfViewer = document.getElementById('m-pdf-viewer');
-                const noPdfMessage = document.getElementById('no-pdf-message');
-                
-                if (filePath && filePath !== 'N/A' && filePath !== '') {
-                    pdfViewer.src = filePath;
-                    pdfViewer.classList.remove('d-none');
-                    noPdfMessage.classList.remove('d-flex');
-                    noPdfMessage.classList.add('d-none');
-                } else {
-                    pdfViewer.src = '';
-                    pdfViewer.classList.add('d-none');
-                    noPdfMessage.classList.remove('d-none');
-                    noPdfMessage.classList.add('d-flex');
+                if(member) {
+                    setVal('m-name', member.full_name);
+                    const regDisplay = document.getElementById('m-reg-display');
+                    if (regDisplay) regDisplay.textContent = member.reg_number;
+                    
+                    setVal('m-reg-val', member.reg_number);
+                    setVal('m-gender', (member.gender === 'Perempuan' ? 'Perempuan' : 'Laki-laki'));
+                    setVal('m-birth-place', member.birth_place);
+                    setVal('m-birth-date', member.birth_date);
+                    setVal('m-education', member.education || 'SMA');
+                    setVal('m-occupation', member.occupation || 'WIRASWASTA');
+                    setVal('m-nik', member.nik);
+                    setVal('m-phone', member.phone);
+                    setVal('m-address', member.address);
+                    setVal('m-position', member.position);
+                    setVal('m-call-code', member.call_code);
+                    setVal('m-card-recommendation', member.card_recommendation);
+                    setVal('m-status-val', member.status || 'Pending');
+                    
+                    // Profile Photo Preview
+                    const photoPath = member.photo_path || member.profile_path; // Support both naming variants if user edited manually
+                    const photoPreview = document.getElementById('m-photo-preview');
+                    if (photoPreview) {
+                        if (photoPath && photoPath !== 'N/A' && photoPath !== '') {
+                            photoPreview.src = photoPath.replace(/\\/g, '/') + '?v=' + Date.now();
+                        } else {
+                            photoPreview.src = 'assets/img/avatar-placeholder.png';
+                        }
+                    }
+                    
+                    // Dropdowns
+                    setVal('m-sector', member.sector);
+                    updateKelurahanDropdown(member.sector || '', member.subsector || '');
+                    
+                    // ID Number logic
+                    if (member.no_anggota) {
+                        setVal('m-id-number', member.no_anggota);
+                    } else if (member.sector && member.subsector) {
+                        updateMemberId();
+                    }
+
+                    // Metadata display
+                    setVal('m-date', btn.getAttribute('data-date'));
+                    
+                    // Status Badge update
+                    const status = member.status || 'Pending';
+                    let badgeClass = 'bg-warning-subtle text-warning';
+                    if(status === 'Approved') badgeClass = 'bg-success-subtle text-success';
+                    if(status === 'Rejected') badgeClass = 'bg-danger-subtle text-danger';
+                    setHTML('m-status-badge', `<span class="badge ${badgeClass} border fw-bold w-100 py-2">${status}</span>`);
+
+                    const filePath = member.file_path;
+                    const pdfViewer = document.getElementById('m-pdf-viewer');
+                    const noPdfMessage = document.getElementById('no-pdf-message');
+                    
+                    if (pdfViewer && noPdfMessage) {
+                        if (filePath && filePath !== 'N/A' && filePath !== '') {
+                            const cleanPath = filePath.replace(/\\/g, '/');
+                            pdfViewer.src = cleanPath + '#view=FitH&scrollbar=0&toolbar=0';
+                            pdfViewer.classList.remove('d-none');
+                            noPdfMessage.classList.remove('d-flex');
+                            noPdfMessage.classList.add('d-none');
+                        } else {
+                            pdfViewer.src = 'about:blank';
+                            pdfViewer.classList.add('d-none');
+                            noPdfMessage.classList.remove('d-none');
+                            noPdfMessage.classList.add('d-flex');
+                        }
+                    }
                 }
             });
 

@@ -10,6 +10,7 @@ $kegiatanData = json_decode(file_get_contents('data/kegiatan.json'), true);
 $faqData = json_decode(file_get_contents('data/faq.json'), true);
 $contactData = json_decode(file_get_contents('data/contact.json'), true);
 $regData = json_decode(file_get_contents('data/registrasi.json'), true);
+$jadwalData = json_decode(file_get_contents('data/jadwal_kegiatan.json'), true);
 
 $pimpinan = $structureData['pimpinan'];
 $sekretariat = $structureData['sekretariat'];
@@ -85,8 +86,9 @@ $pelaksana = $structureData['pelaksana'];
             <div class="container mx-5">
                 <div class="collapse navbar-collapse">
                     <ul class="navbar-nav w-100 justify-content-between text-uppercase">
+                        <li class="nav-item"><a class="nav-link-ugm" href="#home">Beranda</a></li>
                         <li class="nav-item"><a class="nav-link-ugm" href="#pendaftaran">Pendaftaran</a></li>
-                        <li class="nav-item"><a class="nav-link-ugm" href="#sejarah">Sejarah</a></li>
+                        <li class="nav-item"><a class="nav-link-ugm" href="#agenda">Agenda</a></li>
                         <li class="nav-item"><a class="nav-link-ugm" href="#organisasi">Organisasi</a></li>
                         <li class="nav-item"><a class="nav-link-ugm" href="#kegiatan">Kegiatan</a></li>
                         <li class="nav-item"><a class="nav-link-ugm" href="#berita">Berita Terbaru</a></li>
@@ -107,8 +109,9 @@ $pelaksana = $structureData['pelaksana'];
             </div>
             <div class="offcanvas-body p-4">
                 <ul class="navbar-nav gap-3 text-uppercase">
+                    <li class="nav-item"><a class="nav-link-ugm py-2 d-block" href="#home" data-bs-dismiss="offcanvas">Beranda</a></li>
                     <li class="nav-item"><a class="nav-link-ugm py-2 d-block" href="#pendaftaran" data-bs-dismiss="offcanvas">Pendaftaran</a></li>
-                    <li class="nav-item"><a class="nav-link-ugm py-2 d-block" href="#sejarah" data-bs-dismiss="offcanvas">Sejarah</a></li>
+                    <li class="nav-item"><a class="nav-link-ugm py-2 d-block" href="#agenda" data-bs-dismiss="offcanvas">Agenda</a></li>
                     <li class="nav-item"><a class="nav-link-ugm py-2 d-block" href="#organisasi" data-bs-dismiss="offcanvas">Organisasi</a></li>
                     <li class="nav-item"><a class="nav-link-ugm py-2 d-block" href="#kegiatan" data-bs-dismiss="offcanvas">Kegiatan</a></li>
                     <li class="nav-item"><a class="nav-link-ugm py-2 d-block" href="#berita" data-bs-dismiss="offcanvas">Berita Terbaru</a></li>
@@ -121,53 +124,94 @@ $pelaksana = $structureData['pelaksana'];
         </div>
     </header>
 
-    <!-- Hero Section with Parallax & Professional Layout -->
+    <!-- Hero Section with Three.js -->
     <section id="home" class="hero">
         <canvas id="three-canvas"></canvas>
-        <div class="container hero-content mt-5">
-            <div class="row justify-content-center text-center mt-5">
-                <div class="col-lg-10">
-                    <div class="hero-badge-wrapper fade-up mb-4">
-                        <span class="badge bg-warning text-dark px-3 py-2 rounded-pill fw-bold text-uppercase" style="letter-spacing: 2px;"><?php echo $heroData['badge']; ?></span>
-                    </div>
-                    <h1 class="hero-title display-1 mb-4 fade-up">
+        <div class="decor-shape shape-1"></div>
+        <div class="decor-shape shape-2"></div>
+        
+        <div class="container hero-content">
+            <div class="row justify-content-center text-center py-5 my-5">
+                <div class="col-lg-10 mt-5">
+                    <img src="assets/image.png" alt="Logo" class="logo-img mb-2" style="height: 80px;">
+                    <p class="hero-subtext text-uppercase mb-2" style="letter-spacing: 4px; font-weight: 600; color: #475569;"><?php echo $heroData['badge']; ?></p>
+                    <h1 class="hero-title display-2 mb-4 d-none d-md-block" style="font-family: 'Playfair Display', serif; font-weight: 700;">
                         <?php echo $heroData['title_primary']; ?>
                     </h1>
-                    <p class="hero-lead mx-auto mb-5 fade-up">
-                        <?php echo $heroData['lead_text'] ?? 'Membangun sinergi antara Polri dan masyarakat demi terciptanya keamanan dan ketertiban yang kondusif di wilayah Tangerang Selatan.'; ?>
+                    <p class="hero-lead mx-auto mb-5" style="max-width: 800px; font-size: 1.15rem;">
+                        <?php echo $heroData['lead_text']; ?>
                     </p>
-                    <div class="d-flex flex-column flex-sm-row gap-4 justify-content-center align-items-center fade-up">
-                        <a href="#pendaftaran" class="btn btn-hero-primary px-5 py-3 rounded-pill">GABUNG SEKARANG</a>
-                        <a href="#tentang" class="btn btn-hero-link">
-                            <span>Pelajari Visi Kami</span>
-                            <i class="fas fa-arrow-right ms-2"></i>
-                        </a>
+                    <div class="d-flex flex-column flex-sm-row gap-4 justify-content-center align-items-center">
+                        <a href="#pendaftaran" class="btn btn-hero-primary px-5 py-3 rounded-pill fw-bold">GABUNG BERSAMA KAMI</a>
+                        <a href="#tentang" class="btn btn-hero-link fw-bold">Pelajari Selengkapnya <i class="fas fa-arrow-right ms-2"></i></a>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- Scroll Down Indicator -->
-            <!-- <div class="scroll-indicator fade-up">
-                <div class="mouse"></div>
-                <p class="small text-white opacity-50 mt-2">Scroll Down</p>
-            </div> -->
     </section>
 
-    <!-- Quick Stats Bar -->
-    <div class="stats-bar">
+     <!-- Berita & Artikel Section -->
+    <section id="berita" class="bg-light">
         <div class="container">
-            <div class="row g-4 justify-content-center">
-                <?php 
-                if (isset($statsData) && is_array($statsData)):
-                    foreach($statsData as $stat): 
-                ?>
-                <div class="col-6 col-md-3">
-                    <div class="stat-card-item fade-up">
-                        <div class="stat-icon-wrapper">
-                            <i class="<?php echo $stat['icon'] ?? 'fas fa-info'; ?>"></i>
+            <!-- <div class="section-title text-center mb-5">
+                <span class="badge bg-accent text-white px-3 py-2 mb-3">BERITA TERKINI</span>
+                <h2 class="fade-up fw-bold">Kabar & <span class="text-accent">Update Terbaru</span></h2>
+                <p class="text-muted">Informasi terbaru seputar kegiatan dan pengumuman Pokdar Kamtibmas</p>
+            </div> -->
+            
+            <!-- Mobile Carousel for News -->
+            <div id="newsCarousel" class="carousel slide d-md-none mb-4" data-bs-ride="carousel">
+                <div class="carousel-inner rounded-4 shadow-sm">
+                    <?php 
+                    if (isset($newsData) && is_array($newsData)):
+                        foreach($newsData as $index => $news): 
+                    ?>
+                    <div class="carousel-item <?php echo $index === 0 ? 'active' : ''; ?>">
+                        <div class="news-card h-100 bg-white">
+                            <div class="position-relative overflow-hidden" style="height: 200px;">
+                                <img src="<?php echo $news['image'] ?: 'assets/kegiatan/giat (1).jpg'; ?>" alt="News Image" class="w-100 h-100 object-fit-cover">
+                                <span class="position-absolute top-0 start-0 m-3 badge bg-accent text-white rounded-pill px-3 py-2"><?php echo $news['tag'] ?? 'Update'; ?></span>
+                            </div>
+                            <div class="p-4">
+                                <h5 class="fw-bold mb-3"><?php echo $news['title'] ?? ''; ?></h5>
+                                <p class="text-muted small mb-4 line-clamp-3"><?php echo $news['description'] ?? ''; ?></p>
+                                <button type="button" class="btn p-0 text-accent fw-bold text-decoration-none d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#newsModal<?php echo $news['id']; ?>">
+                                    Baca Selengkapnya <i class="fas fa-arrow-right small"></i>
+                                </button>
+                            </div>
                         </div>
-                        <span class="stat-number"><?php echo $stat['number'] ?? '0'; ?></span>
-                        <span class="stat-label"><?php echo $stat['label'] ?? ''; ?></span>
+                    </div>
+                    <?php 
+                        endforeach; 
+                    endif;
+                    ?>
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#newsCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#newsCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                </button>
+            </div>
+
+            <div class="row g-4 d-none d-md-flex">
+                <?php 
+                if (isset($newsData) && is_array($newsData)):
+                    foreach($newsData as $news): 
+                ?>
+                <div class="col-md-4">
+                    <div class="news-card fade-up h-100 shadow-sm border-0 rounded-4 overflow-hidden bg-white">
+                        <div class="position-relative overflow-hidden" style="height: 200px;">
+                            <img src="<?php echo $news['image'] ?: 'assets/kegiatan/giat (1).jpg'; ?>" alt="News Image" class="w-100 h-100 object-fit-cover transition-transform">
+                            <span class="position-absolute top-0 start-0 m-3 badge bg-accent text-white rounded-pill px-3 py-2"><?php echo $news['tag'] ?? 'Update'; ?></span>
+                        </div>
+                        <div class="p-4">
+                            <h5 class="fw-bold mb-3"><?php echo $news['title'] ?? ''; ?></h5>
+                            <p class="text-muted small mb-4 line-clamp-3"><?php echo $news['description'] ?? ''; ?></p>
+                            <button type="button" class="btn p-0 text-accent fw-bold text-decoration-none d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#newsModal<?php echo $news['id']; ?>">
+                                Baca Selengkapnya <i class="fas fa-arrow-right small"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <?php 
@@ -175,8 +219,42 @@ $pelaksana = $structureData['pelaksana'];
                 endif;
                 ?>
             </div>
+
+            <!-- News Modals -->
+            <?php 
+            if (isset($newsData) && is_array($newsData)):
+                foreach($newsData as $news): 
+            ?>
+            <div class="modal fade" id="newsModal<?php echo $news['id']; ?>" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered">
+                    <div class="modal-content border-0 rounded-4 overflow-hidden">
+                        <div class="modal-header border-0 p-0 position-relative">
+                            <img src="<?php echo $news['image'] ?: 'assets/kegiatan/giat (1).jpg'; ?>" class="w-100 object-fit-cover" style="height: 300px;" alt="News Image">
+                            <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3 shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body p-4 p-lg-5">
+                            <div class="d-flex align-items-center gap-2 mb-3">
+                                <span class="badge bg-accent text-white rounded-pill px-3 py-2"><?php echo $news['tag'] ?? 'Update'; ?></span>
+                                <span class="text-muted small"><i class="far fa-calendar-alt me-1"></i> Berita Terbaru</span>
+                            </div>
+                            <h3 class="fw-bold mb-4"><?php echo $news['title'] ?? ''; ?></h3>
+                            <div class="news-content text-muted lh-lg">
+                                <?php echo $news['description'] ?? ''; ?>
+                                <p class="mt-3">Pokdar Kamtibmas terus berkomitmen untuk memberikan informasi dan edukasi terbaik bagi masyarakat demi terciptanya keamanan dan ketertiban yang kondusif di wilayah Tangerang Selatan.</p>
+                            </div>
+                        </div>
+                        <div class="modal-footer border-top-0 p-4 pt-0">
+                            <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Tutup</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <?php 
+                endforeach; 
+            endif;
+            ?>
         </div>
-    </div>
+    </section>
 
     <!-- Tentang Section -->
     <section id="tentang" class="section-padding">
@@ -202,11 +280,17 @@ $pelaksana = $structureData['pelaksana'];
                             <h6 class="fw-bold"><?php echo $card['title']; ?></h6>
                             <hr class="accent-line mx-auto">
                             <div class="small text-muted">
-                                <?php if(isset($card['mobile_intro'])): ?>
+                                <?php if(isset($card['full_intro'])): ?>
+                                <p class="small text-muted mb-3"><?php echo $card['full_intro']; ?></p>
+                                <?php elseif(isset($card['mobile_intro'])): ?>
                                 <p class="small text-muted mb-3"><?php echo $card['mobile_intro']; ?></p>
                                 <?php endif; ?>
 
-                                <?php if(isset($card['mobile_content'])): ?>
+                                <?php if(isset($card['full_content'])): ?>
+                                    <?php foreach($card['full_content'] as $line): ?>
+                                    <p class="mb-2"><?php echo $line; ?></p>
+                                    <?php endforeach; ?>
+                                <?php elseif(isset($card['mobile_content'])): ?>
                                     <?php foreach($card['mobile_content'] as $line): ?>
                                     <p class="mb-2"><?php echo $line; ?></p>
                                     <?php endforeach; ?>
@@ -309,7 +393,7 @@ $pelaksana = $structureData['pelaksana'];
             </div>
 
             <!-- Sejarah Section -->
-            <div class="row align-items-center mt-5 pt-lg-5" id="sejarah">
+            <!-- <div class="row align-items-center mt-5 pt-lg-5" id="sejarah">
                 <div class="col-lg-5 mb-5 mb-lg-0">
                     <div class="position-relative fade-up">
                         <img src="assets/pokdar.png" alt="Sejarah Pokdar" class="img-fluid rounded-4 shadow-lg">
@@ -343,36 +427,47 @@ $pelaksana = $structureData['pelaksana'];
                         ?>
                     </div>
                 </div>
-            </div>
+            </div> -->
         </div>
     </section>
     
-    <!-- Berita & Artikel Section -->
-    <section id="berita" class="section-padding bg-light">
+   
+
+    <!-- Agenda Kegiatan Section -->
+    <section id="agenda" class="section-padding bg-white overflow-hidden">
         <div class="container">
             <div class="section-title text-center mb-5">
-                <span class="badge bg-accent text-white px-3 py-2 mb-3">BERITA TERKINI</span>
-                <h2 class="fade-up fw-bold">Kabar & <span class="text-accent">Update Terbaru</span></h2>
-                <p class="text-muted">Informasi terbaru seputar kegiatan dan pengumuman Pokdar Kamtibmas</p>
+                <span class="badge bg-accent text-white px-3 py-2 mb-3">AGENDA TERBARU</span>
+                <h2 class="fade-up fw-bold">Jadwal <span class="text-accent">Kegiatan</span></h2>
+                <p class="text-muted fade-up">Ikuti dan pantau agenda nyata kami di wilayah Tangerang Selatan</p>
             </div>
-            
+
             <div class="row g-4">
                 <?php 
-                if (isset($newsData) && is_array($newsData)):
-                    foreach($newsData as $news): 
+                if (isset($jadwalData) && is_array($jadwalData)):
+                    foreach($jadwalData as $event): 
                 ?>
-                <div class="col-md-4">
-                    <div class="news-card fade-up h-100 shadow-sm border-0 rounded-4 overflow-hidden bg-white">
-                        <div class="position-relative overflow-hidden" style="height: 200px;">
-                            <img src="<?php echo $news['image'] ?: 'assets/kegiatan/giat (1).jpg'; ?>" alt="News Image" class="w-100 h-100 object-fit-cover transition-transform">
-                            <span class="position-absolute top-0 start-0 m-3 badge bg-accent text-white rounded-pill px-3 py-2"><?php echo $news['tag'] ?? 'Update'; ?></span>
+                <div class="col-lg-4">
+                    <div class="agenda-card fade-up">
+                        <div class="agenda-header d-flex justify-content-between align-items-center mb-3">
+                            <span class="badge bg-soft-accent text-accent rounded-pill px-3 py-2 fw-bold small">
+                                <i class="far fa-calendar-alt me-2"></i><?php echo $event['hari_tgl']; ?>
+                            </span>
                         </div>
-                        <div class="p-4">
-                            <h5 class="fw-bold mb-3"><?php echo $news['title'] ?? ''; ?></h5>
-                            <p class="text-muted small mb-4 line-clamp-3"><?php echo $news['description'] ?? ''; ?></p>
-                            <a href="<?php echo $news['link'] ?? '#'; ?>" class="text-accent fw-bold text-decoration-none d-flex align-items-center gap-2">
-                                Baca Selengkapnya <i class="fas fa-arrow-right small"></i>
-                            </a>
+                        <h5 class="fw-bold mb-3"><?php echo $event['keterangan']; ?></h5>
+                        <div class="agenda-details small">
+                            <div class="d-flex align-items-start gap-3 mb-2">
+                                <i class="far fa-clock text-accent mt-1"></i>
+                                <span><?php echo $event['jam']; ?></span>
+                            </div>
+                            <div class="d-flex align-items-start gap-3 mb-2">
+                                <i class="fas fa-map-marker-alt text-accent mt-1"></i>
+                                <span><?php echo $event['tempat']; ?></span>
+                            </div>
+                            <div class="d-flex align-items-start gap-3">
+                                <i class="fas fa-user-circle text-accent mt-1"></i>
+                                <span>CP: <?php echo $event['cp']; ?></span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -449,45 +544,43 @@ $pelaksana = $structureData['pelaksana'];
 
             <!-- Sekretariat & Bendahara -->
             <div class="row justify-content-center g-4 mb-5">
-                <div class="col-md-5">
-                    <div class="structure-card fade-up h-100 p-4">
-                        <div class="card-category p-2">SEKRETARIAT</div>
-                        <div class="py-3">
+                <div class="col-6 col-lg-4 px-1 px-md-3">
+                    <div class="structure-card fade-up h-100">
+                        <div class="card-category">SEKRETARIAT</div>
+                        <div class="py-2 py-md-3">
                             <div class="member-img-wrapper xs mb-2 mx-auto">
                                 <img src="<?php echo $sekretariat['sekretaris']['image'] ?? 'assets/user.png'; ?>" alt="Sekretaris" class="member-img">
                             </div>
-                            <p class="mb-1 fw-bold"><?php echo $sekretariat['sekretaris']['name'] ?? ''; ?></p>
-                            <span class="badge bg-accent text-white rounded-pill px-3">Sekretaris</span>
+                            <p class="mb-1 fw-bold" style="font-size: 0.75rem; line-height: 1.2;"><?php echo $sekretariat['sekretaris']['name'] ?? ''; ?></p>
+                            <span class="badge bg-accent text-white rounded-pill px-2" style="font-size: 0.6rem;">Sekretaris</span>
                         </div>
                         <hr class="my-2 opacity-10">
-                        <div class="py-3">
+                        <div class="py-2 py-md-3">
                             <div class="member-img-wrapper xs mb-2 mx-auto">
                                 <img src="<?php echo $sekretariat['wakil_sekretaris']['image'] ?? 'assets/user.png'; ?>" alt="Wakil Sekretaris" class="member-img">
                             </div>
-                            <p class="mb-1 small"><?php echo $sekretariat['wakil_sekretaris']['name'] ?? ''; ?></p>
-                            <span class="text-muted small">Wakil Sekretaris</span>
+                            <p class="mb-1" style="font-size: 0.7rem; line-height: 1.2;"><?php echo $sekretariat['wakil_sekretaris']['name'] ?? ''; ?></p>
+                            <span class="text-muted" style="font-size: 0.6rem;">Wakil Sekretaris</span>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-5">
-                    <div class="structure-card fade-up h-100 p-4">
-                        <div class="card-category p-2">BENDAHARA</div>
-                        <div class="py-3">
+                <div class="col-6 col-lg-4 px-1 px-md-3">
+                    <div class="structure-card fade-up h-100">
+                        <div class="card-category">BENDAHARA</div>
+                        <div class="py-2 py-md-3">
                             <div class="member-img-wrapper xs mb-2 mx-auto">
                                 <img src="<?php echo $bendahara['bendahara']['image'] ?? 'assets/user.png'; ?>" alt="Bendahara" class="member-img">
                             </div>
-                            <p class="mb-1 fw-bold"><?php echo $bendahara['bendahara']['name'] ?? ''; ?></p>
-                            <span class="badge bg-accent text-white rounded-pill px-3">Bendahara</span>
+                            <p class="mb-1 fw-bold" style="font-size: 0.75rem; line-height: 1.2;"><?php echo $bendahara['bendahara']['name'] ?? ''; ?></p>
+                            <span class="badge bg-accent text-white rounded-pill px-2" style="font-size: 0.6rem;">Bendahara</span>
                         </div>
                         <hr class="my-2 opacity-10">
-                        <div class="py-3">
+                        <div class="py-2 py-md-3">
                             <div class="member-img-wrapper xs mb-2 mx-auto">
                                 <img src="<?php echo $bendahara['wakil_bendahara']['image'] ?? 'assets/user.png'; ?>" alt="Wakil Bendahara" class="member-img">
                             </div>
-                            <div>
-                                <p class="mb-1 small"><?php echo $bendahara['wakil_bendahara']['name'] ?? ''; ?></p>
-                                <span class="text-muted small">Wakil Bendahara</span>
-                            </div>
+                            <p class="mb-1" style="font-size: 0.7rem; line-height: 1.2;"><?php echo $bendahara['wakil_bendahara']['name'] ?? ''; ?></p>
+                            <span class="text-muted" style="font-size: 0.6rem;">Wakil Bendahara</span>
                         </div>
                     </div>
                 </div>
@@ -521,11 +614,11 @@ $pelaksana = $structureData['pelaksana'];
             </div>
 
             <!-- Footer Struktur -->
-            <div class="mt-5 fade-up">
+            <!-- <div class="mt-5 fade-up">
                 <div class="bg-accent text-white fw-bold p-3 rounded-pill shadow-sm d-inline-block px-5">
                     <?php echo $structureData['footer_title']; ?>
                 </div>
-            </div>
+            </div> -->
         </div>
     </section>
 
@@ -705,32 +798,38 @@ $pelaksana = $structureData['pelaksana'];
                         <p class="text-muted">Kami siap mendengarkan aspirasi dan koordinasi anda.</p>
                     </div>
                     <div class="contact-info">
-                        <div class="d-flex flex-column flex-lg-row align-items-center mb-4 fade-up text-center text-lg-start">
-                            <div class="btn-accent rounded-circle d-flex align-items-center justify-content-center mb-3 mb-lg-0 me-lg-3" style="width: 50px; height: 50px; flex-shrink: 0;">
-                                <i class="fas fa-map-marker-alt"></i>
+                        <div class="row g-3 mb-4">
+                            <div class="col-6 col-lg-12">
+                                <div class="d-flex flex-column flex-lg-row align-items-center justify-content-center justify-content-lg-start text-center text-lg-start gap-2 gap-lg-3 fade-up">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 42px; height: 42px; flex-shrink: 0; background-color: var(--accent); box-shadow: 0 4px 15px rgba(30, 64, 175, 0.2);">
+                                        <i class="fas fa-map-marker-alt small"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="fw-bold mb-0 small">Alamat</h6>
+                                        <p class="text-muted mb-0" style="font-size: 0.75rem; line-height: 1.2;"><?php echo $contactData['map_address'] ?? 'Tangerang Selatan'; ?></p>
+                                    </div>
+                                </div>
                             </div>
-                            <div>
-                                <h6 class="fw-bold mb-0">Alamat</h6>
-                                <p class="text-muted mb-0"><?php echo $contactData['map_address'] ?? 'Tangerang Selatan'; ?></p>
+                            <div class="col-6 col-lg-12">
+                                <div class="d-flex flex-column flex-lg-row align-items-center justify-content-center justify-content-lg-start text-center text-lg-start gap-2 gap-lg-3 fade-up">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 42px; height: 42px; flex-shrink: 0; background-color: var(--accent); box-shadow: 0 4px 15px rgba(30, 64, 175, 0.2);">
+                                        <i class="fas fa-envelope small"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="fw-bold mb-0 small">Email</h6>
+                                        <p class="text-muted mb-0" style="font-size: 0.75rem; line-height: 1.2;"><?php echo $contactData['email'] ?? 'info@pokdar.id'; ?></p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="d-flex flex-column flex-lg-row align-items-center mb-4 fade-up text-center text-lg-start">
-                            <div class="btn-accent rounded-circle d-flex align-items-center justify-content-center mb-3 mb-lg-0 me-lg-3" style="width: 50px; height: 50px; flex-shrink: 0;">
-                                <i class="fas fa-envelope"></i>
-                            </div>
-                            <div>
-                                <h6 class="fw-bold mb-0">Email</h6>
-                                <p class="text-muted mb-0"><?php echo $contactData['email'] ?? 'info@pokdar.id'; ?></p>
-                            </div>
-                        </div>
-                        <div class="mt-5 text-center text-lg-start">
-                            <h6 class="fw-bold mb-3 fade-up">Instansi Terkait & Mitra</h6>
-                            <div class="d-flex flex-wrap justify-content-center justify-content-lg-start gap-3 fade-up">
+                        <div class="mt-4 mt-lg-5 text-center text-lg-start">
+                            <h6 class="fw-bold mb-3 fade-up small">Instansi Terkait & Mitra</h6>
+                            <div class="d-flex flex-wrap justify-content-center justify-content-lg-start gap-2 gap-md-3 fade-up">
                                 <?php 
                                 if (isset($contactData['partners']) && is_array($contactData['partners'])):
                                     foreach($contactData['partners'] as $p): 
                                 ?>
-                                <img src="<?php echo $p; ?>" style="height: 35px; opacity: 0.7;">
+                                <img src="<?php echo $p; ?>" style="height: 25px; opacity: 0.7;" class="partner-logo">
                                 <?php 
                                     endforeach; 
                                 endif;
@@ -765,6 +864,31 @@ $pelaksana = $structureData['pelaksana'];
             </div>
         </div>
     </section>
+
+     <!-- Quick Stats Bar -->
+    <div class="stats-bar" style="margin-top: 30px;margin-bottom: 30px;">
+        <div class="container">
+            <div class="row g-4 justify-content-center">
+                <?php 
+                if (isset($statsData) && is_array($statsData)):
+                    foreach($statsData as $stat): 
+                ?>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card-item fade-up">
+                        <div class="stat-icon-wrapper">
+                            <i class="<?php echo $stat['icon'] ?? 'fas fa-info'; ?>"></i>
+                        </div>
+                        <span class="stat-number"><?php echo $stat['number'] ?? '0'; ?></span>
+                        <span class="stat-label"><?php echo $stat['label'] ?? ''; ?></span>
+                    </div>
+                </div>
+                <?php 
+                    endforeach; 
+                endif;
+                ?>
+            </div>
+        </div>
+    </div>
 
     <!-- Footer -->
     <footer class="py-5 bg-dark text-white">

@@ -25,11 +25,10 @@ body {
     scroll-behavior: smooth;
 }
 
-/* Navbar & Header Enhancement (Transparent & Fixed) */
+/* Navbar & Header Enhancement (UGM Style) */
 .custom-header {
     transition: var(--transition);
     z-index: 1000;
-    background: transparent;
 }
 
 .custom-header a,
@@ -42,31 +41,32 @@ body {
 }
 
 .top-header {
-    background: transparent;
-    padding: 15px 0;
+    background: #093d62;
+    /* Deep Navy UGM */
+    padding: 10px 0;
     transition: var(--transition);
 }
 
 .navbar-brand-ugm .logo-img {
-    height: 60px !important;
+    height: 55px !important;
     transition: var(--transition);
 }
 
 .navbar-brand-ugm .main-title {
     color: var(--white) !important;
-    font-size: 1.3rem !important;
+    font-size: 1.15rem !important;
     margin-bottom: -2px;
 }
 
 .navbar-brand-ugm .sub-title {
-    font-size: 0.85rem !important;
+    font-size: 0.8rem !important;
     letter-spacing: 0.5px;
 }
 
 .social-links-ugm a {
     color: var(--white);
-    font-size: 1rem;
-    opacity: 0.8;
+    font-size: 0.9rem;
+    opacity: 0.85;
     transition: var(--transition);
 }
 
@@ -78,17 +78,17 @@ body {
 .divider-v {
     width: 1px;
     height: 18px;
-    background: rgba(255, 255, 255, 0.3);
-    margin: 0 10px;
+    background: rgba(255, 255, 255, 0.4);
+    margin: 0 5px;
 }
 
 .utility-links a {
     color: var(--white);
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     font-weight: 500;
     text-decoration: none !important;
     transition: var(--transition);
-    opacity: 0.8;
+    opacity: 0.9;
 }
 
 .utility-links a:hover {
@@ -96,23 +96,31 @@ body {
     opacity: 1;
 }
 
+.search-icon-ugm {
+    color: var(--white);
+    cursor: pointer;
+}
+
 .main-navbar-ugm {
-    background: transparent;
+    background: #1b2c43;
+    /* Darker Blue/Black */
+    border-top: 1.5px solid #ffd700;
+    /* Thinner, more elegant UGM Stripe */
     transition: var(--transition);
-    border: none !important;
-    box-shadow: none !important;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 .nav-link-ugm {
     color: var(--white) !important;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     font-weight: 500;
-    padding: 10px 20px !important;
+    padding: 15px 20px !important;
     position: relative;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
     transition: var(--transition);
     text-decoration: none !important;
-    text-transform: uppercase;
+    text-transform: capitalize;
+    border: none !important;
 }
 
 .nav-link-ugm:hover,
@@ -155,53 +163,46 @@ body {
 }
 
 /* Scrolled State */
-.navbar-scrolled {
-    background: rgba(9, 61, 98, 0.95);
-    backdrop-filter: blur(10px);
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-}
-
 .navbar-scrolled .top-header {
-    padding: 10px 0;
-}
-
-.navbar-scrolled .navbar-brand-ugm .logo-img {
-    height: 45px !important;
+    padding-top: 5px !important;
+    padding-bottom: 5px !important;
 }
 
 .navbar-scrolled .main-navbar-ugm {
-    background: transparent;
+    background: rgba(17, 27, 39, 0.98);
+    backdrop-filter: blur(15px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 
-/* Modern Hero Section */
+/* Three.js Hero Section */
 .hero {
     position: relative;
-    height: 100vh;
+    min-height: 110vh;
     display: flex;
     align-items: center;
-    background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('../assets/hero2.png') no-repeat center center;
+    background: url('../assets/hero.png') no-repeat center center;
     background-size: cover;
-    background-attachment: fixed;
     overflow: hidden;
-    padding-top: 0;
+    padding-top: 30px;
 }
 
-.hero::after {
+.hero::before {
     content: '';
     position: absolute;
-    bottom: 0;
+    top: 0;
     left: 0;
     width: 100%;
-    height: 20vh;
-    background: linear-gradient(to top, var(--bg-main), transparent);
-    z-index: 5;
+    height: 100%;
+    background: transparent;
+    z-index: 2;
+    pointer-events: none;
 }
 
 .hero-content {
     position: relative;
     z-index: 10;
-    width: 100%;
+    pointer-events: auto;
 }
 
 #three-canvas {
@@ -212,62 +213,58 @@ body {
     height: 100%;
     z-index: 1;
     pointer-events: none;
-    opacity: 0.2;
+    opacity: 0.15;
 }
 
 .hero-title {
     font-family: 'Playfair Display', serif;
-    font-size: 5.5rem;
+    font-size: 5rem;
     font-weight: 700;
-    color: var(--white);
+    color: #0f172a;
     line-height: 1.1;
-    letter-spacing: -2px;
-    text-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    letter-spacing: -1px;
 }
 
 .hero-lead {
-    font-size: 1.35rem;
-    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.25rem;
+    color: #4b5563;
     line-height: 1.6;
-    max-width: 800px;
+    max-width: 850px;
     margin: 0 auto;
-    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .btn-hero-primary {
-    background: #ffd700;
-    color: #093d62 !important;
-    padding: 18px 50px;
+    background: linear-gradient(to right, #3b82f6, #1e40af);
+    color: white !important;
+    padding: 18px 45px;
     border-radius: 50px;
-    font-weight: 800;
+    font-weight: 700;
     border: none;
-    box-shadow: 0 8px 20px rgba(255, 215, 0, 0.3);
+    box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);
     transition: all 0.3s ease;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
 }
 
 .btn-hero-primary:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 30px rgba(255, 215, 0, 0.5);
-    background: #ffcc00;
+    transform: translateY(-3px);
+    box-shadow: 0 15px 30px rgba(37, 99, 235, 0.4);
+    filter: brightness(1.1);
 }
 
 .btn-hero-link {
-    color: var(--white);
+    color: #1e40af;
     font-weight: 600;
     text-decoration: none;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
-    gap: 10px;
-    border-bottom: 2px solid transparent;
+    gap: 8px;
 }
 
 .btn-hero-link:hover {
-    color: #ffd700;
+    color: #1e3a8a;
     transform: translateX(5px);
-    border-bottom-color: #ffd700;
 }
 
 /* Buttons */
@@ -307,38 +304,36 @@ body {
     background: #000;
 }
 
-/* Professional Section Styling */
+/* Section Styling */
 .section-padding {
-    padding: 120px 0;
+    padding: 50px 0;
 }
 
 .bg-alt {
-    background: #fcfdfe;
+    background: var(--bg-alt);
 }
 
 .section-title h2 {
     font-weight: 800;
-    font-size: 3rem;
-    color: #0f172a;
-    margin-bottom: 25px;
-    letter-spacing: -1px;
+    font-size: 2.5rem;
+    color: var(--primary);
+    margin-bottom: 20px;
 }
 
-/* Redesigned Cards (Professional Look) */
+/* Card Styling */
 .premium-card {
     background: var(--white);
-    border-radius: 2px;
-    /* Less rounded for more professional look */
-    padding: 45px;
-    border-top: 4px solid var(--accent);
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+    border-radius: 20px;
+    padding: 30px;
+    border: 1px solid rgba(0, 0, 0, 0.03);
+    box-shadow: var(--shadow-md);
     transition: var(--transition);
     height: 100%;
 }
 
 .premium-card:hover {
-    transform: translateY(-15px);
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-lg);
 }
 
 /* FAQ Accordion */
@@ -492,12 +487,6 @@ body {
     }
 }
 
-/* Stats Bar */
-.stats-bar {
-    position: relative;
-    margin-top: -80px;
-    z-index: 10;
-}
 
 .stat-card-item {
     background: #f0f7ff;
@@ -792,7 +781,8 @@ body {
     }
 
     .stats-bar {
-        margin-top: -30px;
+        margin-top: 30px !important;
+        margin-bottom: 50px !important;
     }
 
     .section-title h2 {
@@ -832,19 +822,31 @@ body {
     }
 
     .top-header .logo-text .main-title {
-        font-size: 1rem !important;
+        font-size: 1.1rem !important;
     }
 
     .top-header .logo-text .sub-title {
-        font-size: 0.7rem !important;
+        font-size: 0.9rem !important;
+    }
+
+    .card-category {
+        margin: -8px -8px 10px -8px !important;
+        padding: 6px !important;
+        font-size: 0.55rem !important;
+    }
+
+    .member-img-wrapper.xs {
+        width: 50px !important;
+        height: 50px !important;
     }
 
     .navbar-brand-ugm .logo-img {
-        display: none !important;
+        display: block !important;
+        height: 40px !important;
     }
 
     .top-header {
-        padding: 5px 0 !important;
+        padding: 8px 0 !important;
     }
 
     .nav-link-ugm {
@@ -902,6 +904,37 @@ body {
 .premium-shadow {
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
 }
+
+/* Agenda Kegiatan */
+.agenda-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 30px;
+    height: 100%;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(30, 64, 175, 0.05);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.agenda-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(30, 64, 175, 0.1);
+    border-color: var(--accent);
+}
+
+.bg-soft-accent {
+    background-color: rgba(30, 64, 175, 0.1);
+}
+
+.agenda-details i {
+    width: 20px;
+}
+
+.agenda-card h5 {
+    color: #111b27;
+    line-height: 1.4;
+}
+
 
 /* Pendaftaran Section - Clean & White */
 .pendaftaran-section {
@@ -1056,87 +1089,4 @@ body {
 
 .dept-card:hover .member-img {
     transform: scale(1.1);
-}
-
-/* Scroll Indicator */
-.scroll-indicator {
-    position: absolute;
-    bottom: 30px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    z-index: 10;
-}
-
-.mouse {
-    width: 26px;
-    height: 42px;
-    border: 2px solid rgba(255, 255, 255, 0.5);
-    border-radius: 15px;
-    position: relative;
-}
-
-.mouse::before {
-    content: '';
-    width: 4px;
-    height: 8px;
-    background: #ffd700;
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    top: 8px;
-    border-radius: 2px;
-    animation: mouse-scroll 2s infinite;
-}
-
-@keyframes mouse-scroll {
-    0% {
-        opacity: 1;
-        top: 8px;
-    }
-
-    100% {
-        opacity: 0;
-        top: 25px;
-    }
-}
-
-/* Section Refinements */
-.section-title {
-    margin-bottom: 70px;
-}
-
-.section-title h2 {
-    font-family: 'Playfair Display', serif;
-    font-size: 3.5rem;
-    position: relative;
-    display: inline-block;
-}
-
-/* Typography Enhancements */
-p {
-    color: #475569;
-    line-height: 1.8;
-    font-size: 1.05rem;
-}
-
-/* Responsive Fixes */
-@media (max-width: 768px) {
-    .hero-title {
-        font-size: 3.2rem !important;
-    }
-
-    .hero-lead {
-        font-size: 1.1rem !important;
-    }
-
-    .section-padding {
-        padding: 80px 0;
-    }
-
-    .section-title h2 {
-        font-size: 2.5rem;
-    }
 }

@@ -11,13 +11,25 @@
     },
     {
         "reg_number": "WEB-1771907368641",
-        "full_name": "irsyad fauzan",
-        "address": "pamulang",
+        "full_name": "icat pojan",
+        "address": "jl.cawas-pedan, bumiharjo, Plosowangi\r\nCawas",
         "gender": "Laki-laki",
-        "sector": "mana kek",
-        "subsector": "jakkarta selatan",
+        "sector": "01",
+        "subsector": "01",
         "timestamp": "2026-02-24 04:29:28",
-        "file_path": "uploads\/1771907368_hengki26,+623-633+Hindarto.pdf",
-        "status": "Approved"
+        "file_path": "uploads\/1770029353_8324-19962-1-PB (1).pdf",
+        "profile_path": "uploads\/1772440858_2691.jpg",
+        "status": "Approved",
+        "birth_place": "klaten",
+        "birth_date": "2026-03-02",
+        "education": "SMA",
+        "occupation": "WIRASWASTA",
+        "nik": "3121412312",
+        "phone": "085600267104",
+        "no_anggota": "07410101001",
+        "position": "panglima",
+        "call_code": "0002",
+        "card_recommendation": "asmnldkamsldas",
+        "approval": ""
     }
 ]

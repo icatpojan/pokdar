@@ -55,9 +55,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Navbar Scroll Effect ---
     const header = document.querySelector('.custom-header');
     const handleScroll = () => {
-        if (window.scrollY > 10) {
+        if (header && window.scrollY > 10) {
             header.classList.add('navbar-scrolled');
-        } else {
+        } else if (header) {
             header.classList.remove('navbar-scrolled');
         }
     };
@@ -92,11 +92,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     block: 'start'
                 });
 
-                // Close mobile menu
-                const toggler = document.querySelector('.navbar-toggler');
-                const collapse = document.querySelector('.navbar-collapse');
-                if (collapse.classList.contains('show')) {
-                    toggler.click();
+                // Close mobile menu (Offcanvas)
+                const offcanvasEl = document.getElementById('offcanvasNavbar');
+                if (offcanvasEl) {
+                    const offcanvas = bootstrap.Offcanvas.getInstance(offcanvasEl);
+                    if (offcanvas) {
+                        offcanvas.hide();
+                    }
                 }
             }
         });

@@ -1,0 +1,337 @@
+[
+    {
+        "polsek": "01",
+        "kode": "01",
+        "nama": "Cempaka Putih"
+    },
+    {
+        "polsek": "01",
+        "kode": "02",
+        "nama": "Pondok Ranji"
+    },
+    {
+        "polsek": "01",
+        "kode": "03",
+        "nama": "Pisangan"
+    },
+    {
+        "polsek": "01",
+        "kode": "04",
+        "nama": "Cirendeu"
+    },
+    {
+        "polsek": "01",
+        "kode": "05",
+        "nama": "Rempoa"
+    },
+    {
+        "polsek": "01",
+        "kode": "06",
+        "nama": "Rengas"
+    },
+    {
+        "polsek": "02",
+        "kode": "01",
+        "nama": "Pamulang Barat"
+    },
+    {
+        "polsek": "02",
+        "kode": "02",
+        "nama": "Benda Baru"
+    },
+    {
+        "polsek": "02",
+        "kode": "03",
+        "nama": "Pondok Cabe Udik"
+    },
+    {
+        "polsek": "02",
+        "kode": "04",
+        "nama": "Pondok Cabe Ilir"
+    },
+    {
+        "polsek": "02",
+        "kode": "05",
+        "nama": "Kedaung"
+    },
+    {
+        "polsek": "02",
+        "kode": "06",
+        "nama": "Bambu Apus"
+    },
+    {
+        "polsek": "02",
+        "kode": "08",
+        "nama": "Pamulang Timur"
+    },
+    {
+        "polsek": "03",
+        "kode": "01",
+        "nama": "Pondok Betung"
+    },
+    {
+        "polsek": "03",
+        "kode": "02",
+        "nama": "Pondok Pucung"
+    },
+    {
+        "polsek": "03",
+        "kode": "03",
+        "nama": "Pondok Karya"
+    },
+    {
+        "polsek": "03",
+        "kode": "04",
+        "nama": "Pondok Jaya"
+    },
+    {
+        "polsek": "03",
+        "kode": "05",
+        "nama": "Pondok Aren"
+    },
+    {
+        "polsek": "03",
+        "kode": "06",
+        "nama": "Pondok Kacang Barat"
+    },
+    {
+        "polsek": "03",
+        "kode": "07",
+        "nama": "Pondok Kacang Timur"
+    },
+    {
+        "polsek": "03",
+        "kode": "08",
+        "nama": "Parigi"
+    },
+    {
+        "polsek": "04",
+        "kode": "01",
+        "nama": "Ciater"
+    },
+    {
+        "polsek": "04",
+        "kode": "02",
+        "nama": "Rawa Buntu"
+    },
+    {
+        "polsek": "04",
+        "kode": "03",
+        "nama": "Rawa Mekar Jaya"
+    },
+    {
+        "polsek": "04",
+        "kode": "04",
+        "nama": "Lengkong Gudang"
+    },
+    {
+        "polsek": "04",
+        "kode": "05",
+        "nama": "Lengkong Wetan"
+    },
+    {
+        "polsek": "04",
+        "kode": "06",
+        "nama": "Buaran"
+    },
+    {
+        "polsek": "04",
+        "kode": "07",
+        "nama": "Lengkong Gudang Timur"
+    },
+    {
+        "polsek": "04",
+        "kode": "08",
+        "nama": "Cilenggang"
+    },
+    {
+        "polsek": "04",
+        "kode": "09",
+        "nama": "Serpong"
+    },
+    {
+        "polsek": "05",
+        "kode": "01",
+        "nama": "Pakulonan"
+    },
+    {
+        "polsek": "05",
+        "kode": "02",
+        "nama": "Paku Alam"
+    },
+    {
+        "polsek": "05",
+        "kode": "03",
+        "nama": "Paku Jaya"
+    },
+    {
+        "polsek": "05",
+        "kode": "04",
+        "nama": "Pondok Jagung"
+    },
+    {
+        "polsek": "05",
+        "kode": "05",
+        "nama": "Pondok Jagung Timur"
+    },
+    {
+        "polsek": "05",
+        "kode": "06",
+        "nama": "Jelupang"
+    },
+    {
+        "polsek": "05",
+        "kode": "07",
+        "nama": "Lengkong Karya"
+    },
+    {
+        "polsek": "06",
+        "kode": "01",
+        "nama": "Cisauk"
+    },
+    {
+        "polsek": "06",
+        "kode": "02",
+        "nama": "Mekar Wangi"
+    },
+    {
+        "polsek": "06",
+        "kode": "03",
+        "nama": "Suradita"
+    },
+    {
+        "polsek": "06",
+        "kode": "04",
+        "nama": "Sampora"
+    },
+    {
+        "polsek": "06",
+        "kode": "05",
+        "nama": "Dangdang"
+    },
+    {
+        "polsek": "06",
+        "kode": "06",
+        "nama": "Cibogo"
+    },
+    {
+        "polsek": "07",
+        "kode": "01",
+        "nama": "Kelapa Dua"
+    },
+    {
+        "polsek": "07",
+        "kode": "02",
+        "nama": "Bencongan"
+    },
+    {
+        "polsek": "07",
+        "kode": "03",
+        "nama": "Bencongan Indah"
+    },
+    {
+        "polsek": "07",
+        "kode": "04",
+        "nama": "Pakulonan Barat"
+    },
+    {
+        "polsek": "07",
+        "kode": "05",
+        "nama": "Bojong Nangka"
+    },
+    {
+        "polsek": "07",
+        "kode": "06",
+        "nama": "Curug Sangereng"
+    },
+    {
+        "polsek": "08",
+        "kode": "01",
+        "nama": "Curug Kulon"
+    },
+    {
+        "polsek": "08",
+        "kode": "02",
+        "nama": "Curug Wetan"
+    },
+    {
+        "polsek": "08",
+        "kode": "03",
+        "nama": "Kadu"
+    },
+    {
+        "polsek": "08",
+        "kode": "04",
+        "nama": "Kadu Jaya"
+    },
+    {
+        "polsek": "08",
+        "kode": "05",
+        "nama": "Sukabakti"
+    },
+    {
+        "polsek": "08",
+        "kode": "06",
+        "nama": "Binong"
+    },
+    {
+        "polsek": "08",
+        "kode": "07",
+        "nama": "Cukanggalih"
+    },
+    {
+        "polsek": "09",
+        "kode": "01",
+        "nama": "Caringin"
+    },
+    {
+        "polsek": "09",
+        "kode": "02",
+        "nama": "Serdang Wetan"
+    },
+    {
+        "polsek": "09",
+        "kode": "03",
+        "nama": "Babat"
+    },
+    {
+        "polsek": "09",
+        "kode": "04",
+        "nama": "Cianjir"
+    },
+    {
+        "polsek": "09",
+        "kode": "05",
+        "nama": "Legok"
+    },
+    {
+        "polsek": "09",
+        "kode": "06",
+        "nama": "Palasari"
+    },
+    {
+        "polsek": "09",
+        "kode": "07",
+        "nama": "Bojongkamal"
+    },
+    {
+        "polsek": "09",
+        "kode": "08",
+        "nama": "Rancagong"
+    },
+    {
+        "polsek": "09",
+        "kode": "09",
+        "nama": "Kemuning"
+    },
+    {
+        "polsek": "09",
+        "kode": "10",
+        "nama": "Babakan"
+    },
+    {
+        "polsek": "09",
+        "kode": "11",
+        "nama": "Cirarab"
+    }
+]
