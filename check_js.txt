@@ -1,0 +1,16 @@
+                    let statusBadge = `<span class="badge bg-warning-subtle text-warning border px-2">Pending</span>`;
+                    if(status === 'Approved') statusBadge = `<span class="badge bg-success-subtle text-success border px-2">Approved</span>`;
+                    if(status === 'Rejected') statusBadge = `<span class="badge bg-danger-subtle text-danger border px-2">Rejected</span>`;
+
+                    html += `
+                        <tr>
+                            <td class="d-none d-md-table-cell"><code class="bg-light p-1 rounded">${row.reg_number}</code></td>
+                            <td>
+                                <div class="fw-bold">${row.full_name}</div>
+                                <div class="d-md-none small text-muted">${row.reg_number}</div>
+                            </td>
+                            <td class="d-none d-sm-table-cell"><span class="badge bg-light text-dark">${row.gender === 'Laki-laki' ? 'L' : (row.gender === 'Perempuan' ? 'P' : '-')}</span></td>
+                            <td class="small d-none d-md-table-cell">Sektor ${row.sector} - Sub ${row.subsector}</td>
+                            <td class="d-none d-lg-table-cell">${statusBadge}</td>
+                            <td class="text-end">
+                                <div class="btn-group btn-group-sm rounded-pill shadow-sm">

@@ -114,60 +114,260 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
             .mobile-text-center { text-align: center !important; }
             .mobile-justify-center { justify-content: center !important; }
             
-            #adminTabs, #cms-pills-tab {
-                flex-wrap: nowrap !important;
-                overflow-x: auto !important;
-                -webkit-overflow-scrolling: touch;
-                scrollbar-width: none;
-                margin-top: 15px !important;
-                margin-bottom: 5px !important;
-                gap: 8px;
-                padding: 6px !important;
-                background: #f3f4f6;
-                border-radius: 60px;
-            }
-            #adminTabs::-webkit-scrollbar, #cms-pills-tab::-webkit-scrollbar { display: none; }
+            /* Hide the actual admin navs (top) on mobile */
+            #adminTabs, #cms-pills-tab { display: none !important; }
 
-            /* Scroll Indicator Wrapper */
-            .scroll-wrapper {
-                position: relative;
-                margin: 5px 15px;
+            .mobile-menu-selector {
+                display: flex !important;
+                align-items: center;
+                justify-content: space-between;
+                background: #f3f4f6;
+                padding: 12px 20px;
+                border-radius: 50px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                border: 1px solid #e5e7eb;
+                margin: 10px 0;
+            }
+
+            .mobile-menu-selector:active {
+                background: #e5e7eb;
+                transform: scale(0.98);
+            }
+
+            .mobile-menu-label {
+                font-weight: 700;
+                color: #111827;
+                font-size: 0.9rem;
+            }
+
+            .mobile-menu-icon {
+                color: var(--accent);
+                font-size: 0.8rem;
+            }
+
+            /* Premium Action Sheet Style */
+            .offcanvas-bottom {
+                height: auto !important;
+                max-height: 80vh;
+                border-top-left-radius: 24px;
+                border-top-right-radius: 24px;
+                border-top: none;
+                box-shadow: 0 -10px 25px rgba(0,0,0,0.1);
+            }
+
+            .offcanvas-header {
+                padding: 24px 24px 12px;
+            }
+
+            .offcanvas-body {
+                padding: 12px 24px 34px;
+            }
+
+            .mobile-nav-list {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .mobile-nav-item {
+                display: flex;
+                align-items: center;
+                gap: 15px;
+                padding: 14px 18px;
+                border-radius: 16px;
+                color: #4b5563;
+                text-decoration: none;
+                font-weight: 600;
+                transition: all 0.2s;
+                border: 1px solid transparent;
+            }
+
+            .mobile-nav-item i {
+                width: 20px;
+                text-align: center;
+                font-size: 1.1rem;
+            }
+
+            .mobile-nav-item:active {
+                background: #f9fafb;
+                color: #111827;
+                border-color: #f3f4f6;
+            }
+
+            .mobile-nav-item.active {
+                background: #111827;
+                color: #fff;
+            }
+
+            .mobile-nav-item.active i {
+                color: var(--accent);
+            }
+
+            .action-sheet-handle {
+                width: 40px;
+                height: 4px;
+                background: #e5e7eb;
+                border-radius: 2px;
+                margin: -8px auto 16px;
             }
             
-            #adminTabs .nav-link, #cms-pills-tab .nav-link {
-                white-space: nowrap !important;
-                flex: 0 0 auto;
-                padding: 8px 20px !important;
-                font-size: 0.8rem;
-                border-radius: 50px !important;
-                border: none !important;
-                color: #6b7280;
-                background: transparent !important;
-                font-weight: 600;
-                transition: all 0.25s ease;
+            /* Compact CMS Mobile Typography */
+            .cms-section-title { 
+                font-size: 1.25rem !important; 
+                line-height: 1.4 !important;
+                margin-bottom: 4px !important;
             }
-
-            #adminTabs .nav-link.active, #cms-pills-tab .nav-link.active {
+            .cms-section-subtitle { 
+                font-size: 0.75rem !important; 
+                opacity: 0.65;
+                font-weight: 500;
+                line-height: 1.5 !important;
+            }
+            .cms-list-title { 
+                font-size: 1.05rem !important; 
+                line-height: 1.4 !important;
+                display: flex !important;
+                align-items: flex-start !important;
+                gap: 12px !important;
+                color: #111827 !important;
+            }
+            .cms-list-title .bg-accent {
+                margin-top: 8px;
+                flex-shrink: 0;
+            }
+            .btn-compact-mobile { 
+                padding: 10px 24px !important; 
+                font-size: 0.85rem !important;
+                border-radius: 14px !important;
                 background: #111827 !important;
-                color: #ffffff !important;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                border: none !important;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+                color: #fff !important;
             }
-
-            #adminTabs .nav-link::after, #cms-pills-tab .nav-link::after,
-            #adminTabs .nav-link::before, #cms-pills-tab .nav-link::before {
-                display: none !important;
+            .btn-add-compact {
+                width: 44px !important;
+                height: 44px !important;
+                padding: 0 !important;
+                display: flex !important;
+                align-items: center;
+                justify-content: center;
+                border-radius: 14px !important;
+                box-shadow: 0 6px 20px rgba(0,0,0,0.12) !important;
+                flex-shrink: 0;
+                background: #111827 !important;
+                border: none !important;
             }
-
-            #cms-pills-tab .nav-link {
-                margin-bottom: 0 !important;
-                border: 1px solid #f3f4f6 !important;
-                background: #fff;
+            .btn-add-compact span, .btn-add-compact i { display: none !important; }
+            .btn-add-compact::after {
+                content: '\f067';
+                font-family: 'Font Awesome 6 Free';
+                font-weight: 900;
+                font-size: 1rem;
+                color: white;
             }
             
             .cms-premium-form .card {
-                padding: 1.5rem !important;
+                padding: 1.25rem !important;
+                border-radius: 20px !important;
             }
             
+            .cms-header-spacer { 
+                margin-bottom: 1.75rem !important; 
+                padding-bottom: 1.75rem !important; 
+                border-bottom: 1px solid #f3f4f6 !important;
+            }
+
+            /* Mobile Fixed Bottom Navigation */
+            .mobile-bottom-nav {
+                display: none;
+                position: fixed;
+                bottom: 20px;
+                left: 20px;
+                right: 20px;
+                background: rgba(255, 255, 255, 0.85);
+                backdrop-filter: blur(15px);
+                -webkit-backdrop-filter: blur(15px);
+                border: 1px solid rgba(255, 255, 255, 0.3);
+                border-radius: 24px;
+                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+                z-index: 1030;
+                padding: 10px 15px;
+            }
+
+            @media (max-width: 991.98px) {
+                .mobile-bottom-nav {
+                    display: flex;
+                    justify-content: space-around;
+                    align-items: center;
+                }
+                
+                body {
+                    padding-bottom: 100px !important;
+                }
+            }
+
+            .mobile-bottom-item {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 5px;
+                color: #9ca3af;
+                text-decoration: none;
+                font-size: 0.65rem;
+                font-weight: 600;
+                transition: all 0.2s;
+                flex: 1;
+            }
+
+            .mobile-bottom-item i {
+                font-size: 1.35rem;
+                transition: all 0.2s;
+            }
+
+            .mobile-bottom-item.active {
+                color: #111827;
+            }
+
+            .mobile-bottom-item.active i {
+                color: var(--accent);
+                transform: translateY(-3px);
+            }
+
+            /* Compact Dashboard Header Mobile */
+            @media (max-width: 767.98px) {
+                .dashboard-header-row {
+                    margin-bottom: 25px !important;
+                }
+                .dashboard-main-title {
+                    font-size: 1.75rem !important;
+                    margin-bottom: 8px !important;
+                }
+                .dashboard-subtitle {
+                    font-size: 0.85rem !important;
+                    line-height: 1.5;
+                }
+                .stats-card-compact {
+                    padding: 12px 20px !important;
+                    max-width: none !important;
+                    width: auto !important;
+                    display: flex !important;
+                    flex-direction: row !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                    gap: 15px !important;
+                    border-radius: 16px !important;
+                }
+                .stats-count {
+                    font-size: 1.5rem !important;
+                    margin-bottom: 0 !important;
+                }
+                .stats-label {
+                    font-size: 0.75rem !important;
+                    text-align: left;
+                }
+            }
+
             .navbar-brand img { height: 32px !important; }
             .logo-text span.main-title { font-size: 0.85rem !important; }
             .logo-text span.sub-title { font-size: 0.6rem !important; }
@@ -360,7 +560,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
         }
     </style>
 </head>
-<body class="bg-light">
+<body class="" style="background-color: #dbeafe;">
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg bg-white border-bottom sticky-top py-3">
         <div class="container">
@@ -371,7 +571,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                     <span class="sub-title" style="color: #1e3a8a; font-size: 0.7rem;">Pokdar Kamtibmas Bhayangkara</span>
                 </div>
             </a>
-            <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <button class="navbar-toggler border-0 shadow-none d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasAdminMenu">
                 <i class="fas fa-bars text-dark"></i>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
@@ -389,10 +589,10 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
         <main class="flex-grow-1 py-5">
         <div class="container">
             <!-- Header Section -->
-            <div class="row align-items-center mb-5 animate-up">
+            <div class="row align-items-center mb-5 animate-up dashboard-header-row">
                 <div class="col-lg-7 mb-4 mb-lg-0 mobile-text-center">
-                    <h1 class="fw-bold display-5">Dashboard Pengelola</h1>
-                    <p class="text-muted fs-5 mb-0">Selamat datang kembali! Kelola database anggota dan publikasi konten.</p>
+                    <h1 class="fw-bold display-5 dashboard-main-title">Dashboard Pengelola</h1>
+                    <p class="text-muted fs-5 mb-0 dashboard-subtitle">Selamat datang kembali! Kelola database anggota dan publikasi konten.</p>
                 </div>
                 <div class="col-lg-5 text-center">
                     <div class="d-flex gap-3 justify-content-center justify-content-lg-end">
@@ -401,9 +601,9 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                             $data = file_exists($dataFile) ? json_decode(file_get_contents($dataFile), true) : [];
                             $total = is_array($data) ? count($data) : 0;
                         ?>
-                        <div class="card bg-dark text-white border-0 shadow-sm rounded-4 text-center p-3 w-100" style="max-width: 200px;">
-                            <span class="fs-2 mb-1" id="active-member-count"><?php echo $total; ?></span>
-                            <span class="small opacity-75">Total Anggota Aktif</span>
+                        <div class="card bg-dark text-white border-0 shadow-sm rounded-4 text-center p-3 w-100 stats-card-compact" style="max-width: 200px;">
+                            <span class="fs-2 mb-1 stats-count" id="active-member-count"><?php echo $total; ?></span>
+                            <span class="small opacity-75 stats-label">Total Anggota Aktif</span>
                         </div>
                     </div>
                 </div>
@@ -411,7 +611,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
 
             <!-- Tabs Section -->
             <div class="card border-0 shadow-sm rounded-4 overflow-hidden animate-up delay-1">
-                <div class="card-header bg-white p-0 scroll-wrapper">
+                <div class="card-header bg-white p-0">
                     <ul class="nav nav-tabs border-0" id="adminTabs" role="tablist">
                         <li class="nav-item" role="presentation">
                             <button class="nav-link py-3 px-4" id="cms-tab" data-bs-toggle="tab" data-bs-target="#cms" type="button" role="tab" onclick="loadCMS('hero')">Manajemen Konten</button>
@@ -430,7 +630,13 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                         <!-- Tab Manajemen Konten -->
                         <div class="tab-pane fade" id="cms" role="tabpanel">
                             <div class="row g-4">
-                                <div class="col-lg-3 scroll-wrapper">
+                                <div class="col-lg-3">
+                                    <div class="d-lg-none mb-3">
+                                        <div class="mobile-menu-selector" data-bs-toggle="offcanvas" data-bs-target="#offcanvasCmsMenu">
+                                            <span class="mobile-menu-label" id="active-cms-pill-label">Hero Section</span>
+                                            <i class="fas fa-chevron-down mobile-menu-icon"></i>
+                                        </div>
+                                    </div>
                                     <div class="nav nav-pills" id="cms-pills-tab" role="tablist">
                                         <button class="nav-link active text-start" data-bs-toggle="pill" onclick="loadCMS('hero')"><i class="fas fa-rocket me-2 me-lg-3 text-accent"></i> Hero Section</button>
                                         <button class="nav-link text-start" data-bs-toggle="pill" onclick="loadCMS('news')"><i class="fas fa-newspaper me-2 me-lg-3 text-accent"></i> Berita & Artikel</button>
@@ -457,7 +663,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                                 <table class="table table-hover align-middle border-0">
                                     <thead class="table-light">
                                         <tr class="small text-uppercase fw-bold text-muted">
-                                            <th class="border-0 d-none d-md-table-cell">Reg Number</th>
+                                            <th class="border-0 d-none d-md-table-cell">No Anggota</th>
                                             <th class="border-0">Nama Lengkap</th>
                                             <th class="border-0 d-none d-sm-table-cell">L/P</th>
                                             <th class="border-0 d-none d-md-table-cell">Sektor</th>
@@ -469,10 +675,10 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                                         <?php if ($total > 0): ?>
                                             <?php foreach (array_reverse($data) as $row): ?>
                                                 <tr>
-                                                    <td class="d-none d-md-table-cell"><code class="bg-light p-1 rounded"><?php echo htmlspecialchars($row['reg_number']); ?></code></td>
+                                                    <td class="d-none d-md-table-cell"><code class="bg-light p-1 rounded"><?php echo htmlspecialchars($row['no_anggota'] ?: $row['reg_number']); ?></code></td>
                                                     <td>
                                                         <div class="fw-bold"><?php echo htmlspecialchars($row['full_name']); ?></div>
-                                                        <div class="d-md-none small text-muted"><?php echo htmlspecialchars($row['reg_number']); ?></div>
+                                                        <div class="d-md-none small text-muted"><?php echo htmlspecialchars($row['no_anggota'] ?: $row['reg_number']); ?></div>
                                                     </td>
                                                     <td class="d-none d-sm-table-cell"><span class="badge bg-light text-dark"><?php echo htmlspecialchars($row['gender'] === 'Laki-laki' ? 'L' : 'P'); ?></span></td>
                                                     <td class="small d-none d-md-table-cell">Sektor <?php echo htmlspecialchars($row['sector']); ?> - Sub <?php echo htmlspecialchars($row['subsector']); ?></td>
@@ -487,7 +693,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                                                     </td>
                                                     <td class="text-end">
                                                         <div class="btn-group rounded-pill shadow-sm">
-                                                            <button class="btn btn-light px-3" 
+                                                            <button class="btn btn-outline-primary px-3" 
                                                                     data-bs-toggle="modal" 
                                                                     data-bs-target="#detailModal" 
                                                                     data-reg="<?php echo htmlspecialchars($row['reg_number']); ?>"
@@ -577,8 +783,8 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                 </div>
                 <div class="modal-body p-0">
                     <div class="row g-0">
-                        <!-- Left: PDF Viewer -->
-                        <div class="col-lg-8 bg-light border-end" style="min-height: 600px;">
+                        <!-- Left: PDF Viewer (becomes order-2 on mobile) -->
+                        <div class="col-lg-8 bg-light border-end order-2 order-lg-1" style="min-height: 600px;">
                             <div id="pdf-viewer-container" class="h-100 d-flex flex-column">
                                 <iframe id="m-pdf-viewer" src="" class="w-100 flex-grow-1 border-0" style="min-height: 600px;"></iframe>
                                 <div id="no-pdf-message" class="flex-grow-1 d-none align-items-center justify-content-center text-center p-5">
@@ -591,8 +797,8 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                             </div>
                         </div>
                         
-                        <!-- Right: Data Controls -->
-                        <div class="col-lg-4 p-4">
+                        <!-- Right: Data Controls (becomes order-1 on mobile) -->
+                        <div class="col-lg-4 p-4 order-1 order-lg-2">
                             <form id="editMemberForm">
                                 <input type="hidden" name="reg_number" id="m-reg-val">
                                 <input type="hidden" name="status" id="m-status-val">
@@ -1067,17 +1273,17 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
 
                     html += `
                         <tr>
-                            <td class="d-none d-md-table-cell"><code class="bg-light p-1 rounded">${row.reg_number}</code></td>
+                            <td class="d-none d-md-table-cell"><code class="bg-light p-1 rounded">${row.no_anggota || row.reg_number}</code></td>
                             <td>
                                 <div class="fw-bold">${row.full_name}</div>
-                                <div class="d-md-none small text-muted">${row.reg_number}</div>
+                                <div class="d-md-none small text-muted">${row.no_anggota || row.reg_number}</div>
                             </td>
                             <td class="d-none d-sm-table-cell"><span class="badge bg-light text-dark">${row.gender === 'Laki-laki' ? 'L' : (row.gender === 'Perempuan' ? 'P' : '-')}</span></td>
                             <td class="small d-none d-md-table-cell">Sektor ${row.sector} - Sub ${row.subsector}</td>
                             <td class="d-none d-lg-table-cell">${statusBadge}</td>
                             <td class="text-end">
                                 <div class="btn-group btn-group-sm rounded-pill shadow-sm">
-                                    <button class="btn btn-light px-2 px-sm-3" 
+                                    <button class="btn btn-outline-primary px-2 px-sm-3" 
                                             data-bs-toggle="modal" 
                                             data-bs-target="#detailModal" 
                                             data-reg="${row.reg_number}"
@@ -1133,10 +1339,10 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                 [...data].reverse().forEach(row => {
                     html += `
                         <tr>
-                            <td class="d-none d-md-table-cell"><code class="bg-light p-1 rounded">${row.reg_number}</code></td>
+                            <td class="d-none d-md-table-cell"><code class="bg-light p-1 rounded">${row.no_anggota || row.reg_number}</code></td>
                             <td>
                                 <div class="fw-bold">${row.full_name}</div>
-                                <div class="d-md-none small text-muted">${row.reg_number}</div>
+                                <div class="d-md-none small text-muted">${row.no_anggota || row.reg_number}</div>
                             </td>
                             <td class="d-none d-sm-table-cell"><span class="badge bg-light text-dark">${row.gender === 'Laki-laki' ? 'L' : (row.gender === 'Perempuan' ? 'P' : '-')}</span></td>
                             <td class="small d-none d-md-table-cell">Sektor ${row.sector}</td>
@@ -1261,6 +1467,33 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
             }
         }
 
+        // Global function for mobile tab switching
+        window.switchAdminTab = function(tabId, label, icon, element) {
+            const tabTrigger = document.getElementById(tabId);
+            if (tabTrigger) {
+                bootstrap.Tab.getOrCreateInstance(tabTrigger).show();
+                
+                // Update active state in offcanvas menu
+                const mobileMenu = document.getElementById('offcanvasAdminMenu');
+                mobileMenu.querySelectorAll('.mobile-nav-item').forEach(item => {
+                    if (item.getAttribute('onclick')?.includes(tabId)) item.classList.add('active');
+                    else item.classList.remove('active');
+                });
+                
+                // Update active state in fixed bottom nav
+                const bottomNav = document.querySelector('.mobile-bottom-nav');
+                if (bottomNav) {
+                    bottomNav.querySelectorAll('.mobile-bottom-item').forEach(item => {
+                        if (item.getAttribute('onclick')?.includes(tabId)) item.classList.add('active');
+                        else item.classList.remove('active');
+                    });
+                }
+                
+                const offcanvasInstance = bootstrap.Offcanvas.getInstance(mobileMenu);
+                if (offcanvasInstance) offcanvasInstance.hide();
+            }
+        };
+
         async function loadCMS(type) {
             const container = document.getElementById('cms-editor-container');
             container.innerHTML = `
@@ -1273,17 +1506,59 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
             try {
                 const resp = await fetch(`data/${type}.json?v=${Date.now()}`);
                 const data = await resp.json();
+
+                // Mobile Sync
+                const activePill = document.querySelector('#cms-pills-tab [onclick*="loadCMS(\''+type+'\')"]');
+                if (activePill) {
+                    const pills = document.querySelectorAll('#cms-pills-tab .nav-link');
+                    pills.forEach(p => p.classList.remove('active'));
+                    activePill.classList.add('active');
+                    if (document.getElementById('active-cms-pill-label')) {
+                        document.getElementById('active-cms-pill-label').innerText = activePill.innerText.trim();
+                    }
+                }
+
+                // Populate Mobile CMS Menu if empty
+                const mobileCmsNav = document.getElementById('mobile-cms-nav-list');
+                if (mobileCmsNav && mobileCmsNav.children.length === 0) {
+                    const pills = document.querySelectorAll('#cms-pills-tab .nav-link');
+                    pills.forEach(pill => {
+                        const icon = pill.querySelector('i').cloneNode(true);
+                        const text = pill.innerText.trim();
+                        const onclickStr = pill.getAttribute('onclick');
+                        
+                        const item = document.createElement('a');
+                        item.href = '#';
+                        item.className = 'mobile-nav-item' + (pill.classList.contains('active') ? ' active' : '');
+                        item.innerHTML = '';
+                        item.appendChild(icon);
+                        item.innerHTML += ' ' + text;
+                        item.onclick = (e) => {
+                            e.preventDefault();
+                            eval(onclickStr);
+                            const offcanvas = bootstrap.Offcanvas.getInstance(document.getElementById('offcanvasCmsMenu'));
+                            if (offcanvas) offcanvas.hide();
+                        };
+                        mobileCmsNav.appendChild(item);
+                    });
+                } else if (mobileCmsNav) {
+                    // Update active state in mobile menu
+                    mobileCmsNav.querySelectorAll('.mobile-nav-item').forEach(item => {
+                        if (item.innerText.trim() === activePill?.innerText.trim()) item.classList.add('active');
+                        else item.classList.remove('active');
+                    });
+                }
                 
                 let html = `
                     <div class="cms-animate-content">
-                        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 mb-4 border-bottom pb-4">
-                            <div>
-                                <h4 class="fw-bold mb-0 text-dark" style="letter-spacing: -0.5px;">Manajemen ${getLabel(type)}</h4>
-                                <p class="small text-muted mb-0">Sesuaikan konten bagian ini dengan mudah dan cepat.</p>
+                        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-4 mb-4 cms-header-spacer">
+                            <div class="pe-sm-5">
+                                <h2 class="fw-bold mb-0 text-dark cms-section-title" style="letter-spacing: -0.02em;">Manajemen ${getLabel(type)}</h2>
+                                <p class="text-muted mb-0 cms-section-subtitle">Oksigenasi dan kelola konten bagian ini dengan efisien.</p>
                             </div>
-                            <div class="d-flex gap-2">
-                                <button class="btn btn-dark rounded-pill px-4 fw-bold shadow-sm py-2 px-sm-4" onclick="saveCMS('${type}')">
-                                    <i class="fas fa-save me-2 text-white"></i> Simpan Perubahan
+                            <div class="d-flex w-100 w-sm-auto">
+                                <button class="btn btn-dark rounded-pill px-4 fw-bold shadow-sm py-2 px-sm-4 btn-compact-mobile" onclick="saveCMS('${type}')">
+                                    <i class="fas fa-save me-2"></i> Simpan <span class="d-none d-sm-inline">Perubahan</span>
                                 </button>
                             </div>
                         </div>
@@ -1304,13 +1579,13 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                         if (firstChild && typeof firstChild === 'object' && (firstChild.name || firstChild.position)) {
                             // Group these into a table!
                             fieldsHtml += `
-                                <div class="mb-5 pb-4 border-bottom border-light">
-                                    <div class="d-flex justify-content-between align-items-center mb-4">
-                                        <label class="form-label fw-bold text-dark d-flex align-items-center gap-3 mb-0 h5">
-                                            <div class="bg-accent rounded-pill" style="width:12px; height:6px;"></div>
-                                            Daftar ${getLabel(currentKey)}
-                                        </label>
-                                    </div>
+                                    <div class="mb-5 pb-4 border-bottom border-light">
+                                        <div class="d-flex justify-content-between align-items-center mb-4">
+                                            <label class="form-label fw-bold text-dark d-flex align-items-center gap-2 gap-sm-3 mb-0 h5 cms-list-title">
+                                                <div class="bg-accent rounded-pill d-none d-sm-block" style="width:12px; height:6px;"></div>
+                                                Daftar ${getLabel(currentKey)}
+                                            </label>
+                                        </div>
                                     <div class="cms-table-container">
                                         <table class="cms-table">
                                             <thead>
@@ -1363,19 +1638,27 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                             fieldsHtml += `
                                 <div class="mb-5 pb-4 border-bottom border-light">
                                     <div class="d-flex justify-content-between align-items-center mb-4">
-                                        <label class="form-label fw-bold text-dark d-flex align-items-center gap-3 mb-0 h5">
-                                            <div class="bg-accent rounded-pill" style="width:12px; height:6px;"></div>
+                                        <label class="form-label fw-bold text-dark d-flex align-items-center gap-2 gap-sm-3 mb-0 h5 cms-list-title">
+                                            <div class="bg-accent rounded-pill d-none d-sm-block" style="width:12px; height:6px;"></div>
                                             ${label}
                                         </label>
-                                        <button class="btn btn-dark btn-sm rounded-pill px-4 fw-bold shadow-sm cms-add-btn" type="button" onclick="addItem(event, '${type}', '${dataPath}')">
-                                            <i class="fas fa-plus me-1"></i> Tambah Item
+                                        <button class="btn btn-dark btn-sm rounded-pill px-4 fw-bold shadow-sm cms-add-btn btn-add-compact" type="button" onclick="addItem(event, '${type}', '${dataPath}')">
+                                            <i class="fas fa-plus me-1"></i> <span>Tambah Item</span>
                                         </button>
                                     </div>
                                     ${isObjectArray ? (() => {
-                                        const visibleKeys = Object.keys(val[0]).filter(k => {
+                                        let visibleKeys = Object.keys(val[0]).filter(k => {
                                             const v = val[0][k];
                                             return k !== 'id' && k !== 'is_list' && (typeof v !== 'object' || v === null);
                                         });
+
+                                        // Apply filters per content type for a cleaner list view
+                                        if (type === 'faq') visibleKeys = ['question'];
+                                        else if (type === 'news') visibleKeys = ['tag', 'title', 'image'];
+                                        else if (type === 'stats') visibleKeys = ['title', 'value', 'icon'];
+                                        else if (type === 'tentang') visibleKeys = ['title', 'icon'];
+                                        else if (type === 'contact') visibleKeys = ['label', 'value', 'icon'];
+
                                         return `
                                         <div class="cms-table-container">
                                             <table class="cms-table">
@@ -1523,19 +1806,26 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                     html += `
                         <div class="mb-5">
                             <div class="d-flex justify-content-between align-items-center mb-4">
-                                <label class="form-label fw-bold text-dark d-flex align-items-center gap-3 mb-0 h5">
-                                    <div class="bg-accent rounded-pill" style="width:12px; height:6px;"></div>
+                                <label class="form-label fw-bold text-dark d-flex align-items-center gap-2 gap-sm-3 mb-0 h5 cms-list-title">
+                                    <div class="bg-accent rounded-pill d-none d-sm-block" style="width:12px; height:6px;"></div>
                                     Daftar ${getLabel(type)}
                                 </label>
-                                <button class="btn btn-dark btn-sm rounded-pill px-4 fw-bold shadow-sm cms-add-btn" type="button" onclick="addItem(event, '${type}', '')">
-                                    <i class="fas fa-plus me-1"></i> Tambah Item
+                                <button class="btn btn-dark btn-sm rounded-pill px-4 fw-bold shadow-sm cms-add-btn btn-add-compact" type="button" onclick="addItem(event, '${type}', '')">
+                                    <i class="fas fa-plus me-1"></i> <span>Tambah Item</span>
                                 </button>
                             </div>
                             ${isObjectArray ? (() => {
-                                const visibleKeys = Object.keys(data[0]).filter(k => {
+                                let visibleKeys = Object.keys(data[0]).filter(k => {
                                     const v = data[0][k];
                                     return k !== 'id' && k !== 'is_list' && (typeof v !== 'object' || v === null);
                                 });
+
+                                // Apply filters per content type for a cleaner list view
+                                if (type === 'faq') visibleKeys = ['question'];
+                                else if (type === 'news') visibleKeys = ['tag', 'title', 'image'];
+                                else if (type === 'stats') visibleKeys = ['title', 'value', 'icon'];
+                                else if (type === 'tentang') visibleKeys = ['title', 'icon'];
+                                else if (type === 'contact') visibleKeys = ['label', 'value', 'icon'];
                                 return `
                                 <div class="cms-table-container">
                                     <table class="cms-table">
@@ -2057,6 +2347,46 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
             </div>
         </footer>
     </div>
+    <!-- Bottom Sheets for Mobile Navigation -->
+    <div class="offcanvas offcanvas-bottom" tabindex="-1" id="offcanvasAdminMenu" aria-labelledby="offcanvasAdminMenuLabel">
+        <div class="offcanvas-header pb-0">
+            <div class="action-sheet-handle"></div>
+            <h6 class="fw-bold mb-0 w-100 text-center">Navigasi Admin</h6>
+        </div>
+        <div class="offcanvas-body">
+            <div class="mobile-nav-list">
+                <a href="index.php" class="mobile-nav-item">
+                    <i class="fas fa-home"></i> Beranda Utama
+                </a>
+                <a href="#" class="mobile-nav-item active" onclick="switchAdminTab('pendaftaran-tab', 'Database Anggota', 'user-shield', this)">
+                    <i class="fas fa-user-shield"></i> Database Anggota
+                </a>
+                <a href="#" class="mobile-nav-item" onclick="switchAdminTab('cms-tab', 'Manajemen Konten', 'edit', this); loadCMS('hero')">
+                    <i class="fas fa-edit"></i> Manajemen Konten
+                </a>
+                <a href="#" class="mobile-nav-item text-danger" onclick="switchAdminTab('trash-tab', 'Arsip Keluar', 'trash-alt', this); loadTrash()">
+                    <i class="fas fa-trash-alt"></i> Arsip Keluar
+                </a>
+                <div class="border-top my-2"></div>
+                <a href="logout.php" class="mobile-nav-item text-danger">
+                    <i class="fas fa-sign-out-alt"></i> Keluar Sistem
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="offcanvas offcanvas-bottom" tabindex="-1" id="offcanvasCmsMenu" aria-labelledby="offcanvasCmsMenuLabel">
+        <div class="offcanvas-header pb-0">
+            <div class="action-sheet-handle"></div>
+            <h6 class="fw-bold mb-0 w-100 text-center">Pilih Kelola Konten</h6>
+        </div>
+        <div class="offcanvas-body">
+            <div class="mobile-nav-list" id="mobile-cms-nav-list">
+                <!-- Populated via loadCMS/JS -->
+            </div>
+        </div>
+    </div>
+
     <!-- CMS Edit Modal -->
     <div class="modal fade cms-premium-modal" id="cmsEditModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -2089,5 +2419,29 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
     </div>
 
     <div id="toast-container" class="toast-container"></div>
+
+    <!-- Mobile Fixed Bottom Nav -->
+    <div class="mobile-bottom-nav">
+        <a href="index.php" class="mobile-bottom-item">
+            <i class="fas fa-home"></i>
+            <span>Beranda</span>
+        </a>
+        <a href="#" class="mobile-bottom-item active" onclick="switchAdminTab('pendaftaran-tab', 'Database Anggota', 'user-shield', this)">
+            <i class="fas fa-user-shield"></i>
+            <span>Database</span>
+        </a>
+        <a href="#" class="mobile-bottom-item" onclick="switchAdminTab('cms-tab', 'Manajemen Konten', 'edit', this); loadCMS('hero')">
+            <i class="fas fa-edit"></i>
+            <span>Konten</span>
+        </a>
+        <a href="#" class="mobile-bottom-item" onclick="switchAdminTab('trash-tab', 'Arsip Keluar', 'trash-alt', this); loadTrash()">
+            <i class="fas fa-trash-alt"></i>
+            <span>Arsip</span>
+        </a>
+        <a href="logout.php" class="mobile-bottom-item text-danger">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Keluar</span>
+        </a>
+    </div>
 </body>
 </html>
