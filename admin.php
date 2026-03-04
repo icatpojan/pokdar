@@ -16,6 +16,8 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
+    <!-- Summernote CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
     <style>
         /* Sidebar Styling Overhaul */
         #cms-pills-tab .nav-link {
@@ -238,6 +240,124 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
         }
 
         .custom-toast-close:hover { color: #4b5563; }
+
+        /* Premium CMS Table Styles */
+        .cms-table-container {
+            border-radius: 16px;
+            overflow-x: auto;
+            border: 1px solid #e5e7eb;
+            background: #ffffff;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            /* Custom Scrollbar for premium feel */
+            scrollbar-width: thin;
+            scrollbar-color: #d1d5db transparent;
+        }
+
+        .cms-table-container::-webkit-scrollbar {
+            height: 6px;
+        }
+        .cms-table-container::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .cms-table-container::-webkit-scrollbar-thumb {
+            background-color: #d1d5db;
+            border-radius: 20px;
+        }
+
+        .cms-table {
+            width: 100%;
+            min-width: 800px; /* Prevent squishing */
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-bottom: 0;
+        }
+
+        .cms-table thead th {
+            background: #f9fafb;
+            padding: 16px 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #4b5563;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .cms-table tbody td {
+            padding: 16px 20px;
+            vertical-align: middle;
+            border-bottom: 1px solid #f3f4f6;
+            transition: background 0.2s;
+        }
+
+        .cms-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .cms-table tbody tr:hover td {
+            background: #f9fafb;
+        }
+
+        .cms-thumb {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            object-fit: cover;
+            background: #f3f4f6;
+            border: 1px solid #e5e7eb;
+        }
+
+        .cms-action-btn {
+            width: 36px;
+            height: 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            transition: all 0.2s;
+            border: none;
+            background: #f3f4f6;
+            color: #4b5563;
+        }
+
+        @media (max-width: 768px) {
+            .cms-add-btn {
+                padding: 6px 14px !important;
+                font-size: 0.75rem !important;
+            }
+            .cms-add-btn i {
+                font-size: 0.75rem !important;
+                margin-right: 4px !important;
+            }
+        }
+
+
+        .cms-action-btn:hover {
+            background: #e5e7eb;
+            color: #1f2937;
+            transform: translateY(-2px);
+        }
+
+        .cms-action-btn.edit:hover {
+            background: #eff6ff;
+            color: #2563eb;
+        }
+
+        .cms-action-btn.delete:hover {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+        .cms-premium-modal .modal-content {
+            border-radius: 20px;
+            border: none;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .cms-premium-modal .modal-header {
+            border-bottom: 1px solid #f3f4f6;
+            padding: 24px 32px;
+        }
     </style>
 </head>
 <body class="bg-light">
@@ -628,7 +748,10 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
 
 
     <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Summernote JS -->
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
     <script src="js/script.js"></script>
     <script>
         // Custom Premium Toast System
@@ -1158,24 +1281,85 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                                 <h4 class="fw-bold mb-0 text-dark" style="letter-spacing: -0.5px;">Manajemen ${getLabel(type)}</h4>
                                 <p class="small text-muted mb-0">Sesuaikan konten bagian ini dengan mudah dan cepat.</p>
                             </div>
-                            <button class="btn btn-dark rounded-pill px-4 fw-bold shadow-sm py-2 px-sm-4" onclick="saveCMS('${type}')">
-                                <i class="fas fa-save me-2 text-white"></i> Simpan Perubahan
-                            </button>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-dark rounded-pill px-4 fw-bold shadow-sm py-2 px-sm-4" onclick="saveCMS('${type}')">
+                                    <i class="fas fa-save me-2 text-white"></i> Simpan Perubahan
+                                </button>
+                            </div>
                         </div>
                         <form id="cms-form-${type}" class="cms-premium-form">
                 `;
 
                 function renderRecursive(obj, currentKey, path = []) {
                     let fieldsHtml = "";
-                    for (const key in obj) {
-                        if (key === 'buttons' || key === 'id' || key === 'class' || key === 'icon') continue; // Hide these from CMS
+                    
+                    // Special case: if this object contains children that are mostly objects/arrays,
+                    // let's see if we can render some of them as a group table for better consistency
+                    const keys = Object.keys(obj).filter(k => !['buttons', 'id', 'class', 'icon'].includes(k));
+                    const childObjects = keys.filter(k => typeof obj[k] === 'object' && obj[k] !== null && !Array.isArray(obj[k]));
+                    
+                    // If we have multiple child objects that look like "Person" records, group them
+                    if (childObjects.length > 1) {
+                        const firstChild = obj[childObjects[0]];
+                        if (firstChild && typeof firstChild === 'object' && (firstChild.name || firstChild.position)) {
+                            // Group these into a table!
+                            fieldsHtml += `
+                                <div class="mb-5 pb-4 border-bottom border-light">
+                                    <div class="d-flex justify-content-between align-items-center mb-4">
+                                        <label class="form-label fw-bold text-dark d-flex align-items-center gap-3 mb-0 h5">
+                                            <div class="bg-accent rounded-pill" style="width:12px; height:6px;"></div>
+                                            Daftar ${getLabel(currentKey)}
+                                        </label>
+                                    </div>
+                                    <div class="cms-table-container">
+                                        <table class="cms-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Posisi</th>
+                                                    <th>Nama</th>
+                                                    <th>Foto</th>
+                                                    <th class="text-end">Aksi</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                ${childObjects.map(k => {
+                                                    const item = obj[k];
+                                                    const itemPath = [...path, k].join('.');
+                                                    const val = item.name || "";
+                                                    const pos = item.position || getLabel(k);
+                                                    const img = item.image || "assets/user.png";
+                                                    return `
+                                                        <tr>
+                                                            <td><div class="fw-bold">${pos}</div></td>
+                                                            <td><div class="text-truncate" style="max-width: 250px;">${val}</div></td>
+                                                            <td><img src="${img}?v=${Date.now()}" class="cms-thumb shadow-sm"></td>
+                                                            <td class="text-end">
+                                                                <button type="button" class="cms-action-btn edit" onclick="editCmsItem('${type}', '${itemPath}', null)" title="Edit">
+                                                                    <i class="fas fa-edit"></i>
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                    `;
+                                                }).join('')}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            `;
+                            // Remove processed keys from normal loop
+                            keys.forEach(k => { if (childObjects.includes(k)) delete keys[keys.indexOf(k)]; });
+                        }
+                    }
 
+                    for (const key of keys) {
+                        if (!key) continue;
                         const label = getLabel(key);
                         const val = obj[key];
                         const fullPath = [...path, key];
                         const dataPath = fullPath.join('.');
 
                         if (Array.isArray(val)) {
+                            const isObjectArray = val.length > 0 && typeof val[0] === 'object';
                             fieldsHtml += `
                                 <div class="mb-5 pb-4 border-bottom border-light">
                                     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -1183,92 +1367,127 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                                             <div class="bg-accent rounded-pill" style="width:12px; height:6px;"></div>
                                             ${label}
                                         </label>
-                                        <button class="btn btn-outline-dark btn-sm rounded-pill px-3 fw-bold" type="button" onclick="addItem(event, '${type}', '${dataPath}')">
-                                            <i class="fas fa-plus me-1 text-accent"></i> Tambah Item
+                                        <button class="btn btn-dark btn-sm rounded-pill px-4 fw-bold shadow-sm cms-add-btn" type="button" onclick="addItem(event, '${type}', '${dataPath}')">
+                                            <i class="fas fa-plus me-1"></i> Tambah Item
                                         </button>
                                     </div>
-                                    <div id="array-container-${dataPath.replace(/\./g, '-')}" class="row g-4">
-                                        ${val.map((item, i) => {
-                                            if (typeof item === 'object') {
-                                                return `
-                                                    <div class="col-12" id="item-${dataPath.replace(/\./g, '-')}-${i}">
-                                                        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white border-start border-4 border-accent position-relative cms-card">
-                                                            <button type="button" class="btn btn-link text-danger position-absolute top-0 end-0 m-3 p-1 text-decoration-none shadow-none" onclick="removeItem(event, '${type}', '${dataPath}', ${i})">
-                                                                <i class="fas fa-trash-alt"></i>
-                                                            </button>
-                                                            <div class="row g-3">
-                                                                ${Object.keys(item).filter(sk => sk !== 'id').map(subKey => `
-                                                                    <div class="col-md-${Object.keys(item).length > 2 ? '6' : '12'}">
-                                                                        <label class="small fw-bold text-muted mb-1">${getLabel(subKey)}</label>
-                                                                        ${(subKey.toLowerCase().includes('image') || (item[subKey] || "").toString().includes('assets/')) ? `
-                                                                            <div class="d-flex align-items-center gap-2">
-                                                                                <div class="rounded-3 overflow-hidden border bg-light shadow-sm" style="width: 50px; height: 38px; flex-shrink: 0;">
-                                                                                    <img src="${item[subKey]}?v=${Date.now()}" class="w-100 h-100 object-fit-cover">
-                                                                                </div>
-                                                                                <div class="input-group input-group-sm">
-                                                                                    <input type="text" class="form-control border-0 bg-light rounded-start-3" 
-                                                                                           data-path="${dataPath}" data-index="${i}" data-subkey="${subKey}" 
-                                                                                           value="${(item[subKey] || "").toString().replace(/"/g, '&quot;')}">
-                                                                                    <button type="button" class="btn btn-light border-0 px-2" onclick="this.nextElementSibling.click()">
-                                                                                        <i class="fas fa-camera text-muted small"></i>
-                                                                                    </button>
-                                                                                    <input type="file" class="d-none" accept="image/*" onchange="handleCMSImageUpload(this, '${type}', '${dataPath}', ${i}, '${subKey}')">
-                                                                                </div>
-                                                                            </div>
-                                                                        ` : ((item[subKey] || "").toString().length > 100 ? 
-                                                                            `<textarea class="form-control bg-light border-0 rounded-3 px-3 fs-6" data-path="${dataPath}" data-index="${i}" data-subkey="${subKey}" rows="2">${item[subKey]}</textarea>` :
-                                                                            `<input type="text" class="form-control form-control-lg rounded-3 bg-light border-0 px-3 fs-6" 
-                                                                                   data-path="${dataPath}" data-index="${i}" data-subkey="${subKey}" 
-                                                                                   value="${(item[subKey] || "").toString().replace(/"/g, '&quot;')}">`
-                                                                        )}
-                                                                    </div>
-                                                                `).join('')}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                `;
-                                            } else {
-                                                return `
-                                                            <div class="col-md-6" id="item-${dataPath.replace(/\./g, '-')}-${i}">
-                                                                <div class="card border-0 shadow-sm rounded-4 p-3 bg-white d-flex flex-row align-items-center gap-3 cms-card">
-                                                                    ${(item.toString().includes('assets/') || item.toString().includes('uploads/')) ? `
-                                                                        <div class="rounded-3 overflow-hidden shadow-sm" style="width: 60px; height: 45px;">
-                                                                            <img src="${item}?v=${Date.now()}" class="w-100 h-100 object-fit-cover shadow-sm bg-light">
-                                                                        </div>
-                                                                    ` : ''}
-                                                                    <div class="flex-grow-1">
-                                                                        <div class="input-group input-group-sm">
-                                                                            <input type="text" class="form-control border-0 bg-light rounded-start-3 px-3" 
-                                                                                   data-path="${dataPath}" data-index="${i}" 
-                                                                                   value="${item.toString().replace(/"/g, '&quot;')}">
-                                                                            <button type="button" class="btn btn-light border-0 px-3" onclick="this.nextElementSibling.click()">
-                                                                                <i class="fas fa-camera text-muted"></i>
-                                                                            </button>
-                                                                            <input type="file" class="d-none" accept="image/*" onchange="handleCMSImageUpload(this, '${type}', '${dataPath}', ${i})">
-                                                                        </div>
-                                                                    </div>
-                                                                    <button type="button" class="btn btn-link text-danger p-1 text-decoration-none shadow-none" onclick="removeItem(event, '${type}', '${dataPath}', ${i})">
-                                                                        <i class="fas fa-times"></i>
+                                    ${isObjectArray ? (() => {
+                                        const visibleKeys = Object.keys(val[0]).filter(k => {
+                                            const v = val[0][k];
+                                            return k !== 'id' && k !== 'is_list' && (typeof v !== 'object' || v === null);
+                                        });
+                                        return `
+                                        <div class="cms-table-container">
+                                            <table class="cms-table">
+                                                <thead>
+                                                    <tr>
+                                                        ${visibleKeys.map(k => `<th>${getLabel(k)}</th>`).join('')}
+                                                        <th class="text-end">Aksi</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    ${val.map((item, i) => `
+                                                        <tr>
+                                                            ${visibleKeys.map(k => {
+                                                                const value = item[k] || '';
+                                                                const isItemImage = (k.toLowerCase().includes('image') || (value || "").toString().includes('assets/'));
+                                                                const isIcon = k === 'icon';
+                                                                return `
+                                                                    <td>
+                                                                        ${isItemImage ? `<img src="${value}?v=${Date.now()}" class="cms-thumb shadow-sm">` : 
+                                                                        (isIcon ? `<div class="bg-light rounded-3 d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;"><i class="${value} text-dark"></i></div>` :
+                                                                        `<div class="text-truncate" style="max-width: 200px;">${value}</div>`)}
+                                                                    </td>
+                                                                `;
+                                                            }).join('')}
+                                                            <td class="text-end">
+                                                                <div class="d-flex justify-content-end gap-2">
+                                                                    <button type="button" class="cms-action-btn edit" onclick="editCmsItem('${type}', '${dataPath}', ${i})" title="Edit">
+                                                                        <i class="fas fa-edit"></i>
+                                                                    </button>
+                                                                    <button type="button" class="cms-action-btn delete" onclick="removeItem(event, '${type}', '${dataPath}', ${i})" title="Hapus">
+                                                                        <i class="fas fa-trash-alt"></i>
                                                                     </button>
                                                                 </div>
+                                                            </td>
+                                                        </tr>
+                                                    `).join('')}
+                                                </tbody>
+                                            </table>
+                                        </div>`;
+                                    })() : (() => {
+                                        const isAllImages = val.length > 0 && val.every(item => !item || item.toString().includes('assets/') || item.toString().includes('uploads/')) && val.some(item => item && (item.toString().includes('assets/') || item.toString().includes('uploads/')));
+                                        return `
+                                        <div id="array-container-${dataPath.replace(/\./g, '-')}" class="row g-3">
+                                            ${val.map((item, i) => {
+                                                const isActualImage = item && (item.toString().includes('assets/') || item.toString().includes('uploads/'));
+                                                if (isAllImages) {
+                                                    return `
+                                                    <div class="col-6 col-md-3 col-lg-2" id="item-${dataPath.replace(/\./g, '-')}-${i}">
+                                                        <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white h-100 position-relative">
+                                                            <div class="position-absolute top-0 end-0 p-2 d-flex gap-1 z-2">
+                                                                <button type="button" class="btn btn-light btn-sm rounded-circle shadow-sm p-0 d-flex align-items-center justify-content-center" style="width:28px; height:28px;" onclick="this.nextElementSibling.click()" title="Ganti">
+                                                                    <i class="fas fa-camera small"></i>
+                                                                </button>
+                                                                <input type="file" class="d-none" accept="image/*" onchange="handleCMSImageUpload(this, '${type}', '${dataPath}', ${i})">
+                                                                <button type="button" class="btn btn-danger btn-sm rounded-circle shadow-sm p-0 d-flex align-items-center justify-content-center" style="width:28px; height:28px;" onclick="removeItem(event, '${type}', '${dataPath}', ${i})" title="Hapus">
+                                                                    <i class="fas fa-times small"></i>
+                                                                </button>
                                                             </div>
-                                                `;
-                                            }
-                                        }).join('')}
-                                    </div>
+                                                            <div class="ratio ratio-1x1 bg-light d-flex align-items-center justify-content-center">
+                                                                ${isActualImage ? 
+                                                                    `<img src="${item}?v=${Date.now()}" class="object-fit-contain p-3 w-100 h-100">` : 
+                                                                    `<div class="text-muted small text-center p-2"><i class="fas fa-image fa-2x mb-2 d-block opacity-25"></i>Pilih Gambar</div>`
+                                                                }
+                                                            </div>
+                                                            <input type="hidden" data-path="${dataPath}" data-index="${i}" value="${item}">
+                                                        </div>
+                                                    </div>`;
+                                                }
+                                                const isImage = (item.toString().includes('assets/') || item.toString().includes('uploads/'));
+                                                return `
+                                                <div class="col-md-6" id="item-${dataPath.replace(/\./g, '-')}-${i}">
+                                                    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white d-flex align-items-center gap-3 cms-card">
+                                                        ${isImage ? `
+                                                            <div class="rounded-3 overflow-hidden border shadow-sm" style="width: 60px; height: 45px; flex-shrink: 0;">
+                                                                <img src="${item}?v=${Date.now()}" class="w-100 h-100 object-fit-cover">
+                                                            </div>
+                                                        ` : ''}
+                                                        <div class="flex-grow-1">
+                                                            <input type="text" class="form-control border-0 bg-light rounded-pill px-3" 
+                                                                   data-path="${dataPath}" data-index="${i}" 
+                                                                   value="${item.toString().replace(/"/g, '&quot;')}">
+                                                        </div>
+                                                        <div class="d-flex gap-1">
+                                                            ${isImage ? `
+                                                                <button type="button" class="btn btn-link text-dark p-1 shadow-none" onclick="this.nextElementSibling.click()">
+                                                                    <i class="fas fa-upload"></i>
+                                                                </button>
+                                                                <input type="file" class="d-none" accept="image/*" onchange="handleCMSImageUpload(this, '${type}', '${dataPath}', ${i})">
+                                                            ` : ''}
+                                                            <button type="button" class="btn btn-link text-danger p-1 text-decoration-none shadow-none" onclick="removeItem(event, '${type}', '${dataPath}', ${i})">
+                                                                <i class="fas fa-times"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>`;
+                                            }).join('')}
+                                        </div>`;
+                                    })()}
                                 </div>
                             `;
                         } else if (typeof val === 'object' && val !== null) {
                             fieldsHtml += `
                                 <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white border-top border-4 border-accent">
-                                    <label class="form-label fw-bold text-dark mb-3 text-uppercase small" style="letter-spacing: 1px;">Data ${label}</label>
-                                    <div class="row g-3 text-white">
+                                    <label class="form-label fw-bold text-dark mb-3 text-uppercase small" style="letter-spacing: 1px;">${label}</label>
+                                    <div class="row g-3">
                                         ${renderRecursive(val, key, fullPath)}
                                     </div>
                                 </div>
                             `;
                         } else {
-                            const isLarge = (val || "").toString().length > 100 || key.includes('text') || key.includes('description') || key.includes('answer');
+                            const isRich = key.includes('content') || key.includes('description') || key.includes('text') || key.includes('answer') || key.includes('question') || key.includes('address');
+                            const isLarge = isRich || (val || "").toString().length > 100;
                             const colClass = path.length > 0 ? "col-md-6" : "col-12";
                             fieldsHtml += `
                                 <div class="${colClass} mb-4">
@@ -1288,7 +1507,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                                                 </div>
                                             </div>
                                         ` : (isLarge ? 
-                                            `<textarea class="form-control border-0 bg-light rounded-4 p-3 fs-6" data-path="${dataPath}" rows="4">${val}</textarea>` :
+                                            `<textarea class="form-control border-0 bg-light rounded-4 p-3 fs-6 ${isRich ? 'summernote' : ''}" data-path="${dataPath}" data-is-rich="${isRich}" rows="4">${val}</textarea>` :
                                             `<input type="text" class="form-control form-control-lg border-0 bg-light rounded-pill px-4 fs-6" data-path="${dataPath}" value="${(val || "").toString().replace(/"/g, '&quot;')}">`
                                         )}
                                     </div>
@@ -1299,9 +1518,145 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                     return fieldsHtml;
                 }
 
-                html += renderRecursive(data, type);
+                if (Array.isArray(data)) {
+                    const isObjectArray = data.length > 0 && typeof data[0] === 'object';
+                    html += `
+                        <div class="mb-5">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <label class="form-label fw-bold text-dark d-flex align-items-center gap-3 mb-0 h5">
+                                    <div class="bg-accent rounded-pill" style="width:12px; height:6px;"></div>
+                                    Daftar ${getLabel(type)}
+                                </label>
+                                <button class="btn btn-dark btn-sm rounded-pill px-4 fw-bold shadow-sm cms-add-btn" type="button" onclick="addItem(event, '${type}', '')">
+                                    <i class="fas fa-plus me-1"></i> Tambah Item
+                                </button>
+                            </div>
+                            ${isObjectArray ? (() => {
+                                const visibleKeys = Object.keys(data[0]).filter(k => {
+                                    const v = data[0][k];
+                                    return k !== 'id' && k !== 'is_list' && (typeof v !== 'object' || v === null);
+                                });
+                                return `
+                                <div class="cms-table-container">
+                                    <table class="cms-table">
+                                        <thead>
+                                            <tr>
+                                                ${visibleKeys.map(k => `<th>${getLabel(k)}</th>`).join('')}
+                                                <th class="text-end">Aksi</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${data.map((item, i) => `
+                                                <tr>
+                                                    ${visibleKeys.map(k => {
+                                                        const value = item[k] || '';
+                                                        const isImage = (k.toLowerCase().includes('image') || (value || "").toString().includes('assets/'));
+                                                        const isIcon = k === 'icon';
+                                                        return `
+                                                            <td>
+                                                                ${isImage ? `<img src="${value}?v=${Date.now()}" class="cms-thumb shadow-sm">` : 
+                                                                (isIcon ? `<div class="bg-light rounded-3 d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;"><i class="${value} text-dark"></i></div>` :
+                                                                `<div class="text-truncate" style="max-width: 200px;">${value}</div>`)}
+                                                            </td>
+                                                        `;
+                                                    }).join('')}
+                                                    <td class="text-end">
+                                                        <div class="d-flex justify-content-end gap-2">
+                                                            <button type="button" class="cms-action-btn edit" onclick="editCmsItem('${type}', '', ${i})" title="Edit">
+                                                                <i class="fas fa-edit"></i>
+                                                            </button>
+                                                            <button type="button" class="cms-action-btn delete" onclick="removeItem(event, '${type}', '', ${i})" title="Hapus">
+                                                                <i class="fas fa-trash-alt"></i>
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            `).join('')}
+                                        </tbody>
+                                    </table>
+                                </div>`;
+                            })() : (() => {
+                                const isAllImages = data.length > 0 && data.every(item => !item || item.toString().includes('assets/') || item.toString().includes('uploads/')) && data.some(item => item && (item.toString().includes('assets/') || item.toString().includes('uploads/')));
+                                return `
+                                <div class="row g-3">
+                                    ${data.map((item, i) => {
+                                        const isActualImage = item && (item.toString().includes('assets/') || item.toString().includes('uploads/'));
+                                        if (isAllImages) {
+                                            return `
+                                            <div class="col-6 col-md-3 col-lg-2">
+                                                <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white h-100 position-relative">
+                                                    <div class="position-absolute top-0 end-0 p-2 d-flex gap-1 z-2">
+                                                        <button type="button" class="btn btn-light btn-sm rounded-circle shadow-sm p-0 d-flex align-items-center justify-content-center" style="width:28px; height:28px;" onclick="this.nextElementSibling.click()" title="Ganti">
+                                                            <i class="fas fa-camera small"></i>
+                                                        </button>
+                                                        <input type="file" class="d-none" accept="image/*" onchange="handleCMSImageUpload(this, '${type}', '')">
+                                                        <button type="button" class="btn btn-danger btn-sm rounded-circle shadow-sm p-0 d-flex align-items-center justify-content-center" style="width:28px; height:28px;" onclick="removeItem(event, '${type}', '', ${i})" title="Hapus">
+                                                            <i class="fas fa-times small"></i>
+                                                        </button>
+                                                    </div>
+                                                    <div class="ratio ratio-1x1 bg-light d-flex align-items-center justify-content-center">
+                                                        ${isActualImage ? 
+                                                            `<img src="${item}?v=${Date.now()}" class="object-fit-contain p-3 w-100 h-100">` : 
+                                                            `<div class="text-muted small text-center p-2"><i class="fas fa-image fa-2x mb-2 d-block opacity-25"></i>Pilih Gambar</div>`
+                                                        }
+                                                    </div>
+                                                    <input type="hidden" data-path="" data-index="${i}" value="${item}">
+                                                </div>
+                                            </div>`;
+                                        }
+                                        const isImage = (item.toString().includes('assets/') || item.toString().includes('uploads/'));
+                                        return `
+                                        <div class="col-md-6">
+                                            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white d-flex align-items-center gap-3 cms-card">
+                                                ${isImage ? `
+                                                    <div class="rounded-3 overflow-hidden border shadow-sm" style="width: 60px; height: 45px; flex-shrink: 0;">
+                                                        <img src="${item}?v=${Date.now()}" class="w-100 h-100 object-fit-cover">
+                                                    </div>
+                                                ` : ''}
+                                                <div class="flex-grow-1">
+                                                    <input type="text" class="form-control border-0 bg-light rounded-pill px-3" value="${item}" data-path="" data-index="${i}">
+                                                </div>
+                                                <div class="d-flex gap-1">
+                                                    ${isImage ? `
+                                                        <button type="button" class="btn btn-link text-dark p-1 shadow-none" onclick="this.nextElementSibling.click()">
+                                                            <i class="fas fa-upload"></i>
+                                                        </button>
+                                                        <input type="file" class="d-none" accept="image/*" onchange="handleCMSImageUpload(this, '${type}', '')">
+                                                    ` : ''}
+                                                    <button type="button" class="btn btn-link text-danger p-1 text-decoration-none shadow-none" onclick="removeItem(event, '${type}', '', ${i})">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    `}).join('')}
+                                </div>`;
+                            })()}
+                        </div>
+                    `;
+                } else {
+                    html += renderRecursive(data, type);
+                }
+                
                 html += `</form></div>`;
                 container.innerHTML = html;
+
+                // Initialize Summernote for direct forms
+                $(`#cms-form-${type} .summernote`).summernote({
+                    placeholder: 'Ketik konten di sini...',
+                    tabsize: 2,
+                    height: 150,
+                    toolbar: [
+                        ['style', ['bold', 'italic', 'underline', 'clear']],
+                        ['para', ['ul', 'ol', 'paragraph']],
+                        ['view', ['codeview']]
+                    ],
+                    callbacks: {
+                        onChange: function(contents, $editable) {
+                            $(this).val(contents);
+                        }
+                    }
+                });
 
             } catch (err) {
                 container.innerHTML = `<div class="alert alert-danger px-4 py-3 rounded-4">❌ Gagal memuat data: ${err.message}</div>`;
@@ -1324,7 +1679,6 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                 const inputs = form.querySelectorAll('input, textarea');
                 inputs.forEach(input => {
                     const path = input.getAttribute('data-path');
-                    const subKey = input.getAttribute('data-subkey');
                     const index = input.getAttribute('data-index');
 
                     if (!path) return;
@@ -1336,14 +1690,16 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                     }
                     const lastKey = keys[keys.length - 1];
 
+                    let value = input.value;
+                    if (input.dataset.isRich === 'true') {
+                        // Clean up HTML tags
+                        value = value.replace(/<strong>/g, '<b>').replace(/<\/strong>/g, '</b>').trim();
+                    }
+
                     if (index !== null) {
-                        if (subKey) {
-                            ref[lastKey][index][subKey] = input.value;
-                        } else {
-                            ref[lastKey][index] = input.value;
-                        }
+                        ref[lastKey][index] = value;
                     } else {
-                        ref[lastKey] = input.value;
+                        ref[lastKey] = value;
                     }
                 });
 
@@ -1405,6 +1761,202 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
             }
         }
 
+        async function editCmsItem(type, path, index) {
+            const resp = await fetch(`data/${type}.json?v=${Date.now()}`);
+            const data = await resp.json();
+            
+            const keys = path ? path.split('.').filter(k => k) : [];
+            let ref = data;
+            for (let i = 0; i < keys.length; i++) {
+                ref = ref[keys[i]];
+            }
+            const item = Array.isArray(ref) ? ref[index] : ref;
+
+            document.getElementById('cms-edit-type').value = type;
+            document.getElementById('cms-edit-path').value = path || "";
+            document.getElementById('cms-edit-index').value = index;
+            document.getElementById('cmsModalTitle').innerText = `Edit Item ${getLabel(type)}`;
+
+            const container = document.getElementById('cms-modal-fields');
+            container.innerHTML = "";
+
+            for (const key in item) {
+                if (key === 'id' || key === 'icon' || key === 'class') continue;
+
+                const label = getLabel(key);
+                let val = item[key] || "";
+                
+                // Special handling for arrays (e.g., list of strings)
+                let isArray = Array.isArray(val);
+                const isRich = key.includes('content') || key.includes('description') || key.includes('text') || key.includes('answer') || key.includes('question') || key.includes('address') || isArray;
+
+                if (isArray) {
+                    if (val.length > 0 && typeof val[0] === 'object') {
+                        continue; 
+                    }
+                    if (isRich) {
+                        // Convert array to HTML list for Summernote
+                        val = `<ul>${val.map(line => `<li>${line}</li>`).join('')}</ul>`;
+                    } else {
+                        val = val.join('\n');
+                    }
+                }
+
+                const isLarge = isRich || isArray || (val || "").toString().length > 100;
+                const isImage = (key.toLowerCase().includes('image') || (val || "").toString().includes('assets/'));
+
+                const html = `
+                    <div class="col-12">
+                        <label class="form-label fw-bold text-muted small text-uppercase mb-2">${label} ${isArray ? '(Daftar Poin)' : ''}</label>
+                        ${isImage ? `
+                            <div class="d-flex align-items-center gap-3 p-3 bg-light rounded-4">
+                                <div class="rounded-4 overflow-hidden border bg-white shadow-sm" style="width: 120px; height: 90px; flex-shrink: 0;">
+                                    <img src="${val}?v=${Date.now()}" id="modal-img-preview-${key}" class="w-100 h-100 object-fit-cover">
+                                </div>
+                                <div class="flex-grow-1">
+                                    <input type="text" class="form-control mb-2 border-0 bg-white rounded-pill px-3" name="${key}" value="${(val || "").toString().replace(/"/g, '&quot;')}">
+                                    <button type="button" class="btn btn-sm btn-dark rounded-pill px-4" onclick="this.nextElementSibling.click()">
+                                        <i class="fas fa-upload me-1"></i> Ganti Gambar
+                                    </button>
+                                    <input type="file" class="d-none" accept="image/*" onchange="handleModalImageUpload(this, '${key}')">
+                                </div>
+                            </div>
+                        ` : (isLarge ? 
+                            `<textarea class="form-control border-0 bg-light rounded-4 p-3 px-4 fs-6 ${isRich ? 'summernote' : ''}" name="${key}" rows="5" data-is-array="${isArray}" data-is-rich="${isRich}">${val}</textarea>` :
+                            `<input type="text" class="form-control form-control-lg border-0 bg-light rounded-pill px-4 fs-6" name="${key}" value="${(val || "").toString().replace(/"/g, '&quot;')}">`
+                        )}
+                    </div>
+                `;
+                container.innerHTML += html;
+            }
+
+            const modalEl = document.getElementById('cmsEditModal');
+            const modal = new bootstrap.Modal(modalEl);
+            
+            // Initialize Summernote when modal is shown
+            modalEl.addEventListener('shown.bs.modal', function () {
+                $('.summernote').summernote({
+                    placeholder: 'Ketik konten di sini...',
+                    tabsize: 2,
+                    height: 200,
+                    toolbar: [
+                        ['style', ['bold', 'italic', 'underline', 'clear']],
+                        ['font', ['strikethrough']],
+                        ['para', ['ul', 'ol', 'paragraph']],
+                        ['view', ['codeview']]
+                    ],
+                    callbacks: {
+                        onChange: function(contents, $editable) {
+                            // Sync with textarea
+                            $(this).val(contents);
+                        }
+                    }
+                });
+            }, { once: true });
+
+            // Destroy summernote on hide
+            modalEl.addEventListener('hidden.bs.modal', function () {
+                $('.summernote').summernote('destroy');
+            }, { once: true });
+
+            modal.show();
+        }
+
+        async function handleModalImageUpload(input, fieldKey) {
+            if (!input.files || !input.files[0]) return;
+            const type = document.getElementById('cms-edit-type').value;
+            
+            const formData = new FormData();
+            formData.append('type', type);
+            formData.append('action', 'upload');
+            formData.append('file', input.files[0]);
+
+            const btn = input.previousElementSibling;
+            const originalHtml = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Uploading...';
+
+            try {
+                const resp = await fetch('update_content.php', { method: 'POST', body: formData });
+                const result = await resp.json();
+                if (result.status === 'success') {
+                    const inputField = document.querySelector(`#cms-edit-form [name="${fieldKey}"]`);
+                    if (inputField) inputField.value = result.path;
+                    const preview = document.getElementById(`modal-img-preview-${fieldKey}`);
+                    if (preview) preview.src = result.path + '?v=' + Date.now();
+                    showToast('Gambar berhasil diunggah', 'success');
+                } else {
+                    showToast(result.message, 'error');
+                }
+            } catch (err) {
+                showToast(err.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalHtml;
+            }
+        }
+
+        async function saveCmsItem() {
+            const type = document.getElementById('cms-edit-type').value;
+            const path = document.getElementById('cms-edit-path').value;
+            const index = document.getElementById('cms-edit-index').value;
+            const form = document.getElementById('cms-edit-form');
+            
+            try {
+                const resp = await fetch(`data/${type}.json?v=${Date.now()}`);
+                const data = await resp.json();
+                
+                const keys = path ? path.split('.').filter(k => k) : [];
+                let ref = data;
+                for (let i = 0; i < keys.length; i++) {
+                    ref = ref[keys[i]];
+                }
+                const item = Array.isArray(ref) ? ref[index] : ref;
+
+                // Update item with form values
+                const formData = new FormData(form);
+                formData.forEach((value, key) => {
+                    const input = form.querySelector(`[name="${key}"]`);
+                    if (input) {
+                        if (input.dataset.isRich === 'true') {
+                            if (input.dataset.isArray === 'true') {
+                                // Extract <li> items from HTML
+                                const tempDiv = document.createElement('div');
+                                tempDiv.innerHTML = value;
+                                const items = Array.from(tempDiv.querySelectorAll('li')).map(li => {
+                                    // Replace <strong> with <b> for user preference
+                                    return li.innerHTML.replace(/<strong>/g, '<b>').replace(/<\/strong>/g, '</b>').trim();
+                                });
+                                // If no <li> found, try splitting by <p> or <br> as fallback
+                                if (items.length === 0 && value.trim() !== "") {
+                                    item[key] = value.replace(/<strong>/g, '<b>').replace(/<\/strong>/g, '</b>').split(/<br\/?>|<\/p><p>/).map(s => s.replace(/<[^>]*>/g, '').trim()).filter(s => s !== "");
+                                } else {
+                                    item[key] = items;
+                                }
+                            } else {
+                                // Just a rich text string
+                                item[key] = value.replace(/<strong>/g, '<b>').replace(/<\/strong>/g, '</b>').trim();
+                            }
+                        } else if (input.dataset.isArray === 'true') {
+                            // Standard array splitting (newline)
+                            item[key] = value.split('\n').map(s => s.trim()).filter(s => s !== "");
+                        } else {
+                            item[key] = value;
+                        }
+                    }
+                });
+
+                const result = await saveContent(type, data);
+                if (result && result.status === 'success') {
+                    bootstrap.Modal.getInstance(document.getElementById('cmsEditModal')).hide();
+                    await loadCMS(type);
+                }
+            } catch (err) {
+                showToast(err.message, 'error', 'Gagal Menyimpan');
+                console.error(err);
+            }
+        }
+
         async function addItem(event, type, path) {
             if (event) {
                 event.preventDefault();
@@ -1418,13 +1970,12 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                 const resp = await fetch(`data/${type}.json?v=${Date.now()}`);
                 const data = await resp.json();
                 
-                const keys = path.split('.');
+                const keys = path ? path.split('.').filter(k => k) : [];
                 let ref = data;
-                for (let i = 0; i < keys.length - 1; i++) {
+                for (let i = 0; i < keys.length; i++) {
                     ref = ref[keys[i]];
                 }
-                const lastKey = keys[keys.length - 1];
-                const array = ref[lastKey];
+                const array = ref;
 
                 if (Array.isArray(array)) {
                     let newItem;
@@ -1442,6 +1993,10 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                     const result = await saveContent(type, data);
                     if (result && result.status === 'success') {
                         await loadCMS(type);
+                        // Automatically open modal for the new item
+                        if (typeof newItem === 'object') {
+                            editCmsItem(type, path, 0);
+                        }
                     }
                 }
             } catch (err) {
@@ -1467,13 +2022,12 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                 const resp = await fetch(`data/${type}.json?v=${Date.now()}`);
                 const data = await resp.json();
                 
-                const keys = path.split('.');
+                const keys = path ? path.split('.').filter(k => k) : [];
                 let ref = data;
-                for (let i = 0; i < keys.length - 1; i++) {
+                for (let i = 0; i < keys.length; i++) {
                     ref = ref[keys[i]];
                 }
-                const lastKey = keys[keys.length - 1];
-                const array = ref[lastKey];
+                const array = ref;
 
                 if (Array.isArray(array)) {
                     array.splice(index, 1);
@@ -1503,6 +2057,37 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
             </div>
         </footer>
     </div>
+    <!-- CMS Edit Modal -->
+    <div class="modal fade cms-premium-modal" id="cmsEditModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="fw-bold mb-0" id="cmsModalTitle">Edit Item</h5>
+                        <p class="small text-muted mb-0" id="cmsModalSubtitle">Sesuaikan konten dengan teliti.</p>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4 p-lg-5">
+                    <form id="cms-edit-form">
+                        <input type="hidden" id="cms-edit-type">
+                        <input type="hidden" id="cms-edit-path">
+                        <input type="hidden" id="cms-edit-index">
+                        <div id="cms-modal-fields" class="row g-4">
+                            <!-- Populated by JS -->
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer border-0 p-4 p-lg-5 pt-0">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-dark rounded-pill px-4 fw-bold" onclick="saveCmsItem()">
+                        <i class="fas fa-save me-2"></i> Simpan Perubahan
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="toast-container" class="toast-container"></div>
 </body>
 </html>
