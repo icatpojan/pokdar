@@ -441,6 +441,59 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
 
         .custom-toast-close:hover { color: #4b5563; }
 
+        /* Premium Photo Upload Styling */
+        .photo-upload-wrapper {
+            position: relative;
+            display: inline-block;
+            padding: 8px;
+            background: #fff;
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            border: 1px solid #f1f5f9;
+        }
+        .photo-upload-wrapper:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+        }
+        .photo-preview-img {
+            width: 130px;
+            height: 170px;
+            object-fit: cover;
+            border-radius: 18px;
+            background-color: #f8fafc;
+            display: block;
+        }
+        .photo-upload-btn {
+            position: absolute;
+            bottom: -5px;
+            right: -5px;
+            width: 42px;
+            height: 42px;
+            background: #111827;
+            color: #fff;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+            transition: all 0.2s ease;
+            border: 3px solid #fff;
+        }
+        .photo-upload-btn:hover {
+            background: #000;
+            transform: scale(1.1);
+        }
+        .photo-upload-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #64748b;
+            margin-top: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
         /* Premium CMS Table Styles */
         .cms-table-container {
             border-radius: 16px;
@@ -659,6 +712,12 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
 
                         <!-- Tab Database Anggota -->
                         <div class="tab-pane fade show active" id="pendaftaran" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="fw-bold mb-0 d-none d-lg-block">Daftar Pendaftar</h5>
+                                <button class="btn btn-dark rounded-3 px-4 py-2 fw-bold shadow-sm d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#addMemberModal">
+                                    <i class="fas fa-user-plus"></i> Tambah Anggota
+                                </button>
+                            </div>
                             <div class="table-responsive">
                                 <table class="table table-hover align-middle border-0">
                                     <thead class="table-light">
@@ -806,13 +865,14 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                                 <div class="section-badge mb-3">Data Calon Anggota</div>
 
                                 <div class="text-center mb-4">
-                                    <div class="position-relative d-inline-block">
-                                        <img id="m-photo-preview" src="assets/img/avatar-placeholder.png" class="rounded-4 border shadow-sm" style="width: 120px; height: 160px; object-fit: cover; background-color: #f8f9fa;">
-                                        <div class="position-absolute bottom-0 end-0 bg-primary text-white rounded-circle p-2 shadow-sm" style="transform: translate(25%, 25%);">
-                                            <i class="fas fa-camera fa-xs"></i>
-                                        </div>
+                                    <div class="photo-upload-wrapper">
+                                        <img id="m-photo-preview" src="assets/img/avatar-placeholder.png" class="photo-preview-img">
+                                        <label for="m-photo" class="photo-upload-btn">
+                                            <i class="fas fa-camera fa-sm"></i>
+                                        </label>
+                                        <input type="file" name="photo" id="m-photo" class="d-none" accept="image/*" onchange="previewImage(this, 'm-photo-preview')">
                                     </div>
-                                    <p class="small text-muted mt-2 mb-0">Pas Foto Anggota</p>
+                                    <div class="photo-upload-label">Pas Foto Anggota</div>
                                 </div>
                                 
                                 <div class="row g-3 mb-3">
@@ -918,18 +978,19 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                                 </div>
 
                                 <div class="mb-3">
-                                    <label class="small fw-bold text-muted mb-1">UPLOUD POTO</label>
-                                    <input type="file" name="photo" id="m-photo" class="form-control bg-light border-0 rounded-3 fs-6 px-3 py-2">
+                                    <label class="small fw-bold text-muted mb-1 text-uppercase">LAMPIRAN DOKUMEN (PDF/ZIP)</label>
+                                    <div id="m-file-status" class="bg-light p-2 rounded-3 mb-2 small"></div>
+                                    <input type="file" name="reg_file" id="m-reg-file" class="form-control bg-light border-0 rounded-3 fs-6 px-3 py-2">
                                 </div>
 
-                                <div class="section-badge mb-3">REKOMENDASI CETAK KARTU</div>
-                                <div class="mb-4">
+                                <div class="section-badge mb-3 d-none">REKOMENDASI CETAK KARTU</div>
+                                <div class="mb-4 d-none">
                                     <textarea name="card_recommendation" id="m-card-recommendation" class="form-control bg-light border-0 rounded-4 p-3" rows="3"></textarea>
                                 </div>
 
                                 <div class="d-grid gap-2 pt-3 border-top">
                                     <button type="submit" class="btn btn-primary rounded-pill py-2 fw-bold text-uppercase" style="background-color: #4472c4; border: none;">
-                                        AKTIFKAN
+                                        SIMPAN
                                     </button>
                                     <div class="row gx-2">
                                         <div class="col-6">
@@ -1029,23 +1090,25 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
         }
 
         function populatePolsekDropdown() {
-            const select = document.getElementById('m-sector');
-            if(!select) return;
-            select.innerHTML = '<option value="">Pilih Kecamatan</option>';
-            polsekData.forEach(p => {
-                const opt = document.createElement('option');
-                opt.value = p.kode;
-                opt.textContent = p.nama;
-                select.appendChild(opt);
+            const selects = [document.getElementById('m-sector'), document.getElementById('a-sector')];
+            selects.forEach(select => {
+                if(!select) return;
+                select.innerHTML = '<option value="">Pilih Kecamatan</option>';
+                polsekData.forEach(p => {
+                    const opt = document.createElement('option');
+                    opt.value = p.id;
+                    opt.textContent = p.nama;
+                    select.appendChild(opt);
+                });
             });
         }
 
-        function updateKelurahanDropdown(polsekKode, selectedKeluarahan = '') {
+        function updateKelurahanDropdown(polsekId, selectedKeluarahan = '') {
             const select = document.getElementById('m-subsector');
             if(!select) return;
             select.innerHTML = '<option value="">Pilih Kelurahan</option>';
             
-            const filtered = kelurahanData.filter(k => k.polsek === polsekKode);
+            const filtered = kelurahanData.filter(k => k.polsek_id === polsekId);
             filtered.forEach(k => {
                 const opt = document.createElement('option');
                 opt.value = k.kode;
@@ -1059,25 +1122,62 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
             }
         }
 
-        function updateMemberId() {
-            const polsek = document.getElementById('m-sector').value;
-            const kelurahan = document.getElementById('m-subsector').value;
-            const idInput = document.getElementById('m-id-number');
-            const currentReg = document.getElementById('m-reg-val').value;
+        function updateKelurahanDropdownAdd(polsekId) {
+            const select = document.getElementById('a-subsector');
+            if(!select) return;
+            select.innerHTML = '<option value="">Pilih Kelurahan</option>';
             
-            if(polsek && kelurahan) {
-                // Count existing members with same polsek and kelurahan, excluding current one
-                const sameAreaMembers = allMembersData.filter(m => 
-                    m.sector === polsek && 
-                    m.subsector === kelurahan && 
-                    m.reg_number !== currentReg
-                );
+            const filtered = kelurahanData.filter(k => k.polsek_id === polsekId);
+            filtered.forEach(k => {
+                const opt = document.createElement('option');
+                opt.value = k.kode;
+                opt.textContent = k.nama;
+                select.appendChild(opt);
+            });
+            updateMemberIdAdd();
+        }
+
+        function updateMemberId() {
+            const polsekId = document.getElementById('m-sector').value;
+            const kelurahanKode = document.getElementById('m-subsector').value;
+            const idInput = document.getElementById('m-id-number');
+            
+            if(polsekId && kelurahanKode) {
+                const pObj = polsekData.find(p => p.id === polsekId);
+                const polsekKode = pObj ? pObj.kode : '';
                 
-                const nextSeq = (sameAreaMembers.length + 1).toString().padStart(3, '0');
-                // Format: 07 (Polda) + 41 (Polres) + Polsek + Kelurahan + Seq
-                idInput.value = '0741' + polsek + kelurahan + nextSeq;
+                // Sequence based on total registered members + 1
+                const nextSeq = (allMembersData.length + 1).toString().padStart(4, '0');
+                if(idInput) idInput.value = `0741-${polsekKode}${kelurahanKode}-${nextSeq}`;
             } else {
-                idInput.value = '';
+                if(idInput) idInput.value = '';
+            }
+        }
+
+        function updateMemberIdAdd() {
+            const polsekId = document.getElementById('a-sector').value;
+            const kelurahanKode = document.getElementById('a-subsector').value;
+            const idInput = document.querySelector('#addMemberForm [name="no_anggota"]');
+            
+            if(polsekId && kelurahanKode) {
+                const pObj = polsekData.find(p => p.id === polsekId);
+                const polsekKode = pObj ? pObj.kode : '';
+                
+                // Sequence based on total registered members + 1
+                const nextSeq = (allMembersData.length + 1).toString().padStart(4, '0');
+                if(idInput) idInput.value = `0741-${polsekKode}${kelurahanKode}-${nextSeq}`;
+            } else {
+                if(idInput) idInput.value = '';
+            }
+        }
+
+        function previewImage(input, previewId) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById(previewId).src = e.target.result;
+                }
+                reader.readAsDataURL(input.files[0]);
             }
         }
 
@@ -1145,8 +1245,19 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                     }
                     
                     // Dropdowns
-                    setVal('m-sector', member.sector);
-                    updateKelurahanDropdown(member.sector || '', member.subsector || '');
+                    let polsekId = member.sector;
+                    // If member.sector is a code (legacy), find the matching unique ID
+                    const matchingPolseks = polsekData.filter(p => p.kode === member.sector);
+                    if (matchingPolseks.length > 1) {
+                        // Ambiguous code (01, 02, 04), use kelurahan code to find the correct Polsek ID
+                        const correctK = kelurahanData.find(k => k.polsek_id.startsWith(member.sector) && k.kode === member.subsector);
+                        if (correctK) polsekId = correctK.polsek_id;
+                    } else if (matchingPolseks.length === 1) {
+                        polsekId = matchingPolseks[0].id;
+                    }
+                    
+                    setVal('m-sector', polsekId);
+                    updateKelurahanDropdown(polsekId || '', member.subsector || '');
                     
                     // ID Number logic
                     if (member.no_anggota) {
@@ -1246,6 +1357,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
             try {
                 const resp = await fetch('data/pendaftaran.json?v=' + Date.now());
                 const data = await resp.json();
+                allMembersData = data; // Keep global data in sync
                 
                 // Update counter
                 const counterEl = document.getElementById('active-member-count');
@@ -1260,9 +1372,6 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                 // data is array, reverse to show newest first
                 [...data].reverse().forEach(row => {
                     const date = new Date(row.timestamp);
-                    const formattedDate = date.toLocaleDateString('id-ID', {day: '2-digit', month: '2-digit', year: '2-digit'}) + ' ' + 
-                                        date.toLocaleTimeString('id-ID', {hour: '2-digit', minute: '2-digit'});
-                    
                     const longDate = date.toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'}) + ', ' +
                                     date.toLocaleTimeString('id-ID', {hour: '2-digit', minute: '2-digit'});
 
@@ -1271,15 +1380,24 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                     if(status === 'Approved') statusBadge = `<span class="badge bg-success-subtle text-success border px-2">Approved</span>`;
                     if(status === 'Rejected') statusBadge = `<span class="badge bg-danger-subtle text-danger border px-2">Rejected</span>`;
 
+                    // Lookup names for better display
+                    const pObj = polsekData.find(p => p.id === row.sector || p.kode === row.sector);
+                    const kObj = kelurahanData.find(k => (k.polsek_id === row.sector || k.polsek_id.startsWith(row.sector)) && k.kode === row.subsector);
+                    const sectorName = pObj ? pObj.nama : (row.sector || '-');
+                    const subsectorName = kObj ? kObj.nama : (row.subsector || '-');
+
                     html += `
                         <tr>
                             <td class="d-none d-md-table-cell"><code class="bg-light p-1 rounded">${row.no_anggota || row.reg_number}</code></td>
                             <td>
-                                <div class="fw-bold">${row.full_name}</div>
+                                <div class="fw-bold text-uppercase">${row.full_name}</div>
                                 <div class="d-md-none small text-muted">${row.no_anggota || row.reg_number}</div>
                             </td>
                             <td class="d-none d-sm-table-cell"><span class="badge bg-light text-dark">${row.gender === 'Laki-laki' ? 'L' : (row.gender === 'Perempuan' ? 'P' : '-')}</span></td>
-                            <td class="small d-none d-md-table-cell">Sektor ${row.sector} - Sub ${row.subsector}</td>
+                            <td class="small d-none d-md-table-cell text-uppercase">
+                                <div class="fw-bold">${sectorName}</div>
+                                <div class="text-muted small">${subsectorName}</div>
+                            </td>
                             <td class="d-none d-lg-table-cell">${statusBadge}</td>
                             <td class="text-end">
                                 <div class="btn-group btn-group-sm rounded-pill shadow-sm">
@@ -2334,6 +2452,54 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
             }
         }
 
+        // Add Member Logic
+        document.addEventListener('DOMContentLoaded', () => {
+            const addMemberModalEl = document.getElementById('addMemberModal');
+            if (addMemberModalEl) {
+                addMemberModalEl.addEventListener('show.bs.modal', function() {
+                    const date = new Date();
+                    const random = Math.floor(1000 + Math.random() * 9000);
+                    const regNum = `PKDT-TS-${date.getFullYear()}${(date.getMonth() + 1).toString().padStart(2, '0')}-${random}`;
+                    const regInput = document.getElementById('a-reg-number');
+                    if (regInput) regInput.value = regNum;
+                });
+            }
+
+            const addMemberForm = document.getElementById('addMemberForm');
+            if (addMemberForm) {
+                addMemberForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    console.log('Form submission intercepted');
+                    const formData = new FormData(this);
+                    const btn = this.querySelector('button[type="submit"]');
+                    if (btn) btn.disabled = true;
+
+                    try {
+                        const resp = await fetch('submit.php', {
+                            method: 'POST',
+                            body: formData
+                        });
+                        const result = await resp.json();
+                        if (result.status === 'success') {
+                            showToast('Anggota berhasil ditambahkan!', 'success');
+                            const modalInstance = bootstrap.Modal.getInstance(addMemberModalEl);
+                            if (modalInstance) modalInstance.hide();
+                            this.reset();
+                            const preview = document.getElementById('a-photo-preview');
+                            if (preview) preview.src = 'assets/img/avatar-placeholder.png';
+                            if (typeof loadMembers === 'function') await loadMembers();
+                        } else {
+                            showToast(result.message, 'error');
+                        }
+                    } catch (err) {
+                        showToast('Gagal menghubungi server', 'error');
+                    } finally {
+                        if (btn) btn.disabled = false;
+                    }
+                });
+            }
+        });
+
         // Auto-load Hero Section on first open
         window.addEventListener('DOMContentLoaded', () => {
             loadCMS('hero');
@@ -2341,7 +2507,166 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
     </script>
         </main>
 
-        <footer class="bg-dark text-white py-4 mt-auto">
+    <!-- Add Member Modal -->
+    <div class="modal fade" id="addMemberModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="modal-header bg-white border-bottom py-3 px-4">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="bg-dark p-2 rounded-3 text-white">
+                            <i class="fas fa-user-plus fs-5"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-0">Tambah Anggota Baru</h5>
+                            <small class="text-muted">Lengkapi data anggota dengan teliti</small>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4 bg-white" style="max-height: 80vh; overflow-y: auto;">
+                    <form id="addMemberForm" enctype="multipart/form-data">
+                        <input type="hidden" name="status" value="Approved">
+
+                        <div class="section-badge mb-3">Data Calon Anggota</div>
+
+                        <div class="text-center mb-4">
+                            <div class="photo-upload-wrapper">
+                                <img id="a-photo-preview" src="assets/img/avatar-placeholder.png" class="photo-preview-img">
+                                <label for="a-photo" class="photo-upload-btn">
+                                    <i class="fas fa-camera fa-sm"></i>
+                                </label>
+                                <input type="file" name="photo" id="a-photo" class="d-none" accept="image/*" onchange="previewImage(this, 'a-photo-preview')">
+                            </div>
+                            <div class="photo-upload-label">Pas Foto Anggota</div>
+                        </div>
+                        
+                        <div class="row g-3 mb-3">
+                            <div class="col-12">
+                                <label class="small fw-bold text-muted mb-1 text-uppercase">NAMA LENGKAP</label>
+                                <input type="text" name="full_name" class="form-control bg-light border-0 rounded-3 fs-6 px-3 py-2 fw-bold" placeholder="Input nama lengkap..." required>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-6">
+                                <label class="small fw-bold text-muted mb-1 text-uppercase">TEMPAT LAHIR</label>
+                                <input type="text" name="birth_place" class="form-control bg-light border-0 rounded-3 fs-6 px-3 py-2" placeholder="Kota lahir">
+                            </div>
+                            <div class="col-6">
+                                <label class="small fw-bold text-muted mb-1 text-uppercase">TANGGAL LAHIR</label>
+                                <input type="date" name="birth_date" class="form-control bg-light border-0 rounded-3 fs-6 px-3 py-2">
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-6">
+                                <label class="small fw-bold text-muted mb-1 text-uppercase">JENIS KELAMIN</label>
+                                <select name="gender" class="form-select bg-light border-0 rounded-3 fs-6 px-3 py-2">
+                                    <option value="Laki-laki">Laki-laki</option>
+                                    <option value="Perempuan">Perempuan</option>
+                                </select>
+                            </div>
+                            <div class="col-6">
+                                <label class="small fw-bold text-muted mb-1 text-uppercase">PENDIDIKAN</label>
+                                <select name="education" class="form-select bg-light border-0 rounded-3 fs-6 px-3 py-2">
+                                    <option value="SD">SD</option>
+                                    <option value="SMP">SMP</option>
+                                    <option value="SMA">SMA</option>
+                                    <option value="S1">S1</option>
+                                    <option value="S2">S2</option>
+                                    <option value="S3">S3</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-6">
+                                <label class="small fw-bold text-muted mb-1 text-uppercase">PEKERJAAN</label>
+                                <select name="occupation" class="form-select bg-light border-0 rounded-3 fs-6 px-3 py-2">
+                                    <option value="PNS">PNS</option>
+                                    <option value="PENSIUN">PENSIUN</option>
+                                    <option value="KARYAWAN SWASTA">KARYAWAN SWASTA</option>
+                                    <option value="SECURITY">SECURITY</option>
+                                    <option value="WIRASWASTA">WIRASWASTA</option>
+                                    <option value="IRT">IRT</option>
+                                </select>
+                            </div>
+                            <div class="col-6">
+                                <label class="small fw-bold text-muted mb-1 text-uppercase">NIK</label>
+                                <input type="text" name="nik" class="form-control bg-light border-0 rounded-3 fs-6 px-3 py-2" placeholder="16 digit NIK">
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-12">
+                                <label class="small fw-bold text-muted mb-1 text-uppercase">HP</label>
+                                <input type="text" name="phone" class="form-control bg-light border-0 rounded-3 fs-6 px-3 py-2" placeholder="Nomor WhatsApp">
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-6">
+                                <label class="small fw-bold text-muted mb-1 text-uppercase">KECAMATAN</label>
+                                <select name="sector" id="a-sector" class="form-select bg-light border-0 rounded-3 fs-6 px-3 py-2" onchange="updateKelurahanDropdownAdd(this.value)">
+                                    <option value="">Pilih Kecamatan</option>
+                                </select>
+                            </div>
+                            <div class="col-6">
+                                <label class="small fw-bold text-muted mb-1 text-uppercase">KELURAHAN</label>
+                                <select name="subsector" id="a-subsector" class="form-select bg-light border-0 rounded-3 fs-6 px-3 py-2" onchange="updateMemberIdAdd()">
+                                    <option value="">Pilih Kelurahan</option>
+                                    <!-- Populated by JS -->
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="small fw-bold text-muted mb-1 text-uppercase">ALAMAT LENGKAP</label>
+                            <textarea name="address" class="form-control bg-light border-0 rounded-3 fs-6 px-3 py-2" rows="2" placeholder="Jalan, No Rumah, RT/RW..."></textarea>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-12">
+                                <label class="small fw-bold text-muted mb-1 text-uppercase">NO ANGGOTA</label>
+                                <input type="text" name="no_anggota" class="form-control bg-light border-0 rounded-3 fs-6 px-3 py-2 fw-bold" placeholder="Akan otomatis jika disetujui, atau input manual..." readonly>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-6">
+                                <label class="small fw-bold text-muted mb-1 text-uppercase">JABATAN</label>
+                                <input type="text" name="position" class="form-control bg-light border-0 rounded-3 fs-6 px-3 py-2" placeholder="Contoh: Anggota">
+                            </div>
+                            <div class="col-6">
+                                <label class="small fw-bold text-muted mb-1 text-uppercase">KODE PANGGIL</label>
+                                <input type="text" name="call_code" class="form-control bg-light border-0 rounded-3 fs-6 px-3 py-2" placeholder="Contoh: 001">
+                            </div>
+                        </div>
+
+                        <input type="hidden" name="reg_number" id="a-reg-number">
+
+                        <div class="mb-3">
+                            <label class="small fw-bold text-muted mb-1 text-uppercase">LAMPIRAN DOKUMEN (PDF/ZIP)</label>
+                            <input type="file" name="reg_file" class="form-control bg-light border-0 rounded-3 fs-6 px-3 py-2">
+                        </div>
+
+                        <div class="section-badge mb-3 d-none">REKOMENDASI CETAK KARTU</div>
+                        <div class="mb-4 d-none">
+                            <textarea name="card_recommendation" class="form-control bg-light border-0 rounded-4 p-3" rows="3" placeholder="Catatan khusus pencetakan..."></textarea>
+                        </div>
+
+                        <div class="d-grid gap-2 border-top pt-4">
+                            <button type="submit" class="btn btn-dark rounded-3 py-3 fw-bold text-uppercase shadow-sm">
+                                <i class="fas fa-save me-2"></i> SIMPAN ANGGOTA BARU
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-dark text-white py-4 mt-auto d-none d-lg-block">
             <div class="container text-center">
                 <p class="mb-0 opacity-50 small">&copy; <?php echo date('Y'); ?> Admin Panel Pokdar Kamtibmas Polres Tangerang Selatan.</p>
             </div>
@@ -2421,24 +2746,24 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
     <div id="toast-container" class="toast-container"></div>
 
     <!-- Mobile Fixed Bottom Nav -->
-    <div class="mobile-bottom-nav">
-        <a href="index.php" class="mobile-bottom-item">
+    <div class="mobile-bottom-nav d-lg-none">
+        <a href="index.php" class="mobile-bottom-item text-decoration-none">
             <i class="fas fa-home"></i>
             <span>Beranda</span>
         </a>
-        <a href="#" class="mobile-bottom-item active" onclick="switchAdminTab('pendaftaran-tab', 'Database Anggota', 'user-shield', this)">
+        <a href="#" class="mobile-bottom-item active text-decoration-none" onclick="switchAdminTab('pendaftaran-tab', 'Database Anggota', 'user-shield', this)">
             <i class="fas fa-user-shield"></i>
             <span>Database</span>
         </a>
-        <a href="#" class="mobile-bottom-item" onclick="switchAdminTab('cms-tab', 'Manajemen Konten', 'edit', this); loadCMS('hero')">
+        <a href="#" class="mobile-bottom-item text-decoration-none" onclick="switchAdminTab('cms-tab', 'Manajemen Konten', 'edit', this); loadCMS('hero')">
             <i class="fas fa-edit"></i>
             <span>Konten</span>
         </a>
-        <a href="#" class="mobile-bottom-item" onclick="switchAdminTab('trash-tab', 'Arsip Keluar', 'trash-alt', this); loadTrash()">
+        <a href="#" class="mobile-bottom-item text-decoration-none" onclick="switchAdminTab('trash-tab', 'Arsip Keluar', 'trash-alt', this); loadTrash()">
             <i class="fas fa-trash-alt"></i>
             <span>Arsip</span>
         </a>
-        <a href="logout.php" class="mobile-bottom-item text-danger">
+        <a href="logout.php" class="mobile-bottom-item text-danger text-decoration-none">
             <i class="fas fa-sign-out-alt"></i>
             <span>Keluar</span>
         </a>

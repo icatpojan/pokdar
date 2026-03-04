@@ -1,37 +1,61 @@
 [
     {
+        "id": "01-t",
         "kode": "01",
         "nama": "Ciputat Timur"
     },
     {
+        "id": "01-c",
+        "kode": "01",
+        "nama": "Ciputat"
+    },
+    {
+        "id": "02-p",
         "kode": "02",
         "nama": "Pamulang"
     },
     {
+        "id": "02-s",
+        "kode": "02",
+        "nama": "Setu"
+    },
+    {
+        "id": "03-a",
         "kode": "03",
         "nama": "Pondok Aren"
     },
     {
+        "id": "04-s",
         "kode": "04",
         "nama": "Serpong"
     },
     {
-        "kode": "05",
+        "id": "04-u",
+        "kode": "04",
         "nama": "Serpong Utara"
     },
     {
+        "id": "05-p",
+        "kode": "05",
+        "nama": "Pagedangan"
+    },
+    {
+        "id": "06-c",
         "kode": "06",
         "nama": "Cisauk"
     },
     {
+        "id": "07-k",
         "kode": "07",
         "nama": "Kelapa Dua"
     },
     {
+        "id": "08-c",
         "kode": "08",
         "nama": "Curug"
     },
     {
+        "id": "09-l",
         "kode": "09",
         "nama": "Legok"
     }

@@ -23,19 +23,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'gender' => $_POST['gender'] ?? 'N/A',
         'sector' => $_POST['sector'] ?? 'N/A',
         'subsector' => $_POST['subsector'] ?? 'N/A',
+        'birth_place' => $_POST['birth_place'] ?? '',
+        'birth_date' => $_POST['birth_date'] ?? '',
+        'education' => $_POST['education'] ?? '',
+        'occupation' => $_POST['occupation'] ?? '',
+        'nik' => $_POST['nik'] ?? '',
+        'phone' => $_POST['phone'] ?? '',
+        'no_anggota' => $_POST['no_anggota'] ?? '',
+        'position' => $_POST['position'] ?? '',
+        'call_code' => $_POST['call_code'] ?? '',
+        'card_recommendation' => $_POST['card_recommendation'] ?? '',
+        'status' => $_POST['status'] ?? 'Pending',
         'timestamp' => date('Y-m-d H:i:s')
     ];
 
-    // Handle File Upload (optional but requested earlier)
-    if (isset($_FILES['reg_file'])) {
+    // Handle Registration Attachment
+    if (isset($_FILES['reg_file']) && $_FILES['reg_file']['error'] === UPLOAD_ERR_OK) {
         $targetDir = "uploads/";
-        if (!file_exists($targetDir)) {
-            mkdir($targetDir, 0777, true);
+        if (!file_exists($targetDir)) mkdir($targetDir, 0777, true);
+        $fileName = time() . "_ref_" . basename($_FILES["reg_file"]["name"]);
+        if (move_uploaded_file($_FILES["reg_file"]["tmp_name"], $targetDir . $fileName)) {
+            $newData['file_path'] = $targetDir . $fileName;
         }
-        $fileName = basename($_FILES["reg_file"]["name"]);
-        $targetFilePath = $targetDir . time() . "_" . $fileName;
-        if (move_uploaded_file($_FILES["reg_file"]["tmp_name"], $targetFilePath)) {
-            $newData['file_path'] = $targetFilePath;
+    }
+
+    // Handle Profile Photo
+    if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
+        $targetDir = "uploads/";
+        if (!file_exists($targetDir)) mkdir($targetDir, 0777, true);
+        $fileName = time() . "_img_" . basename($_FILES["photo"]["name"]);
+        if (move_uploaded_file($_FILES["photo"]["tmp_name"], $targetDir . $fileName)) {
+            $newData['photo_path'] = $targetDir . $fileName;
         }
     }
 
