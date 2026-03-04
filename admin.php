@@ -340,6 +340,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                     margin-bottom: 25px !important;
                 }
                 .dashboard-main-title {
+                    /* color: black !important; */
                     font-size: 1.75rem !important;
                     margin-bottom: 8px !important;
                 }
@@ -698,6 +699,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                                         <button class="nav-link text-start" data-bs-toggle="pill" onclick="loadCMS('structure')"><i class="fas fa-users me-2 me-lg-3 text-accent"></i> Struktur Organisasi</button>
                                         <button class="nav-link text-start" data-bs-toggle="pill" onclick="loadCMS('kegiatan')"><i class="fas fa-camera-retro me-2 me-lg-3 text-accent"></i> Galeri Kegiatan</button>
                                         <button class="nav-link text-start" data-bs-toggle="pill" onclick="loadCMS('faq')"><i class="fas fa-question-circle me-2 me-lg-3 text-accent"></i> Tanya Jawab (FAQ)</button>
+                                        <button class="nav-link text-start" data-bs-toggle="pill" onclick="loadCMS('jadwal_kegiatan')"><i class="fas fa-calendar-alt me-2 me-lg-3 text-accent"></i> Jadwal Agenda</button>
                                         <button class="nav-link text-start" data-bs-toggle="pill" onclick="loadCMS('contact')"><i class="fas fa-address-book me-2 me-lg-3 text-accent"></i> Kontak & Media</button>
                                         <button class="nav-link text-start" data-bs-toggle="pill" onclick="loadCMS('stats')"><i class="fas fa-chart-bar me-2 me-lg-3 text-accent"></i> Statistik Utama</button>
                                     </div>
@@ -748,10 +750,26 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                                                             $badgeClass = 'bg-warning-subtle text-warning';
                                                             if($status === 'Approved') $badgeClass = 'bg-success-subtle text-success';
                                                             if($status === 'Rejected') $badgeClass = 'bg-danger-subtle text-danger';
+                                                            // Penilaian
+                                                            $pen = $row['penilaian'] ?? null;
+                                                            $penBadge = '';
+                                                            if($pen && isset($pen['total'])) {
+                                                                $pt = $pen['total'];
+                                                                $pBg = '#e2e8f0'; $pColor = '#64748b';
+                                                                if($pt >= 14)     { $pBg = '#0d9488'; $pColor = '#fff'; }
+                                                                elseif($pt >= 11) { $pBg = '#d1fae5'; $pColor = '#065f46'; }
+                                                                elseif($pt >= 6)  { $pBg = '#dbeafe'; $pColor = '#1e40af'; }
+                                                                elseif($pt >= 1)  { $pBg = '#fef3c7'; $pColor = '#92400e'; }
+                                                                $pLabel = $pt >= 14 ? 'Sangat Baik' : ($pt >= 11 ? 'Baik' : ($pt >= 6 ? 'Cukup Baik' : 'Perlu Pembinaan'));
+                                                                $penBadge = '<span class="badge px-2 py-1" style="background:'.$pBg.';color:'.$pColor.';font-size:11px;"><i class="fas fa-clipboard-check me-1"></i>'.$pt.'/15 '.$pLabel.'</span>';
+                                                            }
                                                         ?>
-                                                        <div class="d-flex flex-wrap gap-1 align-items-center">
-                                                            <span class="badge <?php echo $badgeClass; ?> border px-2"><?php echo $status; ?></span>
-                                                            <?php if($isKhusus): ?><span class="badge bg-warning text-dark px-2"><i class="fas fa-star me-1"></i>Khusus</span><?php endif; ?>
+                                                        <div class="d-flex flex-column gap-1 align-items-start">
+                                                            <div class="d-flex flex-wrap gap-1 align-items-center">
+                                                                <span class="badge <?php echo $badgeClass; ?> border px-2"><?php echo $status; ?></span>
+                                                                <?php if($isKhusus): ?><span class="badge bg-warning text-dark px-2"><i class="fas fa-star me-1"></i>Khusus</span><?php endif; ?>
+                                                            </div>
+                                                            <?php if($penBadge): ?><?php echo $penBadge; ?><?php endif; ?>
                                                         </div>
                                                     </td>
                                                     <td class="text-end">
@@ -775,6 +793,11 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                                                             <?php if($status === 'Approved'): ?>
                                                             <button class="btn btn-sm rounded-3 <?php echo $isKhusus ? 'btn-warning' : 'btn-outline-warning'; ?>" title="<?php echo $isKhusus ? 'Edit Rekomendasi' : 'Rekomendasikan sebagai Anggota Khusus'; ?>" onclick="openRekomendasiModal('<?php echo htmlspecialchars($row['reg_number']); ?>', '<?php echo htmlspecialchars($row['full_name']); ?>', '<?php echo htmlspecialchars(addslashes($row['rekomendasi_alasan'] ?? '')); ?>')">
                                                                 <i class="fas fa-star"></i>
+                                                            </button>
+                                                            <?php endif; ?>
+                                                            <?php if($status === 'Approved'): ?>
+                                                            <button class="btn btn-sm btn-outline-info rounded-3" title="Penilaian Anggota" onclick="openPenilaianModal('<?php echo htmlspecialchars($row['reg_number']); ?>', '<?php echo htmlspecialchars($row['full_name']); ?>', '<?php echo htmlspecialchars($row['position'] ?? ''); ?>')">
+                                                                <i class="fas fa-clipboard-check"></i>
                                                             </button>
                                                             <?php endif; ?>
                                                             <button class="btn btn-sm btn-outline-danger rounded-3" title="Keluarkan Anggota" onclick="moveToTrash('<?php echo $row['reg_number']; ?>')">
@@ -1402,14 +1425,28 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                     const isKhusus = (row.member_type || '') === 'Khusus';
                     const isApproved = status === 'Approved';
                     const khususBadge = isKhusus ? `<span class="badge bg-warning text-dark small px-2 py-1"><i class="fas fa-star me-1"></i>Anggota Khusus</span>` : '';
+                    // Penilaian badge
+                    let penilaianBadge = '';
+                    if (row.penilaian && row.penilaian.total !== undefined) {
+                        const pt = row.penilaian.total;
+                        let pColor = '#64748b', pBg = '#e2e8f0';
+                        if (pt >= 14)     { pBg = '#0d9488'; pColor = '#fff'; }
+                        else if (pt >= 11){ pBg = '#d1fae5'; pColor = '#065f46'; }
+                        else if (pt >= 6) { pBg = '#dbeafe'; pColor = '#1e40af'; }
+                        else if (pt >= 1) { pBg = '#fef3c7'; pColor = '#92400e'; }
+                        const pLabel = pt >= 14 ? 'Sangat Baik' : pt >= 11 ? 'Baik' : pt >= 6 ? 'Cukup Baik' : 'Perlu Pembinaan';
+                        penilaianBadge = `<span class="badge px-2 py-1" style="background:${pBg};color:${pColor};font-size:11px;" title="Penilaian: Loyalitas ${row.penilaian.loyalitas||0}, Keaktifan ${row.penilaian.keaktifan||0}, Anggota Terbanyak ${row.penilaian.anggota_terbanyak||0}"><i class="fas fa-clipboard-check me-1"></i>${pt}/15 ${pLabel}</span>`;
+                    }
                     // Rekomendasi button only for Approved members
                     let rekBtn = '';
+                    let penilaianBtn = '';
                     if (isApproved) {
                         const safeAlasan = (row.rekomendasi_alasan || '').replace(/'/g, "\\'" ).replace(/\n/g, '\\n');
                         const safeName = row.full_name.replace(/'/g, "\\'");
                         rekBtn = isKhusus
                             ? `<button class="btn btn-sm btn-warning rounded-3" title="Edit Rekomendasi Anggota Khusus" onclick="openRekomendasiModal('${row.reg_number}', '${safeName}', '${safeAlasan}')"><i class="fas fa-star"></i></button>`
                             : `<button class="btn btn-sm btn-outline-warning rounded-3" title="Rekomendasikan sebagai Anggota Khusus" onclick="openRekomendasiModal('${row.reg_number}', '${safeName}', '')"><i class="fas fa-star"></i></button>`;
+                        penilaianBtn = `<button class="btn btn-sm btn-outline-info rounded-3" title="Penilaian Anggota" onclick="openPenilaianModal('${row.reg_number}', '${safeName}', '${(row.position || '').replace(/'/g,"\\'")}')"><i class="fas fa-clipboard-check"></i></button>`;
                     }
 
                     html += `
@@ -1425,9 +1462,12 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                                 <div class="text-muted small">${subsectorName}</div>
                             </td>
                             <td class="d-none d-lg-table-cell">
-                                <div class="d-flex flex-wrap gap-1 align-items-center">
-                                    ${statusBadge}
-                                    ${khususBadge}
+                                <div class="d-flex flex-column gap-1 align-items-start">
+                                    <div class="d-flex flex-wrap gap-1">
+                                        ${statusBadge}
+                                        ${khususBadge}
+                                    </div>
+                                    ${penilaianBadge}
                                 </div>
                             </td>
                             <td class="text-end">
@@ -1449,6 +1489,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                                         <i class="fas fa-print"></i>
                                     </button>
                                     ${rekBtn}
+                                    ${penilaianBtn}
                                     <button class="btn btn-sm btn-outline-danger rounded-3" title="Keluarkan Anggota" onclick="moveToTrash('${row.reg_number}')">
                                         <i class="fas fa-sign-out-alt"></i>
                                     </button>
@@ -1609,6 +1650,122 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                 showToast('Pop-up diblokir browser. Izinkan pop-up untuk mencetak kartu.', 'warning');
             }
         }
+        // ── Penilaian Anggota ─────────────────────────────────
+        function openPenilaianModal(regNumber, memberName, jabatan) {
+            const member = allMembersData.find(m => m.reg_number === regNumber);
+            document.getElementById('pen-reg-number').value = regNumber;
+            document.getElementById('pen-member-name').textContent = memberName.toUpperCase();
+            document.getElementById('pen-member-jabatan').textContent = jabatan || '—';
+
+            // Sektor name
+            const pObj = polsekData.find(p => p.id === (member?.sector) || p.kode === (member?.sector));
+            document.getElementById('pen-member-sektor').textContent = pObj ? pObj.nama : (member?.sector || '—');
+
+            // Reset / restore ratings
+            document.querySelectorAll('.pen-rating-btn').forEach(btn => {
+                btn.style.background = '#e2e8f0';
+                btn.style.color = '#64748b';
+                btn.style.transform = '';
+            });
+            const existing = member?.penilaian || {};
+            ['loyalitas', 'keaktifan', 'anggota_terbanyak'].forEach(group => {
+                const saved = existing[group];
+                if (saved) {
+                    document.querySelectorAll(`.pen-rating-btn[data-group="${group}"]`).forEach(btn => {
+                        if (parseInt(btn.dataset.val) <= saved) {
+                            applyRatingActive(btn);
+                        }
+                    });
+                }
+            });
+            document.getElementById('pen-komentar').value = existing.komentar || '';
+            updatePenilaianTotal();
+
+            const modal = new bootstrap.Modal(document.getElementById('penilaianModal'));
+            modal.show();
+        }
+
+        function applyRatingActive(btn) {
+            btn.style.background = '#0d9488';
+            btn.style.color = '#fff';
+            btn.style.transform = 'scale(1.08)';
+        }
+
+        function updatePenilaianTotal() {
+            const groups = ['loyalitas', 'keaktifan', 'anggota_terbanyak'];
+            let total = 0;
+            groups.forEach(group => {
+                // Find highest selected
+                const selected = [...document.querySelectorAll(`.pen-rating-btn[data-group="${group}"]`)]
+                    .filter(b => b.style.background === 'rgb(13, 148, 136)' || b.style.background === '#0d9488');
+                if (selected.length) total += Math.max(...selected.map(b => parseInt(b.dataset.val)));
+            });
+            document.getElementById('pen-total').textContent = total;
+            const lbl = document.getElementById('pen-total-label');
+            if (total === 0)    { lbl.textContent = 'Belum dinilai'; lbl.style.cssText = 'background:#e2e8f0;color:#64748b;font-size:12px;'; }
+            else if (total <= 5)  { lbl.textContent = 'Perlu Pembinaan'; lbl.style.cssText = 'background:#fef3c7;color:#92400e;font-size:12px;'; }
+            else if (total <= 10) { lbl.textContent = 'Cukup Baik'; lbl.style.cssText = 'background:#dbeafe;color:#1e40af;font-size:12px;'; }
+            else if (total <= 13) { lbl.textContent = 'Baik'; lbl.style.cssText = 'background:#d1fae5;color:#065f46;font-size:12px;'; }
+            else                  { lbl.textContent = 'Sangat Baik'; lbl.style.cssText = 'background:#0d9488;color:#fff;font-size:12px;'; }
+        }
+
+        // Rating button click handler (delegated)
+        document.addEventListener('click', function(e) {
+            const btn = e.target.closest('.pen-rating-btn');
+            if (!btn) return;
+            const group = btn.dataset.group;
+            const val = parseInt(btn.dataset.val);
+            // Fill up-to clicked, unfill above
+            document.querySelectorAll(`.pen-rating-btn[data-group="${group}"]`).forEach(b => {
+                if (parseInt(b.dataset.val) <= val) {
+                    applyRatingActive(b);
+                } else {
+                    b.style.background = '#e2e8f0';
+                    b.style.color = '#64748b';
+                    b.style.transform = '';
+                }
+            });
+            updatePenilaianTotal();
+        });
+
+        async function savePenilaian() {
+            const reg = document.getElementById('pen-reg-number').value;
+            const getVal = (group) => {
+                const selected = [...document.querySelectorAll(`.pen-rating-btn[data-group="${group}"]`)]
+                    .filter(b => b.style.background === 'rgb(13, 148, 136)' || b.style.background === '#0d9488');
+                return selected.length ? Math.max(...selected.map(b => parseInt(b.dataset.val))) : 0;
+            };
+            const loyalitas = getVal('loyalitas');
+            const keaktifan = getVal('keaktifan');
+            const anggota_terbanyak = getVal('anggota_terbanyak');
+            const total = loyalitas + keaktifan + anggota_terbanyak;
+            const komentar = document.getElementById('pen-komentar').value.trim();
+
+            if (loyalitas === 0 && keaktifan === 0 && anggota_terbanyak === 0) {
+                showToast('Isi minimal satu kriteria penilaian.', 'warning');
+                return;
+            }
+            const formData = new FormData();
+            formData.append('reg_number', reg);
+            formData.append('penilaian', JSON.stringify({ loyalitas, keaktifan, anggota_terbanyak, total, komentar, tanggal: new Date().toISOString().slice(0,10) }));
+            try {
+                const btn = document.getElementById('pen-save-btn');
+                btn.disabled = true;
+                const resp = await fetch('update_member.php', { method: 'POST', body: formData });
+                const result = await resp.json();
+                if (result.status === 'success') {
+                    showToast('Penilaian anggota berhasil disimpan!', 'success');
+                    bootstrap.Modal.getInstance(document.getElementById('penilaianModal')).hide();
+                    await loadMembers();
+                } else {
+                    showToast(result.message || 'Gagal menyimpan penilaian.', 'error');
+                }
+            } catch (err) {
+                showToast('Gagal menghubungi server.', 'error');
+            } finally {
+                document.getElementById('pen-save-btn').disabled = false;
+            }
+        }
 
         async function moveToTrash(reg) {
             if(!confirm('Keluarkan anggota ini dari daftar?')) return;
@@ -1739,7 +1896,8 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
             'news': 'Berita & Pengumuman',
             'kegiatan': 'Galeri Kegiatan',
             'faq': 'Tanya Jawab (FAQ)',
-            'contact': 'Kontak & Media'
+            'contact': 'Kontak & Media',
+            'jadwal_kegiatan': 'Jadwal Agenda Kegiatan'
         };
 
         function getLabel(key) {
@@ -1851,6 +2009,163 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                     });
                 }
                 
+                // ── Special CRUD: Jadwal Agenda Kegiatan ───────────
+                if (type === 'jadwal_kegiatan') {
+                    window._jadwalData = Array.isArray(data) ? data : [];
+                    
+                    // Ensureodal exists in body to avoid clipping
+                    if (!document.getElementById('jadwalAgendaModal')) {
+                        const mDiv = document.createElement('div');
+                        mDiv.innerHTML = `
+                            <div class="modal fade" id="jadwalAgendaModal" tabindex="-1" aria-hidden="true" style="z-index: 9999;">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content border-0 rounded-4 overflow-hidden shadow-lg">
+                                        <div class="modal-header border-0 text-white px-4 pt-4 pb-3" style="background:linear-gradient(135deg,#0d9488,#0f766e);">
+                                            <div>
+                                                <h5 class="modal-title fw-bold mb-0" id="jadwalModalLabel"><i class="fas fa-calendar-plus me-2"></i>Tambah Agenda</h5>
+                                                <small class="opacity-75" id="jadwal-modal-subtitle">Isi detail agenda kegiatan baru</small>
+                                            </div>
+                                            <button type="button" class="btn-close btn-close-white ms-auto" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <div class="modal-body px-4 pb-2 pt-3">
+                                            <input type="hidden" id="jadwal-edit-index" value="-1">
+                                            <div class="row g-3">
+                                                <div class="col-12 col-sm-6">
+                                                    <label class="form-label fw-semibold small">Hari / Tanggal <span class="text-danger">*</span></label>
+                                                    <input type="text" id="jadwal-f-haritgl" class="form-control rounded-3" placeholder="cth: Sabtu, 15 Maret 2026">
+                                                </div>
+                                                <div class="col-12 col-sm-6">
+                                                    <label class="form-label fw-semibold small">Jam</label>
+                                                    <input type="text" id="jadwal-f-jam" class="form-control rounded-3" placeholder="cth: 08:00 - 12:00 WIB">
+                                                </div>
+                                                <div class="col-12">
+                                                    <label class="form-label fw-semibold small">Keterangan / Judul Kegiatan <span class="text-danger">*</span></label>
+                                                    <input type="text" id="jadwal-f-keterangan" class="form-control rounded-3" placeholder="Nama kegiatan...">
+                                                </div>
+                                                <div class="col-12 col-sm-6">
+                                                    <label class="form-label fw-semibold small">Tempat</label>
+                                                    <input type="text" id="jadwal-f-tempat" class="form-control rounded-3" placeholder="Lokasi kegiatan">
+                                                </div>
+                                                <div class="col-12 col-sm-6">
+                                                    <label class="form-label fw-semibold small">Contact Person (CP)</label>
+                                                    <input type="text" id="jadwal-f-cp" class="form-control rounded-3" placeholder="Nama (No HP)">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer border-0 px-4 pb-4 pt-2 gap-2">
+                                            <button type="button" class="btn btn-outline-secondary rounded-3 px-4" data-bs-dismiss="modal">Batal</button>
+                                            <button type="button" class="btn fw-bold rounded-3 text-white px-4" style="background:linear-gradient(135deg,#0d9488,#0f766e);" onclick="window._submitJadwalForm()">
+                                                <i class="fas fa-check me-2"></i><span id="jadwal-btn-label">Tambah Agenda</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        document.body.appendChild(mDiv.firstElementChild);
+                    }
+
+                    window._renderJadwal = function() {
+                        const c = document.getElementById('cms-editor-container');
+                        const events = window._jadwalData;
+                        c.innerHTML = `
+                        <div class="cms-animate-content">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <div>
+                                    <h2 class="fw-bold mb-0 text-dark" style="letter-spacing:-0.02em">Jadwal Agenda Kegiatan</h2>
+                                    <p class="text-muted mb-0 small">Kelola dan perbarui daftar agenda kegiatan yang tampil di halaman utama.</p>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-dark rounded-pill px-4 fw-bold shadow-sm" onclick="window._saveJadwal()">
+                                        <i class="fas fa-save me-2"></i>Simpan
+                                    </button>
+                                    <button class="btn rounded-pill px-4 fw-bold shadow-sm text-white" style="background:linear-gradient(135deg,#0d9488,#0f766e);" onclick="window._openJadwalModal()">
+                                        <i class="fas fa-plus me-2"></i>Tambah Agenda
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Event Cards -->
+                            <div class="row g-3" id="jadwal-cards-container">
+                                ${events.length === 0 ? `<div class="col-12 text-center text-muted py-5"><i class="fas fa-calendar-times fa-2x mb-2 d-block opacity-50"></i>Belum ada agenda. Klik "Tambah Agenda" untuk mulai.</div>` :
+                                events.map((ev, i) => `
+                                <div class="col-12 col-md-6 col-xl-4">
+                                    <div class="border rounded-4 p-3 h-100 shadow-sm" style="border-color:#e2e8f0!important;background:#fff; transition: all 0.3s ease;">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <span class="badge rounded-pill px-3 py-2 fw-semibold" style="background:#f1f5f9;color:#475569;font-size:11px;">
+                                                <i class="far fa-calendar-alt me-1 text-accent"></i>${ev.hari_tgl || '—'}
+                                            </span>
+                                            <div class="d-flex gap-1">
+                                                <button class="btn btn-sm btn-outline-primary rounded-3 border-0 bg-light" style="padding:6px 10px;" onclick="window._editJadwal(${i})" title="Edit"><i class="fas fa-edit" style="font-size:12px;"></i></button>
+                                                <button class="btn btn-sm btn-outline-danger rounded-3 border-0 bg-light-danger" style="padding:6px 10px; color:#ef4444;" onclick="window._deleteJadwal(${i})" title="Hapus"><i class="fas fa-trash-alt" style="font-size:12px;"></i></button>
+                                            </div>
+                                        </div>
+                                        <h6 class="fw-bold mb-3 lh-sm" style="font-size:14px; min-height: 2.4em;">${ev.keterangan || '—'}</h6>
+                                        <div class="d-flex flex-column gap-2" style="font-size:12px;color:#64748b;">
+                                            <div class="d-flex align-items-center gap-2"><i class="far fa-clock text-accent" style="width:16px;"></i><span>${ev.jam || '—'}</span></div>
+                                            <div class="d-flex align-items-center gap-2"><i class="fas fa-map-marker-alt text-accent" style="width:16px;"></i><span>${ev.tempat || '—'}</span></div>
+                                            <div class="d-flex align-items-center gap-2"><i class="fas fa-id-badge text-accent" style="width:16px;"></i><span>CP: ${ev.cp || '—'}</span></div>
+                                        </div>
+                                    </div>
+                                </div>`).join('')}
+                            </div>
+                        </div>`;
+                    };
+
+                    window._saveJadwal = async function() {
+                        const result = await saveContent('jadwal_kegiatan', window._jadwalData);
+                        if (result && result.status === 'success') showToast('Jadwal agenda berhasil disimpan!', 'success');
+                    };
+                    window._deleteJadwal = function(i) {
+                        if (!confirm('Hapus agenda ini?')) return;
+                        window._jadwalData.splice(i, 1);
+                        window._renderJadwal();
+                    };
+                    window._openJadwalModal = function() {
+                        const m = document.getElementById('jadwalAgendaModal');
+                        if (!m) return;
+                        m.querySelector('#jadwal-edit-index').value = -1;
+                        ['jadwal-f-haritgl','jadwal-f-jam','jadwal-f-keterangan','jadwal-f-tempat','jadwal-f-cp'].forEach(id => m.querySelector('#'+id).value = '');
+                        m.querySelector('#jadwalModalLabel').innerHTML = '<i class="fas fa-calendar-plus me-2"></i>Tambah Agenda';
+                        m.querySelector('#jadwal-modal-subtitle').textContent = 'Isi detail agenda kegiatan baru';
+                        m.querySelector('#jadwal-btn-label').textContent = 'Tambah Agenda';
+                        bootstrap.Modal.getOrCreateInstance(m).show();
+                    };
+                    window._editJadwal = function(i) {
+                        const m = document.getElementById('jadwalAgendaModal');
+                        if (!m) return;
+                        const ev = window._jadwalData[i];
+                        m.querySelector('#jadwal-edit-index').value = i;
+                        m.querySelector('#jadwal-f-haritgl').value = ev.hari_tgl || '';
+                        m.querySelector('#jadwal-f-jam').value = ev.jam || '';
+                        m.querySelector('#jadwal-f-keterangan').value = ev.keterangan || '';
+                        m.querySelector('#jadwal-f-tempat').value = ev.tempat || '';
+                        m.querySelector('#jadwal-f-cp').value = ev.cp || '';
+                        m.querySelector('#jadwalModalLabel').innerHTML = '<i class="fas fa-edit me-2"></i>Edit Agenda';
+                        m.querySelector('#jadwal-modal-subtitle').textContent = 'Ubah detail agenda kegiatan';
+                        m.querySelector('#jadwal-btn-label').textContent = 'Simpan Perubahan';
+                        bootstrap.Modal.getOrCreateInstance(m).show();
+                    };
+                    window._submitJadwalForm = function() {
+                        const m = document.getElementById('jadwalAgendaModal');
+                        const hari_tgl = m.querySelector('#jadwal-f-haritgl').value.trim();
+                        const jam = m.querySelector('#jadwal-f-jam').value.trim();
+                        const keterangan = m.querySelector('#jadwal-f-keterangan').value.trim();
+                        const tempat = m.querySelector('#jadwal-f-tempat').value.trim();
+                        const cp = m.querySelector('#jadwal-f-cp').value.trim();
+                        if (!hari_tgl || !keterangan) { showToast('Hari/Tanggal dan Keterangan wajib diisi.', 'warning'); return; }
+                        const idx = parseInt(m.querySelector('#jadwal-edit-index').value);
+                        const item = { hari_tgl, jam, keterangan, tempat, cp };
+                        if (idx >= 0) { window._jadwalData[idx] = item; }
+                        else { window._jadwalData.push(item); }
+                        bootstrap.Modal.getInstance(m)?.hide();
+                        window._renderJadwal();
+                    };
+                    window._renderJadwal();
+                    return;
+                }
+                // ── END: Jadwal special case ───────────────────────
+
                 let html = `
                     <div class="cms-animate-content">
                         <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-4 mb-4 cms-header-spacer">
@@ -2128,6 +2443,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                                 else if (type === 'stats') visibleKeys = ['title', 'value', 'icon'];
                                 else if (type === 'tentang') visibleKeys = ['title', 'icon'];
                                 else if (type === 'contact') visibleKeys = ['label', 'value', 'icon'];
+                                else if (type === 'jadwal_kegiatan') visibleKeys = ['hari_tgl', 'keterangan', 'jam'];
                                 return `
                                 <div class="cms-table-container">
                                     <table class="cms-table">
@@ -2726,6 +3042,111 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                     <button type="button" class="btn btn-light rounded-3 px-4" data-bs-dismiss="modal">Batal</button>
                     <button type="button" class="btn btn-warning rounded-3 px-5 fw-bold" onclick="saveRekomendasi()">
                         <i class="fas fa-star me-2"></i>SIMPAN REKOMENDASI
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Penilaian Anggota Modal -->
+    <div class="modal fade" id="penilaianModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+                <!-- Header -->
+                <div class="modal-header border-0 p-0">
+                    <div class="w-100 px-4 pt-4 pb-3" style="background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="rounded-3 d-flex align-items-center justify-content-center" style="width:46px;height:46px;background:rgba(255,255,255,0.15)">
+                                    <i class="fas fa-clipboard-check text-white fs-5"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-bold text-white fs-6">Penilaian Anggota</div>
+                                    <small class="text-white opacity-75">Berikan penilaian kinerja anggota</small>
+                                </div>
+                            </div>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Body -->
+                <div class="modal-body p-4">
+                    <input type="hidden" id="pen-reg-number">
+                    <!-- Member Info Card -->
+                    <div class="rounded-3 p-3 mb-4" style="background:#f0fdfa;border:1px solid #99f6e4;">
+                        <div class="row g-3">
+                            <div class="col-12 col-md-4">
+                                <div class="text-muted" style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;">Nama Anggota</div>
+                                <div class="fw-bold text-dark fs-6 text-uppercase" id="pen-member-name">—</div>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <div class="text-muted" style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;">Jabatan</div>
+                                <div class="fw-semibold text-dark" id="pen-member-jabatan">—</div>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <div class="text-muted" style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;">Sektor</div>
+                                <div class="fw-semibold text-dark" id="pen-member-sektor">—</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Rating Grid -->
+                    <div class="mb-4">
+                        <div class="fw-bold text-dark mb-3" style="font-size:13px;letter-spacing:0.5px;">PENILAIAN</div>
+                        <div class="d-flex flex-column gap-3">
+                            <!-- Loyalitas -->
+                            <div class="d-flex align-items-center justify-content-between gap-3 p-3 rounded-3" style="background:#f8fafc;border:1px solid #e2e8f0;">
+                                <div class="fw-semibold text-dark" style="min-width:160px;">Loyalitas</div>
+                                <div class="d-flex gap-2" data-group="loyalitas">
+                                    <?php foreach([1,2,3,4,5] as $n): ?>
+                                    <button type="button" class="pen-rating-btn rounded-2 fw-bold border-0" data-group="loyalitas" data-val="<?php echo $n; ?>" style="width:38px;height:38px;font-size:14px;background:#e2e8f0;color:#64748b;transition:all .15s ease;"><?php echo $n; ?></button>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                            <!-- Keaktifan -->
+                            <div class="d-flex align-items-center justify-content-between gap-3 p-3 rounded-3" style="background:#f8fafc;border:1px solid #e2e8f0;">
+                                <div class="fw-semibold text-dark" style="min-width:160px;">Keaktifan</div>
+                                <div class="d-flex gap-2" data-group="keaktifan">
+                                    <?php foreach([1,2,3,4,5] as $n): ?>
+                                    <button type="button" class="pen-rating-btn rounded-2 fw-bold border-0" data-group="keaktifan" data-val="<?php echo $n; ?>" style="width:38px;height:38px;font-size:14px;background:#e2e8f0;color:#64748b;transition:all .15s ease;"><?php echo $n; ?></button>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                            <!-- Anggota Terbanyak -->
+                            <div class="d-flex align-items-center justify-content-between gap-3 p-3 rounded-3" style="background:#f8fafc;border:1px solid #e2e8f0;">
+                                <div class="fw-semibold text-dark" style="min-width:160px;">Anggota Terbanyak</div>
+                                <div class="d-flex gap-2" data-group="anggota_terbanyak">
+                                    <?php foreach([1,2,3,4,5] as $n): ?>
+                                    <button type="button" class="pen-rating-btn rounded-2 fw-bold border-0" data-group="anggota_terbanyak" data-val="<?php echo $n; ?>" style="width:38px;height:38px;font-size:14px;background:#e2e8f0;color:#64748b;transition:all .15s ease;"><?php echo $n; ?></button>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Total -->
+                    <div class="d-flex align-items-center gap-3 mb-4 p-3 rounded-3" style="background:linear-gradient(90deg,#f0fdfa,#fff);border:2px solid #0d9488;">
+                        <div class="fw-bold text-dark" style="min-width:80px;">TOTAL</div>
+                        <div class="d-flex align-items-center">
+                            <div id="pen-total" class="fw-black fs-3 me-1" style="color:#0d9488;min-width:48px;text-align:center;">0</div>
+                            <span class="text-muted fs-6">/ 15</span>
+                        </div>
+                        <div class="ms-2">
+                            <div id="pen-total-label" class="badge px-3 py-2" style="background:#e2e8f0;color:#64748b;font-size:12px;">Belum dinilai</div>
+                        </div>
+                    </div>
+
+                    <!-- Komentar -->
+                    <div class="mb-1">
+                        <label class="fw-bold text-dark mb-2 d-block" style="font-size:13px;letter-spacing:0.5px;">KOMENTAR <span class="text-muted fw-normal">(opsional)</span></label>
+                        <textarea id="pen-komentar" class="form-control" rows="3" placeholder="Tuliskan catatan atau komentar mengenai kinerja anggota..." style="resize:vertical;border-radius:10px;border:1.5px solid #e2e8f0;font-size:14px;"></textarea>
+                    </div>
+                </div>
+                <!-- Footer -->
+                <div class="modal-footer border-0 px-4 pb-4 pt-0">
+                    <button type="button" class="btn px-4 fw-semibold rounded-3" data-bs-dismiss="modal" style="background:#f1f5f9;color:#64748b;">Batal</button>
+                    <button type="button" class="btn px-4 fw-bold rounded-3 text-white" onclick="savePenilaian()" style="background:linear-gradient(135deg,#0d9488,#0f766e);gap:8px;" id="pen-save-btn">
+                        <i class="fas fa-check-circle me-2"></i>SIMPAN PENILAIAN
                     </button>
                 </div>
             </div>

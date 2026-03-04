@@ -41,7 +41,7 @@ $pelaksana = $structureData['pelaksana'];
                 <a class="navbar-brand-ugm d-flex align-items-center gap-3" href="#home">
                     <img src="assets/image.png" alt="Logo" class="logo-img" style="height: 50px;">
                     <div class="logo-text d-flex flex-column text-white">
-                        <span class="main-title fw-bold" style="font-size: 1.2rem; letter-spacing: 1px;">POKDAR KAMTIBMAS</span>
+                        <span class="main-title fw-bold" style="font-size: 1.2rem; letter-spacing: 1px;color:#ffd700 !important;">POKDAR KAMTIBMAS</span>
                         <span class="sub-title opacity-75" style="font-size: 0.85rem;"><?php echo $heroData['logo_subtitle'] ?? 'Resort  Tangerang Selatan'; ?></span>
                     </div>
                 </a>

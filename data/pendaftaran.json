@@ -139,6 +139,14 @@
         "photo_path": "uploads\/1772608556_img_a15f8f30-700a-4801-b9a8-3a0832497560.jpg",
         "approval": "",
         "member_type": "Khusus",
-        "rekomendasi_alasan": "bagus aja"
+        "rekomendasi_alasan": "bagus aja",
+        "penilaian": {
+            "loyalitas": 3,
+            "keaktifan": 3,
+            "anggota_terbanyak": 3,
+            "total": 9,
+            "komentar": "bagus",
+            "tanggal": "2026-03-04"
+        }
     }
 ]

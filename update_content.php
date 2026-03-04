@@ -11,7 +11,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $type = $_POST['type'] ?? '';
     
-    $allowedTypes = ['hero', 'stats', 'tentang', 'sejarah', 'kegiatan', 'faq', 'contact', 'registrasi', 'news', 'structure'];
+    $allowedTypes = ['hero', 'stats', 'tentang', 'sejarah', 'kegiatan', 'faq', 'contact', 'registrasi', 'news', 'structure', 'jadwal_kegiatan'];
     
     if (in_array($type, $allowedTypes)) {
         if (isset($_POST['action']) && $_POST['action'] === 'upload') {

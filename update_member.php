@@ -30,6 +30,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $row[$field] = $_POST[$field];
                 }
             }
+            // Penilaian is a JSON object
+            if (isset($_POST['penilaian'])) {
+                $decoded = json_decode($_POST['penilaian'], true);
+                if (json_last_error() === JSON_ERROR_NONE) {
+                    $row['penilaian'] = $decoded;
+                }
+            }
 
             // Handle Photo Upload
             if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
