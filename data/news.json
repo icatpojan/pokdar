@@ -1,10 +1,18 @@
 [
     {
+        "id": 1,
+        "tag": "Kegiatan",
+        "title": "Mulyadi Widodo Dilantik sebagai Ketua Pokdar Kamtibmas Resor Tangerang Selatan Periode 2025 \u2013 2029",
+        "description": "Mulyadi Widodo, yang akrab disapa Mbah Mung, resmi dilantik dan dikukuhkan sebagai Ketua Pokdar Kamtibmas Resor Tangerang Selatan untuk periode 2025 \u2013 2029. Pelantikan ini dilakukan oleh AKBP. Victor D.H. Inkiriwang, Kapolres Tangerang Selatan, di Gerai Lengkong, Jl. Skki, Pondok Jagung, Kec. Serpong Utara, Kota Tangerang Selatan, pada pukul 10.00 WIB pada Sabtu, 23 Agustus 2025..",
+        "image": "assets/kegiatan/giat_1772432586_8310.jpg",
+        "link": "#"
+    },
+    {
         "id": 2,
         "tag": "Pengumuman",
         "title": "Rapat Koordinasi Bulanan Polres Tangsel",
         "description": "Agenda pembahasan evaluasi keamanan di wilayah Tangerang Selatan...",
-        "image": "assets/kegiatan/giat (1).jpg",
+        "image": "assets/kegiatan/giat_1772432599_6382.webp",
         "link": "#"
     },
     {

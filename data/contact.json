@@ -7,22 +7,23 @@
     "social": [
         {
             "icon": "fab fa-facebook",
-            "link": "#"
+            "link": "https://www.facebook.com/profile.php?id=61586292546439"
         },
         {
             "icon": "fab fa-instagram",
-            "link": "#"
+            "link": "https://www.instagram.com/pokdartangerangselatan/"
         },
         {
             "icon": "fab fa-twitter",
-            "link": "#"
+            "link": "https://x.com/pokdartangsel"
         },
         {
             "icon": "fab fa-youtube",
-            "link": "#"
+            "link": "https://www.youtube.com/shorts/nwRh-ekaDSw"
         }
     ],
     "partners": [
+        "",
         "assets/client-1.png",
         "assets/client-2.png",
         "assets/client-3.png",

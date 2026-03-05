@@ -29,7 +29,8 @@ switch ($action) {
         $data = loadKasektor($dataFile);
         $index = isset($_POST['index']) ? (int)$_POST['index'] : -1;
         $newData = [
-            'name' => $_POST['name'] ?? '',
+            'name' => $_POST['username'] ?? '',    // The login username
+            'full_name' => $_POST['name'] ?? '',   // The selected member name
             'password' => $_POST['password'] ?? '',
             'sector' => $_POST['sector'] ?? '',
             'assessment' => isset($_POST['assessment']) ? json_decode($_POST['assessment'], true) : null,

@@ -29,7 +29,7 @@ $pelaksana = $structureData['pelaksana'];
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/style.css?v=3.0">
+    <link rel="stylesheet" href="css/style.css?v=4.0">
     <link rel="icon" type="image/png" href="assets/image.png">
     <link rel="apple-touch-icon" href="assets/image.png">
     <link rel="manifest" href="manifest.json">
@@ -164,7 +164,7 @@ $pelaksana = $structureData['pelaksana'];
     </section>
 
      <!-- Berita & Artikel Section -->
-    <section id="berita" class="bg-light">
+    <section id="berita" class="bg-light section-padding">
         <div class="container">
             <!-- <div class="section-title text-center mb-5">
                 <span class="badge bg-accent text-white px-3 py-2 mb-3">BERITA TERKINI</span>
@@ -455,39 +455,59 @@ $pelaksana = $structureData['pelaksana'];
                 <p class="text-muted fade-up">Ikuti dan pantau agenda nyata kami di wilayah Tangerang Selatan</p>
             </div>
 
-            <div class="row g-4">
-                <?php 
-                if (isset($jadwalData) && is_array($jadwalData)):
-                    foreach($jadwalData as $event): 
-                ?>
-                <div class="col-lg-4">
-                    <div class="agenda-card fade-up">
-                        <div class="agenda-header d-flex justify-content-between align-items-center mb-3">
-                            <span class="badge bg-soft-accent text-accent rounded-pill px-3 py-2 fw-bold small">
-                                <i class="far fa-calendar-alt me-2"></i><?php echo $event['hari_tgl']; ?>
-                            </span>
-                        </div>
-                        <h5 class="fw-bold mb-3"><?php echo $event['keterangan']; ?></h5>
-                        <div class="agenda-details small">
-                            <div class="d-flex align-items-start gap-3 mb-2">
-                                <i class="far fa-clock text-accent mt-1"></i>
-                                <span><?php echo $event['jam']; ?></span>
-                            </div>
-                            <div class="d-flex align-items-start gap-3 mb-2">
-                                <i class="fas fa-map-marker-alt text-accent mt-1"></i>
-                                <span><?php echo $event['tempat']; ?></span>
-                            </div>
-                            <div class="d-flex align-items-start gap-3">
-                                <i class="fas fa-user-circle text-accent mt-1"></i>
-                                <span>CP: <?php echo $event['cp']; ?></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <?php 
-                    endforeach; 
-                endif;
-                ?>
+            <div class="table-responsive-custom fade-up shadow-sm rounded-4 overflow-x-auto">
+                <table class="table agenda-table mb-0">
+                    <thead class="bg-accent text-white">
+                        <tr>
+                            <th class="py-3 px-4 border-0" style="width: 20%;">Hari & Tanggal</th>
+                            <th class="py-3 px-4 border-0" style="width: 35%;">Agenda Kegiatan</th>
+                            <th class="py-3 px-4 border-0" style="width: 15%;">Waktu</th>
+                            <th class="py-3 px-4 border-0" style="width: 15%;">Lokasi</th>
+                            <th class="py-3 px-4 border-0" style="width: 15%;">Kontak (CP)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php 
+                        if (isset($jadwalData) && is_array($jadwalData)):
+                            foreach($jadwalData as $event): 
+                        ?>
+                        <tr class="align-middle border-bottom border-light">
+                            <td class="py-3 px-4">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="bg-accent-soft rounded-pill p-2 text-accent">
+                                        <i class="far fa-calendar-alt"></i>
+                                    </div>
+                                    <span class="fw-bold small text-dark"><?php echo $event['hari_tgl']; ?></span>
+                                </div>
+                            </td>
+                            <td class="py-3 px-4">
+                                <h6 class="fw-bold mb-0 text-dark"><?php echo $event['keterangan']; ?></h6>
+                            </td>
+                            <td class="py-3 px-4">
+                                <div class="d-flex align-items-center gap-2 small text-muted">
+                                    <i class="far fa-clock text-accent"></i>
+                                    <span><?php echo $event['jam']; ?></span>
+                                </div>
+                            </td>
+                            <td class="py-3 px-4">
+                                <div class="d-flex align-items-center gap-2 small text-muted">
+                                    <i class="fas fa-map-marker-alt text-accent"></i>
+                                    <span><?php echo $event['tempat']; ?></span>
+                                </div>
+                            </td>
+                            <td class="py-3 px-4">
+                                <div class="d-flex align-items-center gap-2 small text-muted">
+                                    <i class="fas fa-user-circle text-accent"></i>
+                                    <span><?php echo $event['cp']; ?></span>
+                                </div>
+                            </td>
+                        </tr>
+                        <?php 
+                            endforeach; 
+                        endif;
+                        ?>
+                    </tbody>
+                </table>
             </div>
         </div>
     </section>

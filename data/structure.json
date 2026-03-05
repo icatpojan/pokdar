@@ -1,87 +1,82 @@
 {
     "pimpinan": {
         "ketua": {
-            "name": "JOHNI ELGANIF, St, M.",
+            "name": "MULYADI WIDODO",
             "position": "Ketua",
-            "image": "assets/kegiatan/giat_1772244558_8649.jpeg"
+            "image": "assets/kegiatan/giat_1772375456_4491.jpg"
         },
         "wakil_ketua": [
             {
-                "name": "WAHYUDI",
-                "position": "Wakil Ketua",
-                "image": "assets/kegiatan/giat_1772244964_9901.jpeg"
+                "name": "DEDI MASHUDI",
+                "position": "WAKIL KETUA 1",
+                "image": "assets/kegiatan/giat_1772375644_6429.jpg"
             },
             {
-                "name": "RULI PURNAMA",
-                "position": "Wakil Ketua",
-                "image": "assets/kegiatan/giat_1772244969_7585.jpeg"
-            },
-            {
-                "name": "GUGUN NUGRAHA",
-                "position": "Wakil Ketua",
-                "image": "assets/kegiatan/giat_1772244973_3902.jpeg"
+                "name": "TOMI PATRIA ",
+                "position": "WAKIL KETUA 2",
+                "image": "assets/kegiatan/giat_1772712103_7685.jpg"
             }
         ]
     },
     "sekretariat": {
         "sekretaris": {
-            "name": "SUMARYANTO, S.Psi.",
+            "name": "DODIK MURSADI",
             "position": "Sekretaris",
-            "image": "assets/kegiatan/giat_1772244980_4886.jpeg"
+            "image": "assets/kegiatan/giat_1772712181_9041.jpg"
         },
         "wakil_sekretaris": {
-            "name": "IING RICKY KHAERUDIN",
+            "name": "IMAM SUYATNO",
             "position": "Wakil Sekretaris",
-            "image": "assets/kegiatan/giat_1772244985_9047.jpeg"
+            "image": "assets/kegiatan/giat_1772712384_4221.jpg"
         }
     },
     "bendahara": {
         "bendahara": {
-            "name": "H. JOHNIE",
+            "name": "EDI KURNIAWAN",
             "position": "Bendahara",
             "image": "assets/kegiatan/giat_1772244992_1987.jpeg"
         },
         "wakil_bendahara": {
-            "name": "HARIYANTO",
+            "name": "SAMUEL SOTYA ADI NUGROHO",
             "position": "Wakil Bendahara",
             "image": "assets/kegiatan/giat_1772244998_2271.jpeg"
         }
     },
     "pelaksana": [
         {
-            "dept": "OKK",
-            "lead": "H. NURHASAN",
-            "sub": "Drs. H. HAMDAN MALIK",
+            "dept": "DIVISI ORGANISASI",
+            "lead": "DOGLAS KRISNO",
+            "sub": "SUWARNO",
             "sub_pos": "Wakil OKK",
-            "image": "assets/kegiatan/giat_1772245002_3997.jpeg"
+            "image": "assets/kegiatan/giat_1772712490_3725.jpg"
         },
         {
-            "dept": "WAS/KUM",
-            "lead": "MT. DIANSYAH",
-            "sub": "H. SUGIONO",
+            "dept": "INFRASTRUKTUR",
+            "lead": "MAHENDRA",
+            "sub": "RAHMANDA",
             "sub_pos": "Wakil WAS/KUM",
             "image": "assets/user.png"
         },
         {
             "dept": "SATGAS",
-            "lead": "SUMARDI",
-            "sub": "SUPRIANTO",
+            "lead": "SUNANDAR BUDI",
+            "sub": "SAPUTRO",
             "sub_pos": "Wakil SATGAS",
-            "image": "assets/user.png"
+            "image": "assets/kegiatan/giat_1772712308_9113.jpg"
         },
         {
-            "dept": "EKONOMI DAN USAHA",
-            "lead": "GATUT SUDARTO",
-            "sub": "M. FIRDAUS, ST",
-            "sub_pos": "Wakil EKONOMI DAN USAHA",
-            "image": "assets/user.png"
+            "dept": "OPERASIONAL",
+            "lead": "KARYADI",
+            "sub": "PARTA",
+            "sub_pos": "WAKIL OPERASIONAL",
+            "image": "assets/kegiatan/giat_1772712008_4907.jpg"
         },
         {
-            "dept": "BINBANG",
-            "lead": "SUHARSONO",
-            "sub": "MA'SUM",
-            "sub_pos": "Wakil BINBANG",
-            "image": "assets/user.png"
+            "dept": "SRIKANDI",
+            "lead": "AMINI",
+            "sub": " ",
+            "sub_pos": " ",
+            "image": "assets/kegiatan/giat_1772712559_6452.jpg"
         },
         {
             "dept": "HUMAS",

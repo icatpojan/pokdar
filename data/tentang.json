@@ -49,15 +49,15 @@
         {
             "icon": "fas fa-globe-asia",
             "title": "Wilayah Operasional",
-            "mobile_intro": "Sesuai wilayah hukum Polda Banten.",
-            "full_intro": "Sesuai dengan wilayah hukum Polda Banten:",
+            "mobile_intro": "Sesuai wilayah hukum polres Kota Tangerang Selatan",
+            "full_intro": "Sesuai dengan wilayah hukum Polres Kota Tangerang Selatan:",
             "content": [
-                "1) Resor Serang Kabupaten",
-                "2) Resor Pandeglang",
-                "3) Resor Lebak",
-                "4) Resor Cilegon",
-                "5) Resorta Serang",
-                "6) Resorta Tangerang"
+                "1) Resor Pamulang",
+                "2) Resor Serpong",
+                "3) Resor Ciputat timur",
+                "4) Resor Pondok Aren",
+                "5) Resorta cisauk",
+                "6) Resorta Kelapa dua"
             ],
             "buttons": [
                 {
@@ -75,7 +75,8 @@
                     "link": "#",
                     "class": "btn btn-sm btn-outline-accent w-50"
                 }
-            ]
+            ],
+            "files": []
         }
     ]
 }

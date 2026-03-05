@@ -1,6 +1,7 @@
 [
     {
         "name": "fauzan",
+        "full_name": "fauzan",
         "password": "fauzan",
         "sector": "01-t",
         "assessment": {
@@ -14,10 +15,34 @@
         "updated_at": "2026-03-04 23:48:23"
     },
     {
-        "name": "dimas",
-        "password": "admin123",
-        "sector": "04-s",
+        "name": "karyadi",
+        "full_name": "karyadi",
+        "password": "karyadi",
+        "sector": "02-p",
+        "assessment": {
+            "kepemimpinan": 4,
+            "koordinasi": 2,
+            "laporan": 4,
+            "total": 10,
+            "komentar": "",
+            "updated_at": "2026-03-05T04:25:34.481Z"
+        },
+        "updated_at": "2026-03-05 11:24:54"
+    },
+    {
+        "name": "jurmiah",
+        "full_name": "Jurmiah",
+        "password": "jurmiah",
+        "sector": "01-t",
         "assessment": null,
-        "updated_at": "2026-03-05 13:17:47"
+        "updated_at": "2026-03-05 15:01:30"
+    },
+    {
+        "name": "dahlann",
+        "full_name": "Dahlan",
+        "password": "dahlann",
+        "sector": "01-c",
+        "assessment": null,
+        "updated_at": "2026-03-05 15:06:31"
     }
 ]

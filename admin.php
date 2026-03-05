@@ -1269,18 +1269,56 @@ $userSector = $_SESSION['user_sector'] ?? '';
                 document.getElementById('m-sector'), 
                 document.getElementById('a-sector'),
                 document.getElementById('filter-sector-biasa'),
-                document.getElementById('filter-sector-khusus')
+                document.getElementById('filter-sector-khusus'),
+                document.getElementById('kasektor-sector')
             ];
+
+            // Get assigned code for Kasektor
+            const assignedP = polsekData.find(p => p.id === window.USER_SECTOR);
+            const assignedKode = assignedP ? assignedP.kode : null;
+            const allowedPolseks = assignedKode ? polsekData.filter(p => p.kode === assignedKode) : [];
+
             selects.forEach(select => {
                 if(!select) return;
                 const isFilter = select.id.startsWith('filter-');
+                
+                // Placeholder
                 select.innerHTML = `<option value="">${isFilter ? 'SEMUA KECAMATAN' : 'Pilih Kecamatan'}</option>`;
+                
                 polsekData.forEach(p => {
+                    // Filter if Kasektor: allow all Polseks with the same code
+                    if (window.USER_ROLE === 'kasektor' && assignedKode) {
+                        if (p.kode !== assignedKode) return;
+                    }
+
                     const opt = document.createElement('option');
                     opt.value = p.id;
                     opt.textContent = p.nama.toUpperCase();
                     select.appendChild(opt);
                 });
+
+                // Restriction for Kasektor
+                if (window.USER_ROLE === 'kasektor' && assignedKode) {
+                    if (allowedPolseks.length === 1) {
+                        // Only one Polsek for this code, pre-select and disable
+                        select.selectedIndex = 1;
+                        select.disabled = true;
+                        if (isFilter) {
+                            const type = select.id.replace('filter-sector-', '');
+                            handleFilterChange(type);
+                        } else if (select.onchange) {
+                            select.onchange();
+                        }
+                    } else {
+                        // Multiple Polseks for this code, allow selection but stay within allowedPolseks
+                        select.disabled = false;
+                        // Pre-select the specifically assigned one if adding/editing
+                        if (!isFilter && window.USER_SECTOR) {
+                            select.value = window.USER_SECTOR;
+                            if (select.onchange) select.onchange();
+                        }
+                    }
+                }
             });
         }
 
@@ -1585,7 +1623,7 @@ $userSector = $_SESSION['user_sector'] ?? '';
                     // type 'biasa' now means ALL MEMBERS as requested (Database Anggota)
                     // type 'khusus' includes both Approved and Pending recommendations
                     const matchType = isKhusus 
-                        ? (m.member_type === 'Khusus' || m.rekomendasi_status === 'Pending') 
+                        ? (m.rekomendasi_status === 'Approved' || m.rekomendasi_status === 'Pending') 
                         : true;
                     const query = (isKhusus ? searchQueryKhusus : searchQueryBiasa).toLowerCase();
                     
@@ -1597,23 +1635,41 @@ $userSector = $_SESSION['user_sector'] ?? '';
                     let filterSector = document.getElementById(`filter-sector-${type}`).value;
                     const filterSubsector = document.getElementById(`filter-subsector-${type}`).value;
                     
-                    // ROLE-BASED RESTRICTION: Kasektor only see their own sector
-                    if (window.USER_ROLE === 'kasektor' && window.USER_SECTOR) {
-                        filterSector = window.USER_SECTOR;
-                    }
-
                     // Match sector: ID match or Code match
-                    const matchSector = !filterSector || 
+                    let matchSector = !filterSector || 
                                        m.sector === filterSector || 
                                        mSector === filterSector || 
                                        filterSector.startsWith(mSector + "-") || 
                                        filterSector === mSector;
 
+                    // ROLE-BASED RESTRICTION: Kasektor forced to their assigned code
+                    if (window.USER_ROLE === 'kasektor' && window.USER_SECTOR) {
+                        const assignedP = polsekData.find(p => p.id === window.USER_SECTOR);
+                        const assignedKode = assignedP ? assignedP.kode : null;
+                        
+                        if (assignedKode) {
+                            // Resolve this member's Polsek Kode
+                            const memP = polsekData.find(p => p.id === m.sector || p.kode === mSector);
+                            const memKode = memP ? memP.kode : mSector;
+
+                            if (!filterSector) {
+                                // "Semua Kecamatan" selected -> match by assigned code
+                                matchSector = (memKode === assignedKode);
+                            } else {
+                                // Specific Polsek selected -> ensure it's one belonging to their code
+                                const selectedP = polsekData.find(p => p.id === filterSector);
+                                if (selectedP && selectedP.kode !== assignedKode) {
+                                    matchSector = false;
+                                }
+                            }
+                        }
+                    }
+
                     // Match subsector: Code match
                     const matchSubsector = !filterSubsector || m.subsector === filterSubsector || mSubsector === filterSubsector;
 
                     // Lookup names for search
-                    const pObj = polsekData.find(p => p.id === m.sector || p.id === matchSector || p.kode === mSector);
+                    const pObj = polsekData.find(p => p.id === m.sector || p.kode === mSector);
                     const kObj = kelurahanData.find(k => (k.polsek_id === m.sector || k.polsek_id.startsWith(mSector)) && (k.kode === m.subsector || k.kode === mSubsector));
                     const sectorName = pObj ? pObj.nama.toLowerCase() : "";
                     const subsectorName = kObj ? kObj.nama.toLowerCase() : "";
@@ -1831,15 +1887,10 @@ $userSector = $_SESSION['user_sector'] ?? '';
             const subsectorFilter = document.getElementById(`filter-subsector-${type}`).value;
             const query = (isKhusus ? searchQueryKhusus : searchQueryBiasa).toLowerCase();
 
-            // ROLE-BASED RESTRICTION: Kasektor only see their own sector
-            if (window.USER_ROLE === 'kasektor' && window.USER_SECTOR) {
-                sectorFilter = window.USER_SECTOR;
-            }
-
             let filtered = allMembersData.filter(m => {
                 // type 'khusus' includes both Approved and Pending recommendations
                 const matchType = isKhusus 
-                    ? (m.member_type === 'Khusus' || m.rekomendasi_status === 'Pending') 
+                    ? (m.rekomendasi_status === 'Approved' || m.rekomendasi_status === 'Pending') 
                     : true;
                 
                 // Normalize sector values for comparison
@@ -1847,11 +1898,34 @@ $userSector = $_SESSION['user_sector'] ?? '';
                 const mSubsector = String(m.subsector || "").padStart(2, '0');
 
                 // Match sector: ID match or Code match (consistent with loadMembers)
-                const matchSector = !sectorFilter || 
+                let matchSector = !sectorFilter || 
                                    m.sector === sectorFilter || 
                                    mSector === sectorFilter || 
                                    sectorFilter.startsWith(mSector + "-") || 
                                    sectorFilter === mSector;
+
+                // ROLE-BASED RESTRICTION: Kasektor forced to their assigned code
+                if (window.USER_ROLE === 'kasektor' && window.USER_SECTOR) {
+                    const assignedP = polsekData.find(p => p.id === window.USER_SECTOR);
+                    const assignedKode = assignedP ? assignedP.kode : null;
+                    
+                    if (assignedKode) {
+                        // Resolve this member's Polsek Kode
+                        const memP = polsekData.find(p => p.id === m.sector || p.kode === mSector);
+                        const memKode = memP ? memP.kode : mSector;
+
+                        if (!sectorFilter) {
+                            // "Semua Kecamatan" selected -> match by assigned code
+                            matchSector = (memKode === assignedKode);
+                        } else {
+                            // Specific Polsek selected -> ensure it's one belonging to their code
+                            const selectedP = polsekData.find(p => p.id === sectorFilter);
+                            if (selectedP && selectedP.kode !== assignedKode) {
+                                matchSector = false;
+                            }
+                        }
+                    }
+                }
 
                 // Match subsector: Code match
                 const matchSubsector = !subsectorFilter || m.subsector === subsectorFilter || mSubsector === subsectorFilter;
@@ -3676,13 +3750,6 @@ $userSector = $_SESSION['user_sector'] ?? '';
                     }
                 });
 
-                // Hide sector filters (force their own sector)
-                const sectorFilters = ['filter-sector-biasa', 'filter-sector-khusus'];
-                sectorFilters.forEach(id => {
-                    const el = document.getElementById(id);
-                    if (el) el.parentElement.style.display = 'none';
-                });
-
                 // Show database anggota by default
                 const pendaftaranTab = document.getElementById('pendaftaran-tab');
                 if (pendaftaranTab) {
@@ -3742,7 +3809,13 @@ $userSector = $_SESSION['user_sector'] ?? '';
 
                 return `
                     <tr>
-                        <td><div class="fw-bold fs-7" style="line-height:1.2;">${k.name}</div><div class="text-muted" style="font-size: 10px;">${k.password}</div></td>
+                        <td>
+                            <div class="fw-bold fs-7" style="line-height:1.2;">${k.full_name || k.name}</div>
+                            <div class="d-flex align-items-center gap-2 mt-1" style="font-size: 10px;">
+                                <span class="badge bg-light text-dark border"><i class="fas fa-user me-1"></i>${k.name}</span>
+                                <span class="badge bg-light text-dark border"><i class="fas fa-key me-1"></i>${k.password}</span>
+                            </div>
+                        </td>
                         <td class="small">${sectorName}</td>
                         <td class="text-center">${ratingHtml}</td>
                         <td class="text-end" style="width: 1%;">
@@ -3769,16 +3842,24 @@ $userSector = $_SESSION['user_sector'] ?? '';
             });
         }
 
-        function populateKasektorMemberDropdown(currentName = '') {
+        function populateKasektorMemberDropdown(currentName = '', filterSector = '') {
             const select = document.getElementById('kasektor-name');
             if (!select) return;
             
             select.innerHTML = '<option value="">Pilih Anggota Penuh...</option>';
             
             // Filter members who are "Khusus" (Anggota Penuh) and Approved
-            const fullMembers = allMembersData.filter(m => 
-                (m.member_type === 'Khusus') && (m.rekomendasi_status === 'Approved')
+            let fullMembers = allMembersData.filter(m => 
+                (m.rekomendasi_status === 'Approved')
             );
+
+            // Additional sector filter if provided
+            if (filterSector) {
+                fullMembers = fullMembers.filter(m => {
+                    const mSector = String(m.sector || "").padStart(2, '0');
+                    return m.sector === filterSector || mSector === filterSector || filterSector.startsWith(mSector + "-") || filterSector === mSector;
+                });
+            }
 
             // Sort by name
             fullMembers.sort((a, b) => a.full_name.localeCompare(b.full_name));
@@ -3810,10 +3891,11 @@ $userSector = $_SESSION['user_sector'] ?? '';
             if (index >= 0) {
                 const k = allKasektor[index];
                 document.getElementById('kasektorModalTitle').textContent = 'Edit Kasektor';
-                populateKasektorMemberDropdown(k.name);
-                document.getElementById('kasektor-name').value = k.name;
-                document.getElementById('kasektor-password').value = k.password;
                 document.getElementById('kasektor-sector').value = k.sector;
+                populateKasektorMemberDropdown(k.full_name || k.name, k.sector);
+                document.getElementById('kasektor-name').value = k.full_name || k.name;
+                document.getElementById('kasektor-username').value = k.name;
+                document.getElementById('kasektor-password').value = k.password;
             } else {
                 document.getElementById('kasektorModalTitle').textContent = 'Tambah Kasektor';
                 document.getElementById('kasektorForm').reset();
@@ -3826,10 +3908,11 @@ $userSector = $_SESSION['user_sector'] ?? '';
         async function saveKasektor() {
             const index = document.getElementById('kasektor-index').value;
             const name = document.getElementById('kasektor-name').value;
+            const username = document.getElementById('kasektor-username').value;
             const password = document.getElementById('kasektor-password').value;
             const sector = document.getElementById('kasektor-sector').value;
 
-            if (!name || !password || !sector) {
+            if (!name || !username || !password || !sector) {
                 showToast('Lengkapi semua data!', 'warning');
                 return;
             }
@@ -3838,6 +3921,7 @@ $userSector = $_SESSION['user_sector'] ?? '';
             formData.append('action', 'save');
             formData.append('index', index);
             formData.append('name', name);
+            formData.append('username', username);
             formData.append('password', password);
             formData.append('sector', sector);
 
@@ -3873,7 +3957,7 @@ $userSector = $_SESSION['user_sector'] ?? '';
             const k = allKasektor[index];
             const m = document.getElementById('penilaianKasektorModal');
             document.getElementById('pen-kas-index').value = index;
-            document.getElementById('pen-kas-name').textContent = k.name;
+            document.getElementById('pen-kas-name').textContent = k.full_name || k.name;
             
             const pObj = polsekData.find(p => p.id === k.sector || p.kode === k.sector);
             document.getElementById('pen-kas-sector').textContent = pObj ? pObj.nama : '—';
@@ -4378,11 +4462,22 @@ $userSector = $_SESSION['user_sector'] ?? '';
                     <form id="kasektorForm">
                         <input type="hidden" id="kasektor-index" value="-1">
                         <div class="mb-3">
+                            <label class="small fw-bold text-muted mb-1 text-uppercase">SEKTOR / KECAMATAN</label>
+                            <select id="kasektor-sector" class="form-select bg-light border-0 rounded-3 px-3 py-2 fw-bold" onchange="populateKasektorMemberDropdown('', this.value)" required>
+                                <option value="">Pilih Sektor</option>
+                                <!-- Populated via JS -->
+                            </select>
+                        </div>
+                        <div class="mb-3">
                             <label class="small fw-bold text-muted mb-1 text-uppercase">PILIH ANGGOTA PENUH</label>
                             <select id="kasektor-name" class="form-select bg-light border-0 rounded-3 px-3 py-2 fw-bold" required>
                                 <option value="">Pilih Anggota...</option>
                                 <!-- Populated via JS -->
                             </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="small fw-bold text-muted mb-1 text-uppercase">USERNAME</label>
+                            <input type="text" id="kasektor-username" class="form-control bg-light border-0 rounded-3 px-3 py-2 fw-bold" placeholder="Username untuk login..." required>
                         </div>
                         <div class="mb-3">
                             <label class="small fw-bold text-muted mb-1 text-uppercase">PASSWORD</label>
@@ -4392,13 +4487,6 @@ $userSector = $_SESSION['user_sector'] ?? '';
                                     <i class="fas fa-eye"></i>
                                 </button>
                             </div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="small fw-bold text-muted mb-1 text-uppercase">SEKTOR / KECAMATAN</label>
-                            <select id="kasektor-sector" class="form-select bg-light border-0 rounded-3 px-3 py-2 fw-bold" required>
-                                <option value="">Pilih Sektor</option>
-                                <!-- Populated via JS -->
-                            </select>
                         </div>
                     </form>
                 </div>
