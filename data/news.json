@@ -1,13 +1,5 @@
 [
     {
-        "id": 1,
-        "tag": "Kegiatan",
-        "title": "Sosialisasi Keamanan Lingkungan di Serpong",
-        "description": "Anggota Pokdar Kamtibmas melakukan edukasi kepada warga...",
-        "image": "assets/kegiatan/giat (1).jpg",
-        "link": "#"
-    },
-    {
         "id": 2,
         "tag": "Pengumuman",
         "title": "Rapat Koordinasi Bulanan Polres Tangsel",

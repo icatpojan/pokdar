@@ -2,11 +2,12 @@
 session_start();
 header('Content-Type: application/json');
 
-if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true || ($_SESSION['user_role'] ?? '') !== 'admin') {
+if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
     http_response_code(403);
     echo json_encode(['status' => 'error', 'message' => 'Unauthorized']);
     exit();
 }
+$userRole = $_SESSION['user_role'] ?? 'admin';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $type = $_POST['type'] ?? '';
@@ -14,6 +15,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $allowedTypes = ['hero', 'stats', 'tentang', 'sejarah', 'kegiatan', 'faq', 'contact', 'registrasi', 'news', 'structure', 'jadwal_kegiatan'];
     
     if (in_array($type, $allowedTypes)) {
+        // Role-based access control
+        if ($userRole === 'kasektor' && !in_array($type, ['news', 'kegiatan', 'jadwal_kegiatan'])) {
+            http_response_code(403);
+            echo json_encode(['status' => 'error', 'message' => 'Unauthorized Access for Kasektor']);
+            exit();
+        }
         if (isset($_POST['action']) && $_POST['action'] === 'upload') {
             if (!isset($_FILES['file'])) {
                 echo json_encode(['status' => 'error', 'message' => 'Tidak ada file diunggah']);

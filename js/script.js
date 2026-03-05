@@ -82,24 +82,29 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
 
     // --- Smooth Scrolling ---
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    document.querySelectorAll('a[href^="#"]:not([href="#"])').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-                target.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
+            const targetId = this.getAttribute('href');
+            try {
+                const target = document.querySelector(targetId);
+                if (target) {
+                    e.preventDefault();
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
 
-                // Close mobile menu (Offcanvas)
-                const offcanvasEl = document.getElementById('offcanvasNavbar');
-                if (offcanvasEl) {
-                    const offcanvas = bootstrap.Offcanvas.getInstance(offcanvasEl);
-                    if (offcanvas) {
-                        offcanvas.hide();
+                    // Close mobile menu (Offcanvas)
+                    const offcanvasEl = document.getElementById('offcanvasNavbar');
+                    if (offcanvasEl) {
+                        const offcanvas = bootstrap.Offcanvas.getInstance(offcanvasEl);
+                        if (offcanvas) {
+                            offcanvas.hide();
+                        }
                     }
                 }
+            } catch (err) {
+                console.error("Invalid selector:", targetId);
             }
         });
     });

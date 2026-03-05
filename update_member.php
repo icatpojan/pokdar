@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'birth_place', 'birth_date', 'education', 'occupation',
                 'nik', 'phone', 'no_anggota', 'position', 'call_code',
                 'card_recommendation', 'approval', 'status',
-                'member_type', 'rekomendasi_alasan'
+                'member_type', 'rekomendasi_alasan', 'rekomendasi_status'
             ];
             foreach ($updatableFields as $field) {
                 if (array_key_exists($field, $_POST)) {

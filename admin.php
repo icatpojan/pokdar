@@ -22,6 +22,8 @@ $userSector = $_SESSION['user_sector'] ?? '';
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="image/png" href="assets/image.png">
+
     <!-- Summernote CSS -->
     <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
     <style>
@@ -63,12 +65,31 @@ $userSector = $_SESSION['user_sector'] ?? '';
             border-radius: 4px !important;
             text-transform: uppercase !important;
             letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        .action-btns {
+            display: flex;
+            flex-wrap: nowrap;
+            gap: 4px;
+            justify-content: flex-end;
+            align-items: center;
+            width: auto;
         }
 
         @media (max-width: 768px) {
             .btn-action-text {
-                padding: 1px 6px !important;
+                padding: 6px 2px !important;
                 font-size: 9px !important;
+                width: 68px !important;
+                flex: none !important;
+                text-align: center;
+                display: inline-block;
+            }
+            .action-btns {
+                width: 140px !important;
+                flex-wrap: wrap !important;
+                justify-content: flex-end;
             }
             .stats-card-compact {
                 max-width: 160px !important;
@@ -560,10 +581,16 @@ $userSector = $_SESSION['user_sector'] ?? '';
 
         .cms-table {
             width: 100%;
-            min-width: 800px; /* Prevent squishing */
+            min-width: unset; /* Allow mobile to be flexible */
             border-collapse: separate;
             border-spacing: 0;
             margin-bottom: 0;
+        }
+
+        @media (min-width: 992px) {
+            .cms-table {
+                min-width: 800px; /* Only force width on desktop */
+            }
         }
 
         .cms-table thead th {
@@ -582,6 +609,12 @@ $userSector = $_SESSION['user_sector'] ?? '';
             vertical-align: middle;
             border-bottom: 1px solid #f3f4f6;
             transition: background 0.2s;
+        }
+
+        @media (max-width: 768px) {
+            .cms-table tbody td {
+                padding: 12px 10px; /* Smaller padding on mobile */
+            }
         }
 
         .cms-table tbody tr:last-child td {
@@ -717,10 +750,10 @@ $userSector = $_SESSION['user_sector'] ?? '';
                             <button class="nav-link py-3 px-4" id="pendaftaran-khusus-tab" data-bs-toggle="tab" data-bs-target="#pendaftaran-khusus" type="button" role="tab" onclick="loadMembers('khusus')">Anggota Penuh</button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link py-3 px-4" id="kasektor-tab" data-bs-toggle="tab" data-bs-target="#kasektor-section" type="button" role="tab" onclick="loadKasektor()"><i class="fas fa-user-shield me-2"></i>Kasektor</button>
+                            <button class="nav-link py-3 px-4" id="kasektor-tab" data-bs-toggle="tab" data-bs-target="#kasektor-section" type="button" role="tab" onclick="loadKasektor()">Kasektor</button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link py-3 px-4 text-danger" id="trash-tab" data-bs-toggle="tab" data-bs-target="#trash-section" type="button" role="tab" onclick="loadTrash()"><i class="fas fa-door-open me-2"></i>Anggota Keluar</button>
+                            <button class="nav-link py-3 px-4" id="trash-tab" data-bs-toggle="tab" data-bs-target="#trash-section" type="button" role="tab" onclick="loadTrash()">Anggota Keluar</button>
                         </li>
                     </ul>
                 </div>
@@ -761,7 +794,7 @@ $userSector = $_SESSION['user_sector'] ?? '';
                         <!-- Tab Database Anggota -->
                         <div class="tab-pane fade show active" id="pendaftaran" role="tabpanel">
                             <div class="d-flex justify-content-between align-items-center mb-4">
-                                <h5 class="fw-bold mb-0 d-none d-lg-block">Daftar Anggota Biasa</h5>
+                                <h5 class="fw-bold mb-0 d-none d-lg-block">Daftar Database Anggota</h5>
                                 <div class="d-flex gap-2">
                                     <button class="btn btn-outline-dark rounded-3 px-3 d-flex align-items-center gap-2" onclick="printMemberList('biasa')">
                                         <i class="fas fa-print"></i> <span class="d-none d-md-inline">Cetak Daftar</span>
@@ -799,7 +832,8 @@ $userSector = $_SESSION['user_sector'] ?? '';
                                             <th class="border-0">Nama Lengkap</th>
                                             <th class="border-0 d-none d-sm-table-cell">L/P</th>
                                             <th class="border-0 d-none d-md-table-cell">Sektor</th>
-                                            <th class="border-0 d-none d-lg-table-cell">Status</th>
+                                            <th class="border-0 d-none d-lg-table-cell">Telepon</th>
+                                            <th class="border-0">Status</th>
                                             <th class="border-0 text-end">Aksi</th>
                                         </tr>
                                     </thead>
@@ -826,7 +860,7 @@ $userSector = $_SESSION['user_sector'] ?? '';
                         <!-- Tab Anggota Penuh -->
                         <div class="tab-pane fade" id="pendaftaran-khusus" role="tabpanel">
                             <div class="d-flex justify-content-between align-items-center mb-4">
-                                <h5 class="fw-bold mb-0 d-none d-lg-block">Daftar Anggota Penuh (Khusus)</h5>
+                                <h5 class="fw-bold mb-0 d-none d-lg-block">Daftar Anggota Penuh</h5>
                                 <button class="btn btn-outline-warning text-dark border-warning-subtle rounded-3 px-3 d-flex align-items-center gap-2 fw-bold" onclick="printMemberList('khusus')">
                                     <i class="fas fa-print"></i> <span class="d-none d-md-inline">Cetak Daftar Penuh</span>
                                 </button>
@@ -859,7 +893,8 @@ $userSector = $_SESSION['user_sector'] ?? '';
                                             <th class="border-0">Nama Lengkap</th>
                                             <th class="border-0 d-none d-sm-table-cell">L/P</th>
                                             <th class="border-0 d-none d-md-table-cell">Sektor</th>
-                                            <th class="border-0 d-none d-lg-table-cell">Status</th>
+                                            <th class="border-0 d-none d-lg-table-cell">Telepon</th>
+                                            <th class="border-0">Status</th>
                                             <th class="border-0 text-end">Aksi</th>
                                         </tr>
                                     </thead>
@@ -868,7 +903,7 @@ $userSector = $_SESSION['user_sector'] ?? '';
                                         <tr>
                                             <td colspan="6" class="text-center py-5">
                                                 <div class="spinner-border text-accent" role="status"></div>
-                                                <p class="mt-2 text-muted">Memuat data anggota khusus...</p>
+                                                <p class="mt-2 text-muted">Memuat data Anggota Penuh...</p>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -1129,18 +1164,7 @@ $userSector = $_SESSION['user_sector'] ?? '';
                                     <button type="submit" class="btn btn-primary rounded-pill py-2 fw-bold text-uppercase" style="background-color: #4472c4; border: none;">
                                         SIMPAN
                                     </button>
-                                    <div class="row gx-2">
-                                        <div class="col-6">
-                                            <button type="button" onclick="setMemberStatus('Approved')" class="btn btn-success w-100 rounded-3 py-2 fw-bold small">
-                                                <i class="fas fa-check-circle me-1"></i> Approve
-                                            </button>
-                                        </div>
-                                        <div class="col-6">
-                                            <button type="button" onclick="setMemberStatus('Rejected')" class="btn btn-outline-danger w-100 rounded-3 py-2 fw-bold small">
-                                                <i class="fas fa-times-circle me-1"></i> Tolak
-                                            </button>
-                                        </div>
-                                    </div>
+                                </div>
                                 </div>
                             </form>
                         </div>
@@ -1558,7 +1582,11 @@ $userSector = $_SESSION['user_sector'] ?? '';
             try {
                 // Filter by member_type and search query
                 let filtered = allMembersData.filter(m => {
-                    const matchType = isKhusus ? (m.member_type === 'Khusus') : (!m.member_type || m.member_type !== 'Khusus');
+                    // type 'biasa' now means ALL MEMBERS as requested (Database Anggota)
+                    // type 'khusus' includes both Approved and Pending recommendations
+                    const matchType = isKhusus 
+                        ? (m.member_type === 'Khusus' || m.rekomendasi_status === 'Pending') 
+                        : true;
                     const query = (isKhusus ? searchQueryKhusus : searchQueryBiasa).toLowerCase();
                     
                     // Normalize sector values for comparison
@@ -1624,7 +1652,7 @@ $userSector = $_SESSION['user_sector'] ?? '';
                 if (infoEl) infoEl.innerText = totalItems > 0 ? `Menampilkan ${startIdx + 1} - ${endIdx} dari ${totalItems} data` : 'Tidak ada data';
 
                 if (totalItems === 0) {
-                    tableBody.innerHTML = `<tr><td colspan="6" class="text-center py-5 text-muted">Belum ada data anggota ${isKhusus ? 'penuh' : 'biasa'}.</td></tr>`;
+                    tableBody.innerHTML = `<tr><td colspan="6" class="text-center py-5 text-muted">Belum ada data anggota ${isKhusus ? 'penuh' : ''}.</td></tr>`;
                     if (paginationEl) paginationEl.innerHTML = '';
                     return;
                 }
@@ -1636,8 +1664,7 @@ $userSector = $_SESSION['user_sector'] ?? '';
                                     date.toLocaleTimeString('id-ID', {hour: '2-digit', minute: '2-digit'});
 
                     const status = row.status || 'Pending';
-                    let statusBadge = `<span class="badge bg-warning-subtle text-warning border px-2">Pending</span>`;
-                    if(status === 'Approved') statusBadge = `<span class="badge bg-success-subtle text-success border px-2">Approved</span>`;
+                    let statusBadge = ''; 
                     if(status === 'Rejected') statusBadge = `<span class="badge bg-danger-subtle text-danger border px-2">Rejected</span>`;
 
                     const mSector = String(row.sector || "").padStart(2, '0');
@@ -1649,7 +1676,16 @@ $userSector = $_SESSION['user_sector'] ?? '';
 
                     const isRowKhusus = (row.member_type || '') === 'Khusus';
                     const isApproved = status === 'Approved';
-                    const khususBadge = ''; // Redundant now that tabs are separated
+                    const rekStatus = row.rekomendasi_status || '';
+                    
+                    let khususBadge = '';
+                    if (isRowKhusus && rekStatus === 'Approved') {
+                        khususBadge = `<span class="badge bg-dark text-white border px-2"><i class="fas fa-star text-warning me-1"></i>Penuh</span>`;
+                    } else if (rekStatus === 'Pending') {
+                        khususBadge = `<span class="badge bg-info-subtle text-info border px-2"><i class="fas fa-hourglass-half me-1"></i>Pending Ajuan</span>`;
+                    } else if (rekStatus === 'Rejected') {
+                        khususBadge = `<span class="badge bg-danger-subtle text-danger border px-2"><i class="fas fa-times-circle me-1"></i>Ajuan Ditolak</span>`;
+                    }
                     
                     let penilaianBadge = '';
                     // Hiding member assessment badge for now as requested
@@ -1673,13 +1709,15 @@ $userSector = $_SESSION['user_sector'] ?? '';
                     let rekBtn = '';
                     let penilaianBtn = '';
                     if (isApproved) {
-                        rekBtn = isRowKhusus
-                            ? `<button class="btn btn-warning btn-action-text" onclick="openRekomendasiModal('${row.reg_number}', '${safeName}', '${safeAlasan}')">REKOM</button>`
-                            : `<button class="btn btn-outline-warning btn-action-text" onclick="openRekomendasiModal('${row.reg_number}', '${safeName}', '')">REKOM</button>`;
-                        
+                        const hasSubmitted = rekStatus !== '';
+                        const rekBtnLabel = hasSubmitted ? 'AJUAN' : 'REKOM';
+                        rekBtn = hasSubmitted
+                            ? `<button class="btn btn-warning btn-action-text" onclick="openRekomendasiModal('${row.reg_number}', '${safeName}', '${safeAlasan}', '${type}')">${rekBtnLabel}</button>`
+                            : `<button class="btn btn-outline-warning btn-action-text" onclick="openRekomendasiModal('${row.reg_number}', '${safeName}', '', '${type}')">${rekBtnLabel}</button>`;
+                    }    
                         // Hiding assessment button
                         // penilaianBtn = `<button class="btn btn-sm btn-outline-info rounded-3" title="Penilaian" onclick="openPenilaianModal('${row.reg_number}', '${safeName}', '${safePosition}')"><i class="fas fa-clipboard-check"></i></button>`;
-                    }
+                    
 
                     html += `
                         <tr>
@@ -1693,7 +1731,8 @@ $userSector = $_SESSION['user_sector'] ?? '';
                                 <div class="fw-bold" style="font-size:11px">${sectorName}</div>
                                 <div class="text-muted small" style="font-size:10px">${subsectorName}</div>
                             </td>
-                            <td class="d-none d-lg-table-cell">
+                            <td class="d-none d-lg-table-cell small text-muted">${row.phone || '-'}</td>
+                            <td>
                                 <div class="d-flex flex-column gap-1 align-items-start">
                                     <div class="d-flex flex-wrap gap-1">
                                         ${statusBadge}
@@ -1702,18 +1741,18 @@ $userSector = $_SESSION['user_sector'] ?? '';
                                     ${penilaianBadge}
                                 </div>
                             </td>
-                            <td class="text-end">
-                                <div class="d-flex gap-1 justify-content-end align-items-center">
+                            <td class="text-end" style="width: 1%;">
+                                <div class="action-btns">
                                     <button class="btn btn-primary btn-action-text"
                                             onclick="openDetailModal('${row.reg_number}', '${longDate}')">
-                                        DETAIL
+                                        PROFILE
                                     </button>
-                                    <button class="btn btn-outline-secondary btn-action-text" onclick="printMemberCard('${row.reg_number}')">
-                                        CETAK
+                                    <button class="btn btn-secondary btn-action-text" onclick="printMemberCard('${row.reg_number}')">
+                                        ${(isRowKhusus && rekStatus === 'Approved') ? 'CETAK CARD' : 'CETAK ID'}
                                     </button>
                                     ${rekBtn}
                                     ${penilaianBtn}
-                                    <button class="btn btn-outline-danger btn-action-text" onclick="moveToTrash('${row.reg_number}')">
+                                    <button class="btn btn-danger btn-action-text" onclick="moveToTrash('${row.reg_number}')">
                                         KELUAR
                                     </button>
                                 </div>
@@ -1788,14 +1827,56 @@ $userSector = $_SESSION['user_sector'] ?? '';
 
         function printMemberList(type) {
             const isKhusus = type === 'khusus';
+            let sectorFilter = document.getElementById(`filter-sector-${type}`).value;
+            const subsectorFilter = document.getElementById(`filter-subsector-${type}`).value;
+            const query = (isKhusus ? searchQueryKhusus : searchQueryBiasa).toLowerCase();
+
+            // ROLE-BASED RESTRICTION: Kasektor only see their own sector
+            if (window.USER_ROLE === 'kasektor' && window.USER_SECTOR) {
+                sectorFilter = window.USER_SECTOR;
+            }
+
             let filtered = allMembersData.filter(m => {
-                const matchType = isKhusus ? (m.member_type === 'Khusus') : (!m.member_type || m.member_type !== 'Khusus');
-                const query = (isKhusus ? searchQueryKhusus : searchQueryBiasa).toLowerCase();
+                // type 'khusus' includes both Approved and Pending recommendations
+                const matchType = isKhusus 
+                    ? (m.member_type === 'Khusus' || m.rekomendasi_status === 'Pending') 
+                    : true;
+                
+                // Normalize sector values for comparison
+                const mSector = String(m.sector || "").padStart(2, '0');
+                const mSubsector = String(m.subsector || "").padStart(2, '0');
+
+                // Match sector: ID match or Code match (consistent with loadMembers)
+                const matchSector = !sectorFilter || 
+                                   m.sector === sectorFilter || 
+                                   mSector === sectorFilter || 
+                                   sectorFilter.startsWith(mSector + "-") || 
+                                   sectorFilter === mSector;
+
+                // Match subsector: Code match
+                const matchSubsector = !subsectorFilter || m.subsector === subsectorFilter || mSubsector === subsectorFilter;
+                
+                // Lookup names for search
+                const pObj = polsekData.find(p => p.id === m.sector || p.kode === mSector);
+                const kObj = kelurahanData.find(k => (k.polsek_id === m.sector || k.polsek_id.startsWith(mSector)) && (k.kode === m.subsector || k.kode === mSubsector));
+                
+                const sectorName = (pObj ? pObj.nama : (m.sector || '-')).toLowerCase();
+                const subsectorName = (kObj ? kObj.nama : (m.subsector || '-')).toLowerCase();
+
+                if (!query) return matchType && matchSector && matchSubsector;
+
                 const matchSearch = String(m.full_name || "").toLowerCase().includes(query) || 
                                     String(m.no_anggota || m.reg_number || "").toLowerCase().includes(query) ||
-                                    String(m.nik || "").toLowerCase().includes(query);
-                return matchType && matchSearch;
+                                    String(m.nik || "").toLowerCase().includes(query) ||
+                                    String(m.phone || "").toLowerCase().includes(query) ||
+                                    sectorName.includes(query) ||
+                                    subsectorName.includes(query);
+
+                return matchType && matchSector && matchSubsector && matchSearch;
             });
+
+            // Sort newest first to match display
+            filtered.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
             if (filtered.length === 0) {
                 showToast('Tidak ada data untuk dicetak.', 'warning');
@@ -1822,7 +1903,7 @@ $userSector = $_SESSION['user_sector'] ?? '';
                 <!DOCTYPE html>
                 <html>
                 <head>
-                    <title>Daftar Anggota ${isKhusus ? 'Penuh' : 'Biasa'}</title>
+                    <title>Daftar ${isKhusus ? 'Anggota Penuh' : 'Database Anggota'}</title>
                     <style>
                         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 30px; color: #333; }
                         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
@@ -1837,7 +1918,7 @@ $userSector = $_SESSION['user_sector'] ?? '';
                 <body>
                     <div class="header">
                         <div class="title">DAFTAR ANGGOTA POKDAR KAMTIBMAS BHAYANGKARA</div>
-                        <div class="subtitle">Kategori: Anggota ${isKhusus ? 'Penuh (Khusus)' : 'Biasa'} | Dicetak pada: ${new Date().toLocaleString('id-ID')}</div>
+                        <div class="subtitle">Kategori: ${isKhusus ? 'Anggota Penuh' : 'Database Anggota (Semua)'} | Dicetak pada: ${new Date().toLocaleString('id-ID')}</div>
                     </div>
                     <table>
                         <thead>
@@ -1865,23 +1946,97 @@ $userSector = $_SESSION['user_sector'] ?? '';
             printWin.document.close();
         }
 
-        function openRekomendasiModal(regNumber, memberName, existingAlasan = '') {
+        function openRekomendasiModal(regNumber, memberName, existingAlasan = '', context = 'biasa') {
+            const member = allMembersData.find(m => m.reg_number === regNumber);
+            const rekStatus = member ? (member.rekomendasi_status || '') : '';
+            
             document.getElementById('rek-reg-number').value = regNumber;
             document.getElementById('rek-member-name').textContent = memberName.toUpperCase();
-            // Pre-fill existing reason if already Anggota Khusus
+            
             const alasanField = document.getElementById('rek-alasan');
             alasanField.value = existingAlasan ? existingAlasan.replace(/\\n/g, '\n') : '';
 
-            // Update modal subtitle based on whether already khusus
-            const subtitle = document.querySelector('#rekomendasiModal .modal-header small');
-            if (subtitle) {
-                subtitle.textContent = existingAlasan
-                    ? 'Edit alasan rekomendasi Anggota Khusus'
-                    : 'Jadikan anggota biasa sebagai Anggota Khusus';
+            // Layout & Accessibility based on status
+            // Editable if empty OR Rejected
+            const isReadonly = (rekStatus === 'Pending' || rekStatus === 'Approved');
+            alasanField.readOnly = isReadonly;
+            if (isReadonly) {
+                alasanField.classList.add('bg-white');
+                alasanField.classList.remove('bg-light');
+            } else {
+                alasanField.classList.remove('bg-white');
+                alasanField.classList.add('bg-light');
             }
+
+            // Buttons visibility
+            const btnSimpan = document.querySelector('button[onclick="saveRekomendasi()"]');
+            const btnApprove = document.getElementById('btn-rek-approve');
+            const btnReject = document.getElementById('btn-rek-reject');
+            
+            // Only show approve/reject for admins/kasektor on pending items in the 'khusus' tab
+            const canProcess = (window.USER_ROLE === 'admin' || window.USER_ROLE === 'kasektor') && (context === 'khusus');
+            
+            if (rekStatus === '' || rekStatus === 'Rejected') {
+                btnSimpan.classList.remove('d-none');
+                if(btnApprove) btnApprove.classList.add('d-none');
+                if(btnReject) btnReject.classList.add('d-none');
+            } else if (rekStatus === 'Pending') {
+                btnSimpan.classList.add('d-none');
+                if (canProcess) {
+                    if(btnApprove) btnApprove.classList.remove('d-none');
+                    if(btnReject) btnReject.classList.remove('d-none');
+                }
+            } else {
+                // Approved
+                btnSimpan.classList.add('d-none');
+                if(btnApprove) btnApprove.classList.add('d-none');
+                if(btnReject) btnReject.classList.add('d-none');
+            }
+
+            // Update modal subtitle
+            const subtitle = document.querySelector('#rekomendasiModal small');
+            if (subtitle) {
+                if (rekStatus === 'Approved') subtitle.textContent = 'Status: Sudah Menjadi Anggota Penuh';
+                else if (rekStatus === 'Pending') subtitle.textContent = 'Status: Menunggu Ajuan';
+                else if (rekStatus === 'Rejected') subtitle.textContent = 'Status: Ajuan Ditolak (Silakan ajukan ulang)';
+                else subtitle.textContent = 'Jadikan anggota biasa sebagai Anggota Penuh';
+            }
+
             const modal = new bootstrap.Modal(document.getElementById('rekomendasiModal'));
             modal.show();
+        }
 
+        async function processRekomendasi(status) {
+            const reg = document.getElementById('rek-reg-number').value;
+            const confirmMsg = status === 'Approved' ? 'Setujui anggota ini menjadi Anggota Penuh?' : 'Tolak ajuan anggota ini?';
+            if (!confirm(confirmMsg)) return;
+
+            try {
+                const formData = new FormData();
+                formData.append('reg_number', reg);
+                formData.append('rekomendasi_status', status);
+                if (status === 'Approved') {
+                    formData.append('member_type', 'Khusus');
+                } else {
+                    // Rejection: reset to Biasa and clear recommendation data implicitly via Rejected status
+                    formData.append('member_type', 'Biasa');
+                }
+
+                const resp = await fetch('update_member.php', { method: 'POST', body: formData });
+                const result = await resp.json();
+
+                bootstrap.Modal.getInstance(document.getElementById('rekomendasiModal')).hide();
+
+                if (result.status === 'success') {
+                    const msg = status === 'Approved' ? 'Anggota berhasil disetujui!' : 'Ajuan berhasil ditolak.';
+                    showToast(msg, 'success');
+                    await refreshMembers();
+                } else {
+                    showToast(result.message || 'Gagal memproses rekomendasi.', 'error');
+                }
+            } catch (err) {
+                showToast('Gagal menghubungi server.', 'error');
+            }
         }
 
         async function saveRekomendasi() {
@@ -1897,19 +2052,18 @@ $userSector = $_SESSION['user_sector'] ?? '';
             try {
                 const formData = new FormData();
                 formData.append('reg_number', reg);
-                formData.append('member_type', 'Khusus');
                 formData.append('rekomendasi_alasan', alasan);
+                formData.append('rekomendasi_status', 'Pending'); // Initial submission
 
                 const resp = await fetch('update_member.php', { method: 'POST', body: formData });
                 const result = await resp.json();
 
-                bootstrap.Modal.getInstance(document.getElementById('rekomendasiModal')).hide();
-
                 if (result.status === 'success') {
-                    showToast('Anggota berhasil dijadikan Anggota Khusus!', 'success', 'Rekomendasi Berhasil');
+                    bootstrap.Modal.getInstance(document.getElementById('rekomendasiModal')).hide();
+                    showToast('Ajuan berhasil dikirim! Menunggu persetujuan.', 'success');
                     await refreshMembers();
                 } else {
-                    showToast(result.message || 'Gagal menyimpan rekomendasi.', 'error', 'Gagal');
+                    showToast(result.message || 'Gagal menyimpan rekomendasi.', 'error');
                 }
             } catch (err) {
                 showToast('Gagal menghubungi server.', 'error');
@@ -1927,7 +2081,10 @@ $userSector = $_SESSION['user_sector'] ?? '';
             const kObj = kelurahanData.find(k => (k.polsek_id === member.sector || k.polsek_id.startsWith(member.sector + '-')) && k.kode === member.subsector);
             const sectorName = pObj ? pObj.nama : (member.sector || '-');
             const subsectorName = kObj ? kObj.nama : (member.subsector || '-');
-            const isKhusus = (member.member_type || '') === 'Khusus';
+            const isKhusus = (member.member_type || '') === 'Khusus' && (member.rekomendasi_status === 'Approved');
+            
+            // Note: Pending members in "Anggota Penuh" tab will print the "Biasa" card design automatically
+            // because isKhusus will be false. No warning needed here anymore.
             const baseUrl = window.location.href.replace('admin.php', '').replace(/\?.*$/, '');
             const photoSrc = member.photo_path || member.profile_path || 'assets/img/avatar-placeholder.png';
             const fullPhotoSrc = baseUrl + photoSrc.replace(/\\/g, '/');
@@ -2185,10 +2342,10 @@ $userSector = $_SESSION['user_sector'] ?? '';
                             </td>
                             <td class="d-none d-sm-table-cell"><span class="badge bg-light text-dark">${row.gender === 'Laki-laki' ? 'L' : (row.gender === 'Perempuan' ? 'P' : '-')}</span></td>
                             <td class="small d-none d-md-table-cell">Sektor ${row.sector}</td>
-                            <td class="text-end">
-                                <div class="btn-group btn-group-sm rounded-pill shadow-sm">
-                                    <button onclick="restoreMember('${row.reg_number}')" class="btn btn-success px-2 px-sm-3">Pulihkan</button>
-                                    <button onclick="permanentDelete('${row.reg_number}')" class="btn btn-outline-danger px-2 px-sm-3">Hapus</button>
+                            <td class="text-end" style="width: 1%;">
+                                <div class="action-btns">
+                                    <button onclick="restoreMember('${row.reg_number}')" class="btn btn-success btn-action-text">Pulihkan</button>
+                                    <button onclick="permanentDelete('${row.reg_number}')" class="btn btn-outline-danger btn-action-text">Hapus</button>
                                 </div>
                             </td>
                         </tr>
@@ -2409,7 +2566,20 @@ $userSector = $_SESSION['user_sector'] ?? '';
                                             <tbody>
                                                 ${val.map((item, i) => `
                                                     <tr>
-                                                        ${vKeys.map(k => `<td><div class="text-truncate" style="max-width:200px;">${item[k] || ''}</div></td>`).join('')}
+                                                        ${vKeys.map(k => {
+                                                            if (k === 'image') {
+                                                                return `<td>
+                                                                    <div class="d-flex align-items-center gap-2">
+                                                                        <img src="${item[k] || 'assets/user.png'}?v=${Date.now()}" class="cms-thumb shadow-sm" onerror="this.src='assets/user.png'">
+                                                                        <label class="btn btn-sm btn-light rounded-pill px-2" title="Ganti foto">
+                                                                            <i class="fas fa-upload fa-xs"></i>
+                                                                            <input type="file" class="d-none" accept="image/*" onchange="handleCMSImageUpload(this, '${window._currentCmsType || 'structure'}', '${dataPath}', ${i}, false, '${k}')">
+                                                                        </label>
+                                                                    </div>
+                                                                </td>`;
+                                                            }
+                                                            return `<td><div class="text-truncate" style="max-width:200px;">${item[k] || ''}</div></td>`;
+                                                        }).join('')}
                                                         <td class="text-end px-3">
                                                             <div class="d-flex justify-content-end gap-2">
                                                                 <button type="button" class="cms-action-btn edit" onclick="editCmsItem('${window._currentCmsType || 'hero'}', '${dataPath}', ${i})"><i class="fas fa-edit"></i></button>
@@ -2426,9 +2596,9 @@ $userSector = $_SESSION['user_sector'] ?? '';
                                             const isImgArr = (key === 'images' || key === 'partners');
                                             if (isImgArr) {
                                                 return `
-                                                <div class="col-md-4 col-sm-6">
+                                                <div class="${key === 'partners' ? 'col-md-2 col-sm-3 col-6' : 'col-md-4 col-sm-6'}">
                                                     <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white position-relative" style="aspect-ratio:16/10;">
-                                                        <img src="${(item || '').toString()}?v=${Date.now()}" class="w-100 h-100 object-fit-cover" onerror="this.src='assets/image.png'">
+                                                        <img src="${(item || '').toString()}?v=${Date.now()}" class="w-100 h-100 ${key === 'partners' ? 'object-fit-contain p-2' : 'object-fit-cover'}" onerror="this.src='assets/image.png'">
                                                         <input type="text" class="d-none" data-path="${dataPath}" data-index="${i}" value="${(item || '').toString().replace(/"/g, '&quot;')}">
                                                         <div class="position-absolute top-0 end-0 m-2 d-flex gap-1">
                                                             <label class="btn btn-sm btn-light rounded-pill px-2 shadow-sm" title="Ganti gambar">
@@ -2462,7 +2632,7 @@ $userSector = $_SESSION['user_sector'] ?? '';
                             </div>
                         `;
                     } else {
-                        const isRich = (key.includes('content') || key.includes('description') || key === 'full' || key.includes('news')) && (window._currentCmsType !== 'hero');
+                        const isRich = key === 'welcome_text' || ((key.includes('content') || key.includes('description') || key === 'full' || key.includes('news')) && (window._currentCmsType !== 'hero'));
                         const isLarge = isRich || (val || "").toString().length > 100 || key === 'lead_text' || key === 'title_primary';
                         const colClass = (path.length > 0 || key === 'title_primary' || key === 'lead_text' || key === 'video_link' || key === 'welcome_text') ? "col-12" : "col-md-6";
                         const isImage = key.toLowerCase().includes('image') || (val || "").toString().includes('assets/');
@@ -2535,8 +2705,7 @@ $userSector = $_SESSION['user_sector'] ?? '';
                             <div class="d-flex justify-content-between align-items-center mb-4">
                                 <div><h2 class="fw-bold mb-0 text-dark">Statistik Utama</h2><p class="text-muted mb-0 small">Kelola angka statistik yang tampil di website.</p></div>
                                 <div class="d-flex gap-2">
-                                    <button class="btn btn-dark rounded-pill px-4" onclick="window._saveStats()"><i class="fas fa-save me-2"></i>Simpan Perubahan</button>
-                                    <button class="btn text-white rounded-pill px-4" style="background:#8b5cf6;" onclick="window._openStatsModal()"><i class="fas fa-plus me-2"></i>Tambah Statistik</button>
+                                    <button type="button" class="btn text-white rounded-pill px-4" style="background:#8b5cf6;" onclick="window._openStatsModal()"><i class="fas fa-plus me-2"></i>Tambah Statistik</button>
                                 </div>
                             </div>
                             <div class="cms-table-container">
@@ -2558,8 +2727,8 @@ $userSector = $_SESSION['user_sector'] ?? '';
                                             <td><span class="badge bg-dark rounded-pill px-3 py-1">${item.number || '—'}</span></td>
                                             <td class="text-end">
                                                 <div class="d-flex gap-2 justify-content-end">
-                                                    <button class="cms-action-btn edit" onclick="window._openStatsModal(${i})"><i class="fas fa-edit"></i></button>
-                                                    <button class="cms-action-btn delete" onclick="window._deleteStats(${i})"><i class="fas fa-trash-alt"></i></button>
+                                                    <button type="button" class="cms-action-btn edit" onclick="window._openStatsModal(${i})"><i class="fas fa-edit"></i></button>
+                                                    <button type="button" class="cms-action-btn delete" onclick="window._deleteStats(${i})"><i class="fas fa-trash-alt"></i></button>
                                                 </div>
                                             </td>
                                         </tr>`).join('')}
@@ -2573,7 +2742,13 @@ $userSector = $_SESSION['user_sector'] ?? '';
                         const res = await saveContent('stats', window._statsData);
                         if (res?.status === 'success') showToast('Statistik Utama diperbarui!');
                     };
-                    window._deleteStats = (i) => { if(confirm('Hapus statistik ini?')) { window._statsData.splice(i,1); window._renderStats(); } };
+                    window._deleteStats = async (i) => { 
+                        if(confirm('Hapus statistik ini?')) { 
+                            window._statsData.splice(i,1); 
+                            await window._saveStats(); 
+                            window._renderStats(); 
+                        } 
+                    };
                     window._openStatsModal = (i = -1) => {
                         const m = document.getElementById('statsModal');
                         const isEdit = i >= 0;
@@ -2598,6 +2773,7 @@ $userSector = $_SESSION['user_sector'] ?? '';
                         if (!item.label.trim()) { alert('Label tidak boleh kosong'); return; }
                         if (idx >= 0) window._statsData[idx] = item; else window._statsData.push(item);
                         bootstrap.Modal.getInstance(m).hide();
+                        window._saveStats();
                         window._renderStats();
                     };
 
@@ -2616,8 +2792,7 @@ $userSector = $_SESSION['user_sector'] ?? '';
                             <div class="d-flex justify-content-between align-items-center mb-4">
                                 <div><h2 class="fw-bold mb-0 text-dark">Berita &amp; Artikel</h2><p class="text-muted mb-0 small">Kelola daftar berita dan artikel.</p></div>
                                 <div class="d-flex gap-2">
-                                    <button class="btn btn-dark rounded-pill px-4" onclick="window._saveNews()"><i class="fas fa-save me-2"></i>Simpan Perubahan</button>
-                                    <button class="btn text-white rounded-pill px-4" style="background:#10b981;" onclick="window._openNewsModal()"><i class="fas fa-plus me-2"></i>Tambah Berita</button>
+                                    <button type="button" class="btn text-white rounded-pill px-4" style="background:#10b981;" onclick="window._openNewsModal()"><i class="fas fa-plus me-2"></i>Tambah Berita</button>
                                 </div>
                             </div>
                             <div class="cms-table-container">
@@ -2637,8 +2812,8 @@ $userSector = $_SESSION['user_sector'] ?? '';
                                             <td class="d-none d-md-table-cell"><span class="badge bg-light text-dark rounded-pill px-3 py-1">${item.tag || '—'}</span></td>
                                             <td class="text-end">
                                                 <div class="d-flex gap-2 justify-content-end">
-                                                    <button class="cms-action-btn edit" onclick="window._openNewsModal(${i})"><i class="fas fa-edit"></i></button>
-                                                    <button class="cms-action-btn delete" onclick="window._deleteNews(${i})"><i class="fas fa-trash-alt"></i></button>
+                                                    <button type="button" class="cms-action-btn edit" onclick="window._openNewsModal(${i})"><i class="fas fa-edit"></i></button>
+                                                    <button type="button" class="cms-action-btn delete" onclick="window._deleteNews(${i})"><i class="fas fa-trash-alt"></i></button>
                                                 </div>
                                             </td>
                                         </tr>`).join('')}
@@ -2652,7 +2827,13 @@ $userSector = $_SESSION['user_sector'] ?? '';
                         const res = await saveContent('news', window._newsData);
                         if (res?.status === 'success') showToast('Berita & Artikel diperbarui!');
                     };
-                    window._deleteNews = (i) => { if(confirm('Hapus berita ini?')) { window._newsData.splice(i,1); window._renderNews(); } };
+                    window._deleteNews = async (i) => { 
+                        if(confirm('Hapus berita ini?')) { 
+                            window._newsData.splice(i,1); 
+                            await window._saveNews();
+                            window._renderNews(); 
+                        } 
+                    };
                     window._openNewsModal = (i = -1) => {
                         const m = document.getElementById('newsModal');
                         const isEdit = i >= 0;
@@ -2680,6 +2861,7 @@ $userSector = $_SESSION['user_sector'] ?? '';
                         if (!item.title.trim()) { alert('Judul tidak boleh kosong'); return; }
                         if (idx >= 0) window._newsData[idx] = item; else window._newsData.push(item);
                         bootstrap.Modal.getInstance(m).hide();
+                        window._saveNews();
                         window._renderNews();
                     };
 
@@ -2742,8 +2924,7 @@ $userSector = $_SESSION['user_sector'] ?? '';
                             <div class="d-flex justify-content-between align-items-center mb-4">
                                 <div><h2 class="fw-bold mb-0 text-dark">Jadwal Agenda</h2><p class="text-muted mb-0 small">Kelola daftar agenda kegiatan.</p></div>
                                 <div class="d-flex gap-2">
-                                    <button class="btn btn-dark rounded-pill px-4" onclick="window._saveJadwal()"><i class="fas fa-save me-2"></i>Simpan</button>
-                                    <button class="btn text-white rounded-pill px-4" style="background:#0d9488;" onclick="window._openJadwalModal()"><i class="fas fa-plus me-2"></i>Tambah</button>
+                                    <button type="button" class="btn text-white rounded-pill px-4" style="background:#0d9488;" onclick="window._openJadwalModal()"><i class="fas fa-plus me-2"></i>Tambah</button>
                                 </div>
                             </div>
                             <div class="row g-3">
@@ -2770,7 +2951,13 @@ $userSector = $_SESSION['user_sector'] ?? '';
                         const res = await saveContent('jadwal_kegiatan', window._jadwalData);
                         if (res?.status === 'success') showToast('Jadwal Agenda diperbarui!');
                     };
-                    window._deleteJadwal = (i) => { if(confirm('Hapus?')) { window._jadwalData.splice(i,1); window._renderJadwal(); } };
+                    window._deleteJadwal = async (i) => { 
+                        if(confirm('Hapus?')) { 
+                            window._jadwalData.splice(i,1); 
+                            await window._saveJadwal();
+                            window._renderJadwal(); 
+                        } 
+                    };
                     window._openJadwalModal = () => {
                         const m = document.getElementById('jadwalAgendaModal');
                         m.querySelector('#jadwal-edit-index').value = -1;
@@ -2789,6 +2976,7 @@ $userSector = $_SESSION['user_sector'] ?? '';
                         };
                         if (idx >= 0) window._jadwalData[idx] = data; else window._jadwalData.push(data);
                         bootstrap.Modal.getInstance(m).hide();
+                        window._saveJadwal();
                         window._renderJadwal();
                     };
                     window._editJadwal = (i) => {
@@ -2818,8 +3006,7 @@ $userSector = $_SESSION['user_sector'] ?? '';
                             <div class="d-flex justify-content-between align-items-center mb-4">
                                 <div><h2 class="fw-bold mb-0 text-dark">Tanya Jawab (FAQ)</h2><p class="text-muted mb-0 small">Kelola daftar pertanyaan dan jawaban.</p></div>
                                 <div class="d-flex gap-2">
-                                    <button class="btn btn-dark rounded-pill px-4" onclick="window._saveFAQ()"><i class="fas fa-save me-2"></i>Simpan Perubahan</button>
-                                    <button class="btn text-white rounded-pill px-4" style="background:#3b82f6;" onclick="window._openFAQModal()"><i class="fas fa-plus me-2"></i>Tambah FAQ</button>
+                                    <button type="button" class="btn text-white rounded-pill px-4" style="background:#3b82f6;" onclick="window._openFAQModal()"><i class="fas fa-plus me-2"></i>Tambah FAQ</button>
                                 </div>
                             </div>
                             <div class="cms-table-container">
@@ -2837,8 +3024,8 @@ $userSector = $_SESSION['user_sector'] ?? '';
                                             <td class="fw-medium">${faq.question || '—'}</td>
                                             <td class="text-end">
                                                 <div class="d-flex gap-2 justify-content-end">
-                                                    <button class="cms-action-btn edit" onclick="window._openFAQModal(${i})"><i class="fas fa-edit"></i></button>
-                                                    <button class="cms-action-btn delete" onclick="window._deleteFAQ(${i})"><i class="fas fa-trash-alt"></i></button>
+                                                    <button type="button" class="cms-action-btn edit" onclick="window._openFAQModal(${i})"><i class="fas fa-edit"></i></button>
+                                                    <button type="button" class="cms-action-btn delete" onclick="window._deleteFAQ(${i})"><i class="fas fa-trash-alt"></i></button>
                                                 </div>
                                             </td>
                                         </tr>`).join('')}
@@ -2852,7 +3039,13 @@ $userSector = $_SESSION['user_sector'] ?? '';
                         const res = await saveContent('faq', window._faqData);
                         if (res?.status === 'success') showToast('FAQ diperbarui!');
                     };
-                    window._deleteFAQ = (i) => { if(confirm('Hapus FAQ ini?')) { window._faqData.splice(i,1); window._renderFAQ(); } };
+                    window._deleteFAQ = async (i) => { 
+                        if(confirm('Hapus FAQ ini?')) { 
+                            window._faqData.splice(i,1); 
+                            await window._saveFAQ();
+                            window._renderFAQ(); 
+                        } 
+                    };
                     window._openFAQModal = (i = -1) => {
                         const m = document.getElementById('faqModal');
                         const isEdit = i >= 0;
@@ -2879,6 +3072,7 @@ $userSector = $_SESSION['user_sector'] ?? '';
                         
                         if (idx >= 0) window._faqData[idx] = data; else window._faqData.push(data);
                         bootstrap.Modal.getInstance(m).hide();
+                        window._saveFAQ();
                         window._renderFAQ();
                     };
 
@@ -2898,14 +3092,9 @@ $userSector = $_SESSION['user_sector'] ?? '';
                 let html = `
                     <div class="cms-animate-content">
                         <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-4 mb-4 cms-header-spacer">
-                            <div class="pe-sm-5">
+                            <div class="pe-sm-5 text-center text-sm-start w-100">
                                 <h2 class="fw-bold mb-0 text-dark cms-section-title" style="letter-spacing:-0.02em;">Manajemen ${getLabel(type)}</h2>
-                                <p class="text-muted mb-0 cms-section-subtitle">Kelola konten bagian ini dengan efisien.</p>
-                            </div>
-                            <div class="d-flex w-100 w-sm-auto">
-                                <button class="btn btn-dark rounded-pill px-4 fw-bold shadow-sm py-2 px-sm-4" onclick="saveCMS('${type}')">
-                                    <i class="fas fa-save me-2"></i> Simpan Perubahan
-                                </button>
+                                <p class="text-muted mb-0 cms-section-subtitle">Data disimpan secara otomatis saat Anda melakukan perubahan.</p>
                             </div>
                         </div>
                         <form id="cms-form-${type}" class="cms-premium-form">
@@ -2922,7 +3111,25 @@ $userSector = $_SESSION['user_sector'] ?? '';
                 $(`#cms-form-${type} .summernote`).summernote({
                     placeholder: 'Ketik konten di sini...', tabsize: 2, height: 150,
                     toolbar: [['style', ['bold', 'italic', 'underline', 'clear']], ['para', ['ul', 'ol', 'paragraph']], ['view', ['codeview']]],
-                    callbacks: { onChange: function(contents) { $(this).val(contents); } }
+                    callbacks: { 
+                        onChange: function(contents) { 
+                            $(this).val(contents);
+                            clearTimeout(window._cmsAutoSaveTimer);
+                            window._cmsAutoSaveTimer = setTimeout(() => saveCMS(type, true), 1000);
+                        } 
+                    }
+                });
+
+                // Auto-save on input or change
+                const form = document.getElementById(`cms-form-${type}`);
+                form.addEventListener('input', (e) => {
+                    if (e.target.classList.contains('summernote')) return; 
+                    clearTimeout(window._cmsAutoSaveTimer);
+                    window._cmsAutoSaveTimer = setTimeout(() => saveCMS(type, true), 800);
+                });
+                form.addEventListener('change', () => {
+                    clearTimeout(window._cmsAutoSaveTimer);
+                    saveCMS(type, true);
                 });
 
             } catch (err) {
@@ -2931,13 +3138,26 @@ $userSector = $_SESSION['user_sector'] ?? '';
             }
         }
 
-        async function saveCMS(type) {
+        async function saveCMS(type, isAuto = false) {
             const form = document.getElementById(`cms-form-${type}`);
-            const saveBtn = form.closest('.tab-pane').querySelector('button[onclick^="saveCMS"]');
+            if (!form) return;
+            const saveBtn = form.closest('.tab-pane')?.querySelector('button[onclick^="saveCMS"]');
             
-            const originalBtnHtml = saveBtn.innerHTML;
-            saveBtn.disabled = true;
-            saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Menyimpan...';
+            let originalBtnHtml = "";
+            if (saveBtn) {
+                originalBtnHtml = saveBtn.innerHTML;
+                saveBtn.disabled = true;
+                saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Menyimpan...';
+            }
+            
+            if (isAuto) {
+                const toast = document.createElement('div');
+                toast.className = 'position-fixed bottom-0 end-0 p-3';
+                toast.style.zIndex = '1060';
+                toast.innerHTML = `<div class="bg-dark text-white rounded-pill px-3 py-1 small shadow-lg animate-up"><i class="fas fa-sync-alt fa-spin me-2"></i>Auto-saving...</div>`;
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 1000);
+            }
 
             try {
                 const resp = await fetch(`data/${type}.json?v=${Date.now()}`);
@@ -2983,7 +3203,7 @@ $userSector = $_SESSION['user_sector'] ?? '';
             }
         }
 
-        async function handleCMSImageUpload(input, type, path, index = null, reRender = false) {
+        async function handleCMSImageUpload(input, type, path, index = null, reRender = false, subKey = null) {
             if (!input.files || !input.files[0]) return;
 
             const file = input.files[0];
@@ -3004,7 +3224,21 @@ $userSector = $_SESSION['user_sector'] ?? '';
                 const result = await resp.json();
                 
                 if (result.status === 'success') {
-                    if (reRender) {
+                    if (subKey) {
+                        // Object array item: update the img in the table row directly, then save
+                        const row = input.closest('tr');
+                        const img = row ? row.querySelector('img.cms-thumb') : null;
+                        if (img) img.src = result.path + '?v=' + Date.now();
+                        // Push new path into the in-memory data and save
+                        const cmsResp = await fetch(`data/${type}.json?v=${Date.now()}`);
+                        const cmsData = await cmsResp.json();
+                        const keys = path ? path.split('.').filter(k => k) : [];
+                        let target = cmsData;
+                        for (const k of keys) target = target[k];
+                        if (Array.isArray(target) && target[index]) target[index][subKey] = result.path;
+                        await saveContent(type, cmsData);
+                        showToast('Foto diperbarui!');
+                    } else if (reRender) {
                         // For image array cards: find hidden input within the same card
                         const card = input.closest('.card, .col-md-4, .col-sm-6');
                         const hiddenInput = card ? card.querySelector(`input[data-path="${path}"][data-index="${index}"]`) : null;
@@ -3372,24 +3606,70 @@ $userSector = $_SESSION['user_sector'] ?? '';
             }
         });
 
-        // Auto-load Hero Section on first open
+        // Auto-load Hero Section on first open and Populate Mobile CMS Menu
         window.addEventListener('DOMContentLoaded', () => {
             if (window.USER_ROLE === 'admin') {
                 loadCMS('hero');
+
+                // Populate Mobile CMS Menu from Desktop Pills
+                const cmsPills = document.querySelectorAll('#cms-pills-tab .nav-link');
+                const mobileCmsNav = document.getElementById('mobile-cms-nav-list');
+                if (cmsPills.length > 0 && mobileCmsNav) {
+                    mobileCmsNav.innerHTML = '';
+                    cmsPills.forEach(pill => {
+                        const link = document.createElement('a');
+                        link.href = '#';
+                        link.className = 'mobile-nav-item' + (pill.classList.contains('active') ? ' active' : '');
+                        
+                        const icon = pill.querySelector('i')?.cloneNode(true);
+                        const text = document.createTextNode(' ' + pill.innerText.trim());
+                        
+                        if (icon) link.appendChild(icon);
+                        link.appendChild(text);
+                        
+                        link.onclick = (e) => {
+                            e.preventDefault();
+                            pill.click();
+                            const offcanvasEl = document.getElementById('offcanvasCmsMenu');
+                            if (offcanvasEl) {
+                                const offcanvas = bootstrap.Offcanvas.getInstance(offcanvasEl);
+                                if (offcanvas) offcanvas.hide();
+                            }
+                        };
+                        mobileCmsNav.appendChild(link);
+                    });
+                }
             } else {
-                // For Kasektor, hide admin tabs and default to member list
-                const adminOnlyTabs = ['cms-tab', 'kasektor-tab', 'trash-tab'];
+                // For Kasektor, hide specific admin tabs but ALLOW content management
+                const adminOnlyTabs = ['kasektor-tab', 'trash-tab'];
                 adminOnlyTabs.forEach(id => {
                     const el = document.getElementById(id);
                     if (el) el.parentElement.style.display = 'none';
+                });
+
+                // Update CMS tab click for Kasektor to default to 'news'
+                const cmsTab = document.getElementById('cms-tab');
+                if (cmsTab) {
+                    cmsTab.setAttribute('onclick', "loadCMS('news')");
+                }
+
+                // Filter CMS pills for Kasektor
+                const cmsPills = document.querySelectorAll('#cms-pills-tab .nav-link');
+                cmsPills.forEach(pill => {
+                    const text = pill.innerText.toLowerCase();
+                    const allowed = ['berita', 'galeri', 'jadwal'];
+                    const isAllowed = allowed.some(a => text.includes(a));
+                    if (!isAllowed) {
+                        pill.style.display = 'none';
+                    }
                 });
 
                 // Hide mobile counterparts
                 const mobileNavs = document.querySelectorAll('.mobile-nav-item, .mobile-bottom-item');
                 mobileNavs.forEach(nav => {
                     const text = nav.innerText.toLowerCase();
-                    if (text.includes('konten') || text.includes('kasektor') || text.includes('arsip') || text.includes('keluar')) {
-                        // Note: 'Arsip' and 'Arsip Keluar' are matched
+                    // ALLOW 'konten' for Kasektor
+                    if (text.includes('kasektor') || text.includes('arsip') || text.includes('keluar')) {
                         if (!text.includes('keluar sistem')) { // Keep logout
                              nav.style.display = 'none';
                         }
@@ -3465,8 +3745,8 @@ $userSector = $_SESSION['user_sector'] ?? '';
                         <td><div class="fw-bold fs-7" style="line-height:1.2;">${k.name}</div><div class="text-muted" style="font-size: 10px;">${k.password}</div></td>
                         <td class="small">${sectorName}</td>
                         <td class="text-center">${ratingHtml}</td>
-                        <td class="text-end">
-                            <div class="d-flex justify-content-end gap-1">
+                        <td class="text-end" style="width: 1%;">
+                            <div class="action-btns">
                                 <button class="btn btn-info btn-action-text text-white" onclick="openPenilaianKasektorModal(${i})">NILAI</button>
                                 <button class="btn btn-dark btn-action-text" onclick="openKasektorModal(${i})">EDIT</button>
                                 <button class="btn btn-outline-danger btn-action-text" onclick="deleteKasektor(${i})">HAPUS</button>
@@ -3489,6 +3769,40 @@ $userSector = $_SESSION['user_sector'] ?? '';
             });
         }
 
+        function populateKasektorMemberDropdown(currentName = '') {
+            const select = document.getElementById('kasektor-name');
+            if (!select) return;
+            
+            select.innerHTML = '<option value="">Pilih Anggota Penuh...</option>';
+            
+            // Filter members who are "Khusus" (Anggota Penuh) and Approved
+            const fullMembers = allMembersData.filter(m => 
+                (m.member_type === 'Khusus') && (m.rekomendasi_status === 'Approved')
+            );
+
+            // Sort by name
+            fullMembers.sort((a, b) => a.full_name.localeCompare(b.full_name));
+
+            const addedNames = new Set();
+            
+            // Add current name if it's not in the list (for legacy support or if member was deleted)
+            if (currentName && !fullMembers.some(m => m.full_name === currentName)) {
+                const opt = document.createElement('option');
+                opt.value = currentName;
+                opt.textContent = currentName + ' (Anggota Tidak Ditemukan/Lama)';
+                select.appendChild(opt);
+                addedNames.add(currentName);
+            }
+
+            fullMembers.forEach(m => {
+                const opt = document.createElement('option');
+                opt.value = m.full_name;
+                opt.textContent = m.full_name;
+                select.appendChild(opt);
+                addedNames.add(m.full_name);
+            });
+        }
+
         function openKasektorModal(index = -1) {
             const m = document.getElementById('kasektorModal');
             document.getElementById('kasektor-index').value = index;
@@ -3496,12 +3810,14 @@ $userSector = $_SESSION['user_sector'] ?? '';
             if (index >= 0) {
                 const k = allKasektor[index];
                 document.getElementById('kasektorModalTitle').textContent = 'Edit Kasektor';
+                populateKasektorMemberDropdown(k.name);
                 document.getElementById('kasektor-name').value = k.name;
                 document.getElementById('kasektor-password').value = k.password;
                 document.getElementById('kasektor-sector').value = k.sector;
             } else {
                 document.getElementById('kasektorModalTitle').textContent = 'Tambah Kasektor';
                 document.getElementById('kasektorForm').reset();
+                populateKasektorMemberDropdown();
             }
             
             bootstrap.Modal.getOrCreateInstance(m).show();
@@ -3665,18 +3981,13 @@ $userSector = $_SESSION['user_sector'] ?? '';
     <div class="modal fade" id="rekomendasiModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
-                <div class="modal-header border-bottom py-3 px-4" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="bg-white bg-opacity-25 p-2 rounded-3">
-                            <i class="fas fa-star fs-5 text-white"></i>
-                        </div>
+                    <div class="modal-header border-0 text-white px-4 pt-4 pb-3" style="background:linear-gradient(135deg,#f59e0b,#d97706);">
                         <div>
-                            <h5 class="fw-bold mb-0 text-white">Rekomendasi Anggota Khusus</h5>
-                            <small class="text-white text-opacity-75">Jadikan anggota biasa sebagai Anggota Khusus</small>
+                            <h5 class="modal-title fw-bold mb-0" id="rek-modal-title"><i class="fas fa-star me-2"></i>Ajuan Anggota Penuh</h5>
+                            <small class="opacity-75">Jadikan anggota sebagai Anggota Penuh</small>
                         </div>
+                        <button type="button" class="btn-close btn-close-white ms-auto" data-bs-dismiss="modal"></button>
                     </div>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
                 <div class="modal-body p-4">
                     <input type="hidden" id="rek-reg-number">
                     <div class="mb-3">
@@ -3685,17 +3996,23 @@ $userSector = $_SESSION['user_sector'] ?? '';
                     </div>
                     <div class="alert alert-warning border-0 rounded-3 small">
                         <i class="fas fa-info-circle me-2"></i>
-                        Anggota yang direkomendasikan akan mendapatkan status <strong>Anggota Khusus</strong> dan akan ditandai dengan ikon bintang di daftar anggota.
-                    </div>
-                    <div class="mb-3">
-                        <label for="rek-alasan" class="form-label fw-semibold">Alasan Rekomendasi <span class="text-danger">*</span></label>
-                        <textarea id="rek-alasan" class="form-control border-0 bg-light rounded-3" rows="4" placeholder="Tuliskan alasan mengapa anggota ini layak mendapatkan status Anggota Khusus..."></textarea>
+                        <p class="text-muted small mb-4">
+                            Anggota yang diajukan akan mendapatkan status <strong>Anggota Penuh</strong> dan akan ditandai dengan ikon bintang di daftar anggota.
+                        </p>
+                        <label for="rek-alasan" class="form-label fw-semibold">Alasan Ajuan <span class="text-danger">*</span></label>
+                        <textarea id="rek-alasan" class="form-control border-0 bg-light rounded-3" rows="4" placeholder="Tuliskan alasan mengapa anggota ini layak mendapatkan status Anggota Penuh..."></textarea>
                     </div>
                 </div>
                 <div class="modal-footer border-top px-4 pb-4 pt-3 gap-2">
                     <button type="button" class="btn btn-light rounded-3 px-4" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-danger rounded-3 px-4 d-none" id="btn-rek-reject" onclick="processRekomendasi('Rejected')">
+                        <i class="fas fa-times me-2"></i>TOLAK
+                    </button>
+                    <button type="button" class="btn btn-success rounded-3 px-4 d-none" id="btn-rek-approve" onclick="processRekomendasi('Approved')">
+                        <i class="fas fa-check me-2"></i>TERIMA
+                    </button>
                     <button type="button" class="btn btn-warning rounded-3 px-5 fw-bold" onclick="saveRekomendasi()">
-                        <i class="fas fa-star me-2"></i>SIMPAN REKOMENDASI
+                        <i class="fas fa-star me-2"></i>SIMPAN AJUAN
                     </button>
                 </div>
             </div>
@@ -4061,8 +4378,11 @@ $userSector = $_SESSION['user_sector'] ?? '';
                     <form id="kasektorForm">
                         <input type="hidden" id="kasektor-index" value="-1">
                         <div class="mb-3">
-                            <label class="small fw-bold text-muted mb-1 text-uppercase">NAMA LENGKAP</label>
-                            <input type="text" id="kasektor-name" class="form-control bg-light border-0 rounded-3 px-3 py-2 fw-bold" placeholder="Nama Kasektor..." required>
+                            <label class="small fw-bold text-muted mb-1 text-uppercase">PILIH ANGGOTA PENUH</label>
+                            <select id="kasektor-name" class="form-select bg-light border-0 rounded-3 px-3 py-2 fw-bold" required>
+                                <option value="">Pilih Anggota...</option>
+                                <!-- Populated via JS -->
+                            </select>
                         </div>
                         <div class="mb-3">
                             <label class="small fw-bold text-muted mb-1 text-uppercase">PASSWORD</label>
