@@ -2422,14 +2422,32 @@ $userSector = $_SESSION['user_sector'] ?? '';
                                         </table>`;
                                     })() : `
                                     <div class="row g-3">
-                                        ${val.map((item, i) => `
+                                        ${val.map((item, i) => {
+                                            const isImgArr = (key === 'images' || key === 'partners');
+                                            if (isImgArr) {
+                                                return `
+                                                <div class="col-md-4 col-sm-6">
+                                                    <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white position-relative" style="aspect-ratio:16/10;">
+                                                        <img src="${(item || '').toString()}?v=${Date.now()}" class="w-100 h-100 object-fit-cover" onerror="this.src='assets/image.png'">
+                                                        <input type="text" class="d-none" data-path="${dataPath}" data-index="${i}" value="${(item || '').toString().replace(/"/g, '&quot;')}">
+                                                        <div class="position-absolute top-0 end-0 m-2 d-flex gap-1">
+                                                            <label class="btn btn-sm btn-light rounded-pill px-2 shadow-sm" title="Ganti gambar">
+                                                                <i class="fas fa-upload fa-xs"></i>
+                                                                <input type="file" class="d-none" accept="image/*" onchange="handleCMSImageUpload(this, '${window._currentCmsType || 'hero'}', '${dataPath}', ${i}, true)">
+                                                            </label>
+                                                            <button type="button" class="btn btn-sm btn-danger rounded-pill px-2 shadow-sm" title="Hapus" onclick="removeItem(event, '${window._currentCmsType || 'hero'}', '${dataPath}', ${i})"><i class="fas fa-times fa-xs"></i></button>
+                                                        </div>
+                                                    </div>
+                                                </div>`;
+                                            }
+                                            return `
                                             <div class="col-md-6">
                                                 <div class="card border-0 shadow-sm rounded-4 p-3 bg-white d-flex align-items-center gap-3">
                                                     <input type="text" class="form-control border-0 bg-light rounded-pill px-3" data-path="${dataPath}" data-index="${i}" value="${(item || '').toString().replace(/"/g, '&quot;')}">
                                                     <button type="button" class="btn btn-link text-danger p-0" onclick="removeItem(event, '${window._currentCmsType || 'hero'}', '${dataPath}', ${i})"><i class="fas fa-times"></i></button>
                                                 </div>
-                                            </div>
-                                        `).join('')}
+                                            </div>`;
+                                        }).join('')}
                                     </div>`}
                                 </div>
                             </div>
@@ -2504,6 +2522,177 @@ $userSector = $_SESSION['user_sector'] ?? '';
                         if (item.innerText.trim() === activePill?.innerText.trim()) item.classList.add('active');
                         else item.classList.remove('active');
                     });
+                }
+
+                // ── Special Case: Statistik Utama ────────────────
+                if (type === 'stats') {
+                    window._statsData = Array.isArray(data) ? data : [];
+
+                    window._renderStats = function() {
+                        const items = window._statsData;
+                        container.innerHTML = `
+                        <div class="cms-animate-content">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <div><h2 class="fw-bold mb-0 text-dark">Statistik Utama</h2><p class="text-muted mb-0 small">Kelola angka statistik yang tampil di website.</p></div>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-dark rounded-pill px-4" onclick="window._saveStats()"><i class="fas fa-save me-2"></i>Simpan Perubahan</button>
+                                    <button class="btn text-white rounded-pill px-4" style="background:#8b5cf6;" onclick="window._openStatsModal()"><i class="fas fa-plus me-2"></i>Tambah Statistik</button>
+                                </div>
+                            </div>
+                            <div class="cms-table-container">
+                                <table class="table cms-table align-middle border-0" style="min-width: unset;">
+                                    <thead>
+                                        <tr class="small text-uppercase fw-bold text-muted">
+                                            <th class="border-0">Icon</th>
+                                            <th class="border-0">Label</th>
+                                            <th class="border-0">Angka</th>
+                                            <th class="border-0 text-end">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${items.length === 0 ? `<tr><td colspan="4" class="text-center py-5">Belum ada statistik.</td></tr>` :
+                                        items.map((item, i) => `
+                                        <tr>
+                                            <td><i class="${item.icon || 'fas fa-chart-bar'} fa-lg text-primary"></i></td>
+                                            <td class="fw-medium">${item.label || '—'}</td>
+                                            <td><span class="badge bg-dark rounded-pill px-3 py-1">${item.number || '—'}</span></td>
+                                            <td class="text-end">
+                                                <div class="d-flex gap-2 justify-content-end">
+                                                    <button class="cms-action-btn edit" onclick="window._openStatsModal(${i})"><i class="fas fa-edit"></i></button>
+                                                    <button class="cms-action-btn delete" onclick="window._deleteStats(${i})"><i class="fas fa-trash-alt"></i></button>
+                                                </div>
+                                            </td>
+                                        </tr>`).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>`;
+                    };
+
+                    window._saveStats = async () => {
+                        const res = await saveContent('stats', window._statsData);
+                        if (res?.status === 'success') showToast('Statistik Utama diperbarui!');
+                    };
+                    window._deleteStats = (i) => { if(confirm('Hapus statistik ini?')) { window._statsData.splice(i,1); window._renderStats(); } };
+                    window._openStatsModal = (i = -1) => {
+                        const m = document.getElementById('statsModal');
+                        const isEdit = i >= 0;
+                        m.querySelector('#stats-modal-label').innerHTML = isEdit ? '<i class="fas fa-edit me-2"></i>Edit Statistik' : '<i class="fas fa-chart-bar me-2"></i>Tambah Statistik';
+                        m.querySelector('#stats-edit-index').value = i;
+                        const item = isEdit ? window._statsData[i] : {icon: 'fas fa-star', number: '', label: ''};
+                        m.querySelector('#stats-f-icon').value = item.icon || 'fas fa-star';
+                        m.querySelector('#stats-f-number').value = item.number || '';
+                        m.querySelector('#stats-f-label').value = item.label || '';
+                        // Preview icon
+                        m.querySelector('#stats-icon-preview').className = (item.icon || 'fas fa-star') + ' fa-2x text-primary';
+                        bootstrap.Modal.getOrCreateInstance(m).show();
+                    };
+                    window._submitStatsForm = () => {
+                        const m = document.getElementById('statsModal');
+                        const idx = parseInt(m.querySelector('#stats-edit-index').value);
+                        const item = {
+                            icon: m.querySelector('#stats-f-icon').value || 'fas fa-star',
+                            number: m.querySelector('#stats-f-number').value,
+                            label: m.querySelector('#stats-f-label').value
+                        };
+                        if (!item.label.trim()) { alert('Label tidak boleh kosong'); return; }
+                        if (idx >= 0) window._statsData[idx] = item; else window._statsData.push(item);
+                        bootstrap.Modal.getInstance(m).hide();
+                        window._renderStats();
+                    };
+
+                    window._renderStats();
+                    return;
+                }
+
+                // ── Special Case: Berita & Artikel ───────────────
+                if (type === 'news') {
+                    window._newsData = Array.isArray(data) ? data : [];
+
+                    window._renderNews = function() {
+                        const items = window._newsData;
+                        container.innerHTML = `
+                        <div class="cms-animate-content">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <div><h2 class="fw-bold mb-0 text-dark">Berita &amp; Artikel</h2><p class="text-muted mb-0 small">Kelola daftar berita dan artikel.</p></div>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-dark rounded-pill px-4" onclick="window._saveNews()"><i class="fas fa-save me-2"></i>Simpan Perubahan</button>
+                                    <button class="btn text-white rounded-pill px-4" style="background:#10b981;" onclick="window._openNewsModal()"><i class="fas fa-plus me-2"></i>Tambah Berita</button>
+                                </div>
+                            </div>
+                            <div class="cms-table-container">
+                                <table class="table cms-table align-middle border-0">
+                                    <thead>
+                                        <tr class="small text-uppercase fw-bold text-muted">
+                                            <th class="border-0">Judul</th>
+                                            <th class="border-0 d-none d-md-table-cell">Tag</th>
+                                            <th class="border-0 text-end">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${items.length === 0 ? `<tr><td colspan="3" class="text-center py-5">Belum ada berita.</td></tr>` :
+                                        items.map((item, i) => `
+                                        <tr>
+                                            <td class="fw-medium">${item.title || '—'}</td>
+                                            <td class="d-none d-md-table-cell"><span class="badge bg-light text-dark rounded-pill px-3 py-1">${item.tag || '—'}</span></td>
+                                            <td class="text-end">
+                                                <div class="d-flex gap-2 justify-content-end">
+                                                    <button class="cms-action-btn edit" onclick="window._openNewsModal(${i})"><i class="fas fa-edit"></i></button>
+                                                    <button class="cms-action-btn delete" onclick="window._deleteNews(${i})"><i class="fas fa-trash-alt"></i></button>
+                                                </div>
+                                            </td>
+                                        </tr>`).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>`;
+                    };
+
+                    window._saveNews = async () => {
+                        const res = await saveContent('news', window._newsData);
+                        if (res?.status === 'success') showToast('Berita & Artikel diperbarui!');
+                    };
+                    window._deleteNews = (i) => { if(confirm('Hapus berita ini?')) { window._newsData.splice(i,1); window._renderNews(); } };
+                    window._openNewsModal = (i = -1) => {
+                        const m = document.getElementById('newsModal');
+                        const isEdit = i >= 0;
+                        m.querySelector('#news-modal-title-label').innerHTML = isEdit ? '<i class="fas fa-edit me-2"></i>Edit Berita' : '<i class="fas fa-newspaper me-2"></i>Tambah Berita';
+                        m.querySelector('#news-edit-index').value = i;
+                        const item = isEdit ? window._newsData[i] : {tag:'', title:'', description:'', image:'', link:'#'};
+                        m.querySelector('#news-f-tag').value = item.tag || '';
+                        m.querySelector('#news-f-title').value = item.title || '';
+                        m.querySelector('#news-f-image').value = item.image || '';
+                        m.querySelector('#news-f-link').value = item.link || '#';
+                        $('#news-f-description').summernote('code', item.description || '');
+                        bootstrap.Modal.getOrCreateInstance(m).show();
+                    };
+                    window._submitNewsForm = () => {
+                        const m = document.getElementById('newsModal');
+                        const idx = parseInt(m.querySelector('#news-edit-index').value);
+                        const item = {
+                            id: idx >= 0 ? (window._newsData[idx].id || idx+1) : (window._newsData.length + 1),
+                            tag: m.querySelector('#news-f-tag').value,
+                            title: m.querySelector('#news-f-title').value,
+                            description: $('#news-f-description').summernote('code'),
+                            image: m.querySelector('#news-f-image').value,
+                            link: m.querySelector('#news-f-link').value || '#'
+                        };
+                        if (!item.title.trim()) { alert('Judul tidak boleh kosong'); return; }
+                        if (idx >= 0) window._newsData[idx] = item; else window._newsData.push(item);
+                        bootstrap.Modal.getInstance(m).hide();
+                        window._renderNews();
+                    };
+
+                    // Initialize Summernote in Modal if not already
+                    if (!$('#news-f-description').data('summernote')) {
+                        $('#news-f-description').summernote({
+                            placeholder: 'Ketik deskripsi berita...', tabsize: 2, height: 180,
+                            toolbar: [['style', ['bold', 'italic', 'underline', 'clear']], ['para', ['ul', 'ol', 'paragraph']], ['view', ['codeview']]]
+                        });
+                    }
+
+                    window._renderNews();
+                    return;
                 }
 
                 // ── Special Case: Jadwal Agenda ───────────────────
@@ -2618,6 +2807,93 @@ $userSector = $_SESSION['user_sector'] ?? '';
                     return;
                 }
 
+                // ── Special Case: Tanya Jawab (FAQ) ──────────────────
+                if (type === 'faq') {
+                    window._faqData = Array.isArray(data) ? data : [];
+                    
+                    window._renderFAQ = function() {
+                        const faqs = window._faqData;
+                        container.innerHTML = `
+                        <div class="cms-animate-content">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <div><h2 class="fw-bold mb-0 text-dark">Tanya Jawab (FAQ)</h2><p class="text-muted mb-0 small">Kelola daftar pertanyaan dan jawaban.</p></div>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-dark rounded-pill px-4" onclick="window._saveFAQ()"><i class="fas fa-save me-2"></i>Simpan Perubahan</button>
+                                    <button class="btn text-white rounded-pill px-4" style="background:#3b82f6;" onclick="window._openFAQModal()"><i class="fas fa-plus me-2"></i>Tambah FAQ</button>
+                                </div>
+                            </div>
+                            <div class="cms-table-container">
+                                <table class="table cms-table align-middle border-0" style="min-width: unset;">
+                                    <thead>
+                                        <tr class="small text-uppercase fw-bold text-muted">
+                                            <th class="border-0">Pertanyaan</th>
+                                            <th class="border-0 text-end">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${faqs.length === 0 ? `<tr><td colspan="2" class="text-center py-5">Belum ada FAQ.</td></tr>` :
+                                        faqs.map((faq, i) => `
+                                        <tr>
+                                            <td class="fw-medium">${faq.question || '—'}</td>
+                                            <td class="text-end">
+                                                <div class="d-flex gap-2 justify-content-end">
+                                                    <button class="cms-action-btn edit" onclick="window._openFAQModal(${i})"><i class="fas fa-edit"></i></button>
+                                                    <button class="cms-action-btn delete" onclick="window._deleteFAQ(${i})"><i class="fas fa-trash-alt"></i></button>
+                                                </div>
+                                            </td>
+                                        </tr>`).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>`;
+                    };
+
+                    window._saveFAQ = async () => {
+                        const res = await saveContent('faq', window._faqData);
+                        if (res?.status === 'success') showToast('FAQ diperbarui!');
+                    };
+                    window._deleteFAQ = (i) => { if(confirm('Hapus FAQ ini?')) { window._faqData.splice(i,1); window._renderFAQ(); } };
+                    window._openFAQModal = (i = -1) => {
+                        const m = document.getElementById('faqModal');
+                        const isEdit = i >= 0;
+                        m.querySelector('#faqModalLabel').innerHTML = isEdit ? '<i class="fas fa-edit me-2"></i>Edit FAQ' : '<i class="fas fa-question-circle me-2"></i>Tambah FAQ';
+                        m.querySelector('#faq-edit-index').value = i;
+                        
+                        const faq = isEdit ? window._faqData[i] : {question: '', answer: ''};
+                        m.querySelector('#faq-f-question').value = faq.question;
+                        
+                        // Set Summernote content
+                        $('#faq-f-answer').summernote('code', faq.answer);
+                        
+                        bootstrap.Modal.getOrCreateInstance(m).show();
+                    };
+                    window._submitFAQForm = () => {
+                        const m = document.getElementById('faqModal');
+                        const idx = parseInt(m.querySelector('#faq-edit-index').value);
+                        const data = {
+                            question: m.querySelector('#faq-f-question').value,
+                            answer: $('#faq-f-answer').summernote('code')
+                        };
+                        
+                        if (!data.question.trim()) { alert('Pertanyaan tidak boleh kosong'); return; }
+                        
+                        if (idx >= 0) window._faqData[idx] = data; else window._faqData.push(data);
+                        bootstrap.Modal.getInstance(m).hide();
+                        window._renderFAQ();
+                    };
+
+                    // Initialize Summernote in Modal if not already
+                    if (!$('#faq-f-answer').data('summernote')) {
+                        $('#faq-f-answer').summernote({
+                            placeholder: 'Ketik jawaban di sini...', tabsize: 2, height: 200,
+                            toolbar: [['style', ['bold', 'italic', 'underline', 'clear']], ['para', ['ul', 'ol', 'paragraph']], ['view', ['codeview']]]
+                        });
+                    }
+
+                    window._renderFAQ();
+                    return;
+                }
+
                 // ── Default CMS Case ──────────────────────────────
                 let html = `
                     <div class="cms-animate-content">
@@ -2707,7 +2983,7 @@ $userSector = $_SESSION['user_sector'] ?? '';
             }
         }
 
-        async function handleCMSImageUpload(input, type, path, index = null, subKey = null) {
+        async function handleCMSImageUpload(input, type, path, index = null, reRender = false) {
             if (!input.files || !input.files[0]) return;
 
             const file = input.files[0];
@@ -2716,30 +2992,41 @@ $userSector = $_SESSION['user_sector'] ?? '';
             formData.append('action', 'upload');
             formData.append('file', file);
 
-            const originalBtn = input.previousElementSibling;
-            const originalHtml = originalBtn.innerHTML;
-            originalBtn.disabled = true;
-            originalBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+            // The trigger element may be a <label> or a <button>
+            const triggerEl = input.closest('label') || input.previousElementSibling;
+            if (triggerEl) {
+                triggerEl.style.opacity = '0.5';
+                triggerEl.style.pointerEvents = 'none';
+            }
 
             try {
                 const resp = await fetch('update_content.php', { method: 'POST', body: formData });
                 const result = await resp.json();
                 
                 if (result.status === 'success') {
-                    // Update the value in current form view
-                    const container = input.closest('.cms-premium-form');
-                    let targetInput;
-                    if (index !== null) {
-                        if (subKey) targetInput = container.querySelector(`input[data-path="${path}"][data-index="${index}"][data-subkey="${subKey}"]`);
-                        else targetInput = container.querySelector(`input[data-path="${path}"][data-index="${index}"]`);
+                    if (reRender) {
+                        // For image array cards: find hidden input within the same card
+                        const card = input.closest('.card, .col-md-4, .col-sm-6');
+                        const hiddenInput = card ? card.querySelector(`input[data-path="${path}"][data-index="${index}"]`) : null;
+                        if (hiddenInput) {
+                            hiddenInput.value = result.path;
+                            // Update the visible image
+                            const img = card.querySelector('img');
+                            if (img) img.src = result.path + '?v=' + Date.now();
+                        }
                     } else {
-                        targetInput = container.querySelector(`input[data-path="${path}"]`);
-                    }
-
-                    if (targetInput) {
-                        targetInput.value = result.path;
-                        // Reload view to show new image (simpler than manual DOM update)
-                        await saveCMS(type); 
+                        // Legacy: find input in the CMS form
+                        const container = input.closest('.cms-premium-form');
+                        let targetInput;
+                        if (index !== null) {
+                            targetInput = container.querySelector(`input[data-path="${path}"][data-index="${index}"]`);
+                        } else {
+                            targetInput = container.querySelector(`input[data-path="${path}"]`);
+                        }
+                        if (targetInput) {
+                            targetInput.value = result.path;
+                            await saveCMS(type);
+                        }
                     }
                 } else {
                     showToast(result.message, 'error', 'Gagal Upload');
@@ -2747,8 +3034,10 @@ $userSector = $_SESSION['user_sector'] ?? '';
             } catch (err) {
                 showToast(err.message, 'error', 'Kesalahan Upload');
             } finally {
-                originalBtn.disabled = false;
-                originalBtn.innerHTML = originalHtml;
+                if (triggerEl) {
+                    triggerEl.style.opacity = '';
+                    triggerEl.style.pointerEvents = '';
+                }
             }
         }
 
@@ -3885,6 +4174,130 @@ $userSector = $_SESSION['user_sector'] ?? '';
                     <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Batal</button>
                     <button type="button" class="btn btn-primary rounded-pill px-4 fw-bold" onclick="savePenilaianKasektor()">
                         <i class="fas fa-save me-2"></i> Simpan Penilaian
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Modal -->
+    <div class="modal fade" id="statsModal" tabindex="-1" aria-hidden="true" style="z-index: 9999;">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 rounded-4 overflow-hidden shadow-lg">
+                <div class="modal-header border-0 text-white px-4 pt-4 pb-3" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed);">
+                    <div>
+                        <h5 class="modal-title fw-bold mb-0" id="stats-modal-label"><i class="fas fa-chart-bar me-2"></i>Tambah Statistik</h5>
+                        <small class="opacity-75">Isi detail angka statistik</small>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white ms-auto" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body px-4 pb-2 pt-4">
+                    <input type="hidden" id="stats-edit-index" value="-1">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label fw-semibold small">Icon (Font Awesome Class)</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white" style="min-width: 50px; justify-content: center;">
+                                    <i id="stats-icon-preview" class="fas fa-star fa-2x text-primary"></i>
+                                </span>
+                                <input type="text" id="stats-f-icon" class="form-control rounded-end-3" placeholder="cth: fas fa-users" oninput="document.getElementById('stats-icon-preview').className = this.value + ' fa-2x text-primary'">
+                            </div>
+                            <div class="form-text">Gunakan class Font Awesome, cth: <code>fas fa-users</code>, <code>fas fa-smile</code></div>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label fw-semibold small">Angka</label>
+                            <input type="text" id="stats-f-number" class="form-control rounded-3" placeholder="cth: 1234">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label fw-semibold small">Label</label>
+                            <input type="text" id="stats-f-label" class="form-control rounded-3" placeholder="cth: Anggota">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 px-4 pb-4 pt-2 gap-2">
+                    <button type="button" class="btn btn-outline-secondary rounded-3 px-4" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn fw-bold rounded-3 text-white px-4" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed);" onclick="window._submitStatsForm()">
+                        <i class="fas fa-check me-2"></i>Simpan Statistik
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- News Modal -->
+    <div class="modal fade" id="newsModal" tabindex="-1" aria-hidden="true" style="z-index: 9999;">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 rounded-4 overflow-hidden shadow-lg">
+                <div class="modal-header border-0 text-white px-4 pt-4 pb-3" style="background:linear-gradient(135deg,#10b981,#059669);">
+                    <div>
+                        <h5 class="modal-title fw-bold mb-0" id="news-modal-title-label"><i class="fas fa-newspaper me-2"></i>Tambah Berita</h5>
+                        <small class="opacity-75">Isi detail berita atau artikel</small>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white ms-auto" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body px-4 pb-2 pt-3">
+                    <input type="hidden" id="news-edit-index" value="-1">
+                    <div class="row g-3">
+                        <div class="col-12 col-sm-4">
+                            <label class="form-label fw-semibold small">Tag / Kategori</label>
+                            <input type="text" id="news-f-tag" class="form-control rounded-3" placeholder="cth: Kegiatan">
+                        </div>
+                        <div class="col-12 col-sm-8">
+                            <label class="form-label fw-semibold small">Judul</label>
+                            <input type="text" id="news-f-title" class="form-control rounded-3" placeholder="Judul berita...">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold small">Deskripsi</label>
+                            <textarea id="news-f-description" class="summernote"></textarea>
+                        </div>
+                        <div class="col-12 col-sm-8">
+                            <label class="form-label fw-semibold small">Path Gambar</label>
+                            <input type="text" id="news-f-image" class="form-control rounded-3" placeholder="cth: assets/kegiatan/giat.jpg">
+                        </div>
+                        <div class="col-12 col-sm-4">
+                            <label class="form-label fw-semibold small">Link URL</label>
+                            <input type="text" id="news-f-link" class="form-control rounded-3" placeholder="#" value="#">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 px-4 pb-4 pt-2 gap-2">
+                    <button type="button" class="btn btn-outline-secondary rounded-3 px-4" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn fw-bold rounded-3 text-white px-4" style="background:linear-gradient(135deg,#10b981,#059669);" onclick="window._submitNewsForm()">
+                        <i class="fas fa-check me-2"></i>Simpan Berita
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ Modal -->
+    <div class="modal fade" id="faqModal" tabindex="-1" aria-hidden="true" style="z-index: 9999;">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 rounded-4 overflow-hidden shadow-lg">
+                <div class="modal-header border-0 text-white px-4 pt-4 pb-3" style="background:linear-gradient(135deg,#3b82f6,#2563eb);">
+                    <div>
+                        <h5 class="modal-title fw-bold mb-0" id="faqModalLabel"><i class="fas fa-question-circle me-2"></i>Tambah FAQ</h5>
+                        <small class="opacity-75" id="faq-modal-subtitle">Isi detail pertanyaan dan jawaban</small>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white ms-auto" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body px-4 pb-2 pt-3">
+                    <input type="hidden" id="faq-edit-index" value="-1">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label fw-semibold small">Pertanyaan</label>
+                            <input type="text" id="faq-f-question" class="form-control rounded-3" placeholder="Masukkan pertanyaan...">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold small">Jawaban</label>
+                            <textarea id="faq-f-answer" class="summernote"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 px-4 pb-4 pt-2 gap-2">
+                    <button type="button" class="btn btn-outline-secondary rounded-3 px-4" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn fw-bold rounded-3 text-white px-4" style="background:linear-gradient(135deg,#3b82f6,#2563eb);" onclick="window._submitFAQForm()">
+                        <i class="fas fa-check me-2"></i>Simpan FAQ
                     </button>
                 </div>
             </div>
