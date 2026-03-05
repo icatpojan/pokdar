@@ -414,7 +414,6 @@ $userSector = $_SESSION['user_sector'] ?? '';
                     padding: 12px 20px !important;
                     max-width: none !important;
                     width: auto !important;
-                    display: flex !important;
                     flex-direction: row !important;
                     align-items: center !important;
                     justify-content: center !important;
@@ -832,8 +831,8 @@ $userSector = $_SESSION['user_sector'] ?? '';
                                             <th class="border-0 d-none d-md-table-cell">No Anggota</th>
                                             <th class="border-0">Nama Lengkap</th>
                                             <th class="border-0 d-none d-sm-table-cell">L/P</th>
-                                            <th class="border-0 d-none d-md-table-cell">Sektor</th>
-                                            <th class="border-0 d-none d-lg-table-cell">Telepon</th>
+                                            <th class="border-0">Telepon</th>
+                                            <th class="border-0">Lokasi</th>
                                             <th class="border-0">Status</th>
                                             <th class="border-0 text-end">Aksi</th>
                                         </tr>
@@ -1783,6 +1782,7 @@ $userSector = $_SESSION['user_sector'] ?? '';
                                 <div class="fw-bold text-uppercase">${row.full_name}</div>
                                 <div class="d-md-none small text-muted" style="font-size:10px">${row.no_anggota || row.reg_number}</div>
                             </td>
+                            <td class="d-none d-sm-table-cell"><span class="badge bg-light text-dark">${row.gender === 'Laki-laki' ? 'L' : (row.gender === 'Perempuan' ? 'P' : '-')}</span></td>
                             <td class="small" style="font-size:12px">${row.phone || '-'}</td>
                             <td class="small text-uppercase" style="font-size:11px">
                                 <div class="fw-bold" style="font-size:11px">${sectorName}</div>
