@@ -728,7 +728,7 @@ $userSector = $_SESSION['user_sector'] ?? '';
                             $data = file_exists($dataFile) ? json_decode(file_get_contents($dataFile), true) : [];
                             $total = is_array($data) ? count($data) : 0;
                         ?>
-                        <div class="card bg-dark text-white border-0 shadow-sm rounded-4 text-center p-3 w-100 stats-card-compact" style="max-width: 200px;">
+                        <div class="card bg-dark text-white border-0 shadow-sm rounded-4 text-center p-3 w-100 stats-card-compact d-none d-lg-block" style="max-width: 200px;">
                             <span class="fs-2 mb-1 stats-count" id="active-member-count"><?php echo $total; ?></span>
                             <span class="small opacity-75 stats-label">Total Anggota Aktif</span>
                         </div>
@@ -1780,14 +1780,13 @@ $userSector = $_SESSION['user_sector'] ?? '';
                             <td class="d-none d-md-table-cell"><code class="bg-light p-1 rounded">${row.no_anggota || row.reg_number}</code></td>
                             <td>
                                 <div class="fw-bold text-uppercase">${row.full_name}</div>
-                                <div class="d-md-none small text-muted">${row.no_anggota || row.reg_number}</div>
+                                <div class="d-md-none small text-muted" style="font-size:10px">${row.no_anggota || row.reg_number}</div>
                             </td>
-                            <td class="d-none d-sm-table-cell"><span class="badge bg-light text-dark">${row.gender === 'Laki-laki' ? 'L' : (row.gender === 'Perempuan' ? 'P' : '-')}</span></td>
-                            <td class="small d-none d-md-table-cell text-uppercase text-truncate" style="max-width:150px">
+                            <td class="small" style="font-size:12px">${row.phone || '-'}</td>
+                            <td class="small text-uppercase" style="font-size:11px">
                                 <div class="fw-bold" style="font-size:11px">${sectorName}</div>
-                                <div class="text-muted small" style="font-size:10px">${subsectorName}</div>
+                                <div class="text-muted" style="font-size:10px">${subsectorName}</div>
                             </td>
-                            <td class="d-none d-lg-table-cell small text-muted">${row.phone || '-'}</td>
                             <td>
                                 <div class="d-flex flex-column gap-1 align-items-start">
                                     <div class="d-flex flex-wrap gap-1">
@@ -3810,10 +3809,9 @@ $userSector = $_SESSION['user_sector'] ?? '';
                 return `
                     <tr>
                         <td>
-                            <div class="fw-bold fs-7" style="line-height:1.2;">${k.full_name || k.name}</div>
-                            <div class="d-flex align-items-center gap-2 mt-1" style="font-size: 10px;">
-                                <span class="badge bg-light text-dark border"><i class="fas fa-user me-1"></i>${k.name}</span>
-                                <span class="badge bg-light text-dark border"><i class="fas fa-key me-1"></i>${k.password}</span>
+                            <div class="fw-bold mb-1" style="font-size:14px; line-height:1.3;">${k.full_name || k.name}</div>
+                            <div style="font-size: 11px; color:#6c757d;">
+                                <i class="fas fa-user-circle me-1"></i><span class="fw-semibold text-dark">${k.name}</span>
                             </div>
                         </td>
                         <td class="small">${sectorName}</td>

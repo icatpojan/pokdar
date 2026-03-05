@@ -150,7 +150,9 @@
         "card_recommendation": "",
         "status": "Approved",
         "timestamp": "2026-03-05 16:49:14",
-        "photo_path": "uploads\/1772704154_img_17727040810582382672781142779038.jpg"
+        "photo_path": "uploads\/1772704154_img_17727040810582382672781142779038.jpg",
+        "rekomendasi_alasan": "adas",
+        "rekomendasi_status": "Pending"
     },
     {
         "reg_number": "PKDT-TS-202603-4182",
