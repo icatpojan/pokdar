@@ -12,6 +12,11 @@ $faqData = json_decode(file_get_contents('data/faq.json'), true);
 $contactData = json_decode(file_get_contents('data/contact.json'), true);
 $regData = json_decode(file_get_contents('data/registrasi.json'), true);
 $jadwalData = json_decode(file_get_contents('data/jadwal_kegiatan.json'), true);
+if (is_array($jadwalData)) {
+    usort($jadwalData, function($a, $b) {
+        return strtotime($a['hari_tgl'] ?? '9999-99-99') - strtotime($b['hari_tgl'] ?? '9999-99-99');
+    });
+}
 
 $pimpinan = $structureData['pimpinan'];
 $sekretariat = $structureData['sekretariat'];
@@ -477,7 +482,16 @@ $pelaksana = $structureData['pelaksana'];
                                     <div class="bg-accent-soft rounded-pill p-2 text-accent">
                                         <i class="far fa-calendar-alt"></i>
                                     </div>
-                                    <span class="fw-bold small text-dark"><?php echo $event['hari_tgl']; ?></span>
+                                    <span class="fw-bold small text-dark"><?php
+                                        $d = strtotime($event['hari_tgl'] ?? '');
+                                        if ($d) {
+                                            $bln = ['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+                                            $hari = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'][date('w',$d)];
+                                            echo $hari . ', ' . date('j',$d) . ' ' . $bln[(int)date('n',$d)] . ' ' . date('Y',$d);
+                                        } else {
+                                            echo htmlspecialchars($event['hari_tgl']);
+                                        }
+                                    ?></span>
                                 </div>
                             </td>
                             <td class="py-3 px-4">

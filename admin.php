@@ -128,6 +128,7 @@ $userSector = $_SESSION['user_sector'] ?? '';
 
         #cms-pills-tab .nav-link.active i {
             transform: scale(1.1);
+            color: #fff !important;
         }
 
         /* Top Nav Tabs */
@@ -2862,10 +2863,10 @@ $userSector = $_SESSION['user_sector'] ?? '';
                         const items = window._newsData;
                         container.innerHTML = `
                         <div class="cms-animate-content">
-                            <div class="d-flex justify-content-between align-items-center mb-4">
-                                <div><h2 class="fw-bold mb-0 text-dark">Berita &amp; Artikel</h2><p class="text-muted mb-0 small">Kelola daftar berita dan artikel.</p></div>
-                                <div class="d-flex gap-2">
-                                    <button type="button" class="btn text-white rounded-pill px-4" style="background:#10b981;" onclick="window._openNewsModal()"><i class="fas fa-plus me-2"></i>Tambah Berita</button>
+                            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2 mb-4">
+                                <div><h2 class="fw-bold mb-0 text-dark fs-5">Berita &amp; Artikel</h2><p class="text-muted mb-0 small">Kelola daftar berita dan artikel.</p></div>
+                                <div class="d-flex gap-2 flex-shrink-0">
+                                    <button type="button" class="btn btn-sm text-white rounded-pill px-3" style="background:#10b981;" onclick="window._openNewsModal()"><i class="fas fa-plus me-1"></i>Tambah Berita</button>
                                 </div>
                             </div>
                             <div class="cms-table-container">
@@ -2971,8 +2972,8 @@ $userSector = $_SESSION['user_sector'] ?? '';
                                         <div class="modal-body px-4 pb-2 pt-3">
                                             <input type="hidden" id="jadwal-edit-index" value="-1">
                                             <div class="row g-3">
-                                                <div class="col-12 col-sm-6"><label class="form-label fw-semibold small">Hari / Tanggal</label><input type="text" id="jadwal-f-haritgl" class="form-control rounded-3" placeholder="cth: Sabtu, 15 Maret 2026"></div>
-                                                <div class="col-12 col-sm-6"><label class="form-label fw-semibold small">Jam</label><input type="text" id="jadwal-f-jam" class="form-control rounded-3" placeholder="cth: 08:00 WIB"></div>
+                                                <div class="col-12 col-sm-6"><label class="form-label fw-semibold small">Tanggal</label><input type="date" id="jadwal-f-haritgl" class="form-control rounded-3"></div>
+                                                <div class="col-12 col-sm-6"><label class="form-label fw-semibold small">Jam</label><input type="time" id="jadwal-f-jam" class="form-control rounded-3"></div>
                                                 <div class="col-12"><label class="form-label fw-semibold small">Kegiatan</label><input type="text" id="jadwal-f-keterangan" class="form-control rounded-3" placeholder="Nama kegiatan..."></div>
                                                 <div class="col-12 col-sm-6"><label class="form-label fw-semibold small">Tempat</label><input type="text" id="jadwal-f-tempat" class="form-control rounded-3" placeholder="Lokasi"></div>
                                                 <div class="col-12 col-sm-6"><label class="form-label fw-semibold small">CP</label><input type="text" id="jadwal-f-cp" class="form-control rounded-3" placeholder="Kontak"></div>
@@ -2992,12 +2993,23 @@ $userSector = $_SESSION['user_sector'] ?? '';
 
                     window._renderJadwal = function() {
                         const events = window._jadwalData;
+                        const fmtDate = (d) => {
+                            if (!d) return '—';
+                            const dt = new Date(d + 'T00:00:00');
+                            if (isNaN(dt)) return d;
+                            return dt.toLocaleDateString('id-ID', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+                        };
+                        const fmtTime = (t) => {
+                            if (!t) return '—';
+                            // Already HH:MM
+                            return t;
+                        };
                         container.innerHTML = `
                         <div class="cms-animate-content">
-                            <div class="d-flex justify-content-between align-items-center mb-4">
-                                <div><h2 class="fw-bold mb-0 text-dark">Jadwal Agenda</h2><p class="text-muted mb-0 small">Kelola daftar agenda kegiatan.</p></div>
-                                <div class="d-flex gap-2">
-                                    <button type="button" class="btn text-white rounded-pill px-4" style="background:#0d9488;" onclick="window._openJadwalModal()"><i class="fas fa-plus me-2"></i>Tambah</button>
+                            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2 mb-4">
+                                <div><h2 class="fw-bold mb-0 text-dark fs-5">Jadwal Agenda</h2><p class="text-muted mb-0 small">Kelola daftar agenda kegiatan.</p></div>
+                                <div class="d-flex gap-2 flex-shrink-0">
+                                    <button type="button" class="btn btn-sm text-white rounded-pill px-3" style="background:#0d9488;" onclick="window._openJadwalModal()"><i class="fas fa-plus me-1"></i>Tambah</button>
                                 </div>
                             </div>
                             <div class="row g-3">
@@ -3006,14 +3018,14 @@ $userSector = $_SESSION['user_sector'] ?? '';
                                 <div class="col-12 col-md-6 col-xl-4">
                                     <div class="card border-0 shadow-sm rounded-4 p-3 h-100">
                                         <div class="d-flex justify-content-between align-items-start mb-2">
-                                            <span class="badge bg-light text-dark rounded-pill">${ev.hari_tgl || '—'}</span>
+                                            <span class="badge bg-light text-dark rounded-pill" style="font-size:11px;">${fmtDate(ev.hari_tgl)}</span>
                                             <div class="d-flex gap-1">
                                                 <button class="btn btn-sm btn-light" onclick="window._editJadwal(${i})"><i class="fas fa-edit"></i></button>
                                                 <button class="btn btn-sm btn-light text-danger" onclick="window._deleteJadwal(${i})"><i class="fas fa-trash-alt"></i></button>
                                             </div>
                                         </div>
                                         <h6 class="fw-bold mb-2">${ev.keterangan || '—'}</h6>
-                                        <div class="small text-muted"><i class="far fa-clock me-1"></i>${ev.jam || '—'}</div>
+                                        <div class="small text-muted"><i class="far fa-clock me-1"></i>${fmtTime(ev.jam)}</div>
                                     </div>
                                 </div>`).join('')}
                             </div>
@@ -3034,6 +3046,7 @@ $userSector = $_SESSION['user_sector'] ?? '';
                     window._openJadwalModal = () => {
                         const m = document.getElementById('jadwalAgendaModal');
                         m.querySelector('#jadwal-edit-index').value = -1;
+                        m.querySelector('#jadwalModalLabel').innerHTML = '<i class="fas fa-calendar-plus me-2"></i>Tambah Agenda';
                         ['haritgl','jam','keterangan','tempat','cp'].forEach(k => m.querySelector('#jadwal-f-'+k).value = '');
                         bootstrap.Modal.getOrCreateInstance(m).show();
                     };
@@ -3047,6 +3060,7 @@ $userSector = $_SESSION['user_sector'] ?? '';
                             tempat: m.querySelector('#jadwal-f-tempat').value,
                             cp: m.querySelector('#jadwal-f-cp').value
                         };
+                        if (!data.hari_tgl) { alert('Tanggal harus diisi!'); return; }
                         if (idx >= 0) window._jadwalData[idx] = data; else window._jadwalData.push(data);
                         bootstrap.Modal.getInstance(m).hide();
                         window._saveJadwal();
@@ -3056,6 +3070,7 @@ $userSector = $_SESSION['user_sector'] ?? '';
                         const m = document.getElementById('jadwalAgendaModal');
                         const ev = window._jadwalData[i];
                         m.querySelector('#jadwal-edit-index').value = i;
+                        m.querySelector('#jadwalModalLabel').innerHTML = '<i class="fas fa-edit me-2"></i>Edit Agenda';
                         m.querySelector('#jadwal-f-haritgl').value = ev.hari_tgl || '';
                         m.querySelector('#jadwal-f-jam').value = ev.jam || '';
                         m.querySelector('#jadwal-f-keterangan').value = ev.keterangan || '';
@@ -3076,10 +3091,10 @@ $userSector = $_SESSION['user_sector'] ?? '';
                         const faqs = window._faqData;
                         container.innerHTML = `
                         <div class="cms-animate-content">
-                            <div class="d-flex justify-content-between align-items-center mb-4">
-                                <div><h2 class="fw-bold mb-0 text-dark">Tanya Jawab (FAQ)</h2><p class="text-muted mb-0 small">Kelola daftar pertanyaan dan jawaban.</p></div>
-                                <div class="d-flex gap-2">
-                                    <button type="button" class="btn text-white rounded-pill px-4" style="background:#3b82f6;" onclick="window._openFAQModal()"><i class="fas fa-plus me-2"></i>Tambah FAQ</button>
+                            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2 mb-4">
+                                <div><h2 class="fw-bold mb-0 text-dark fs-5">Tanya Jawab (FAQ)</h2><p class="text-muted mb-0 small">Kelola daftar pertanyaan dan jawaban.</p></div>
+                                <div class="d-flex gap-2 flex-shrink-0">
+                                    <button type="button" class="btn btn-sm text-white rounded-pill px-3" style="background:#3b82f6;" onclick="window._openFAQModal()"><i class="fas fa-plus me-1"></i>Tambah FAQ</button>
                                 </div>
                             </div>
                             <div class="cms-table-container">
@@ -4391,8 +4406,8 @@ $userSector = $_SESSION['user_sector'] ?? '';
                 <a href="#" class="mobile-nav-item" onclick="switchAdminTab('cms-tab', 'Manajemen Konten', 'edit', this); loadCMS('hero')">
                     <i class="fas fa-edit"></i> Manajemen Konten
                 </a>
-                <a href="#" class="mobile-nav-item text-danger" onclick="switchAdminTab('trash-tab', 'Arsip Keluar', 'trash-alt', this); loadTrash()">
-                    <i class="fas fa-trash-alt"></i> Arsip Keluar
+                <a href="#" class="mobile-nav-item" onclick="switchAdminTab('trash-tab', 'Anggota Keluar', 'trash-alt', this); loadTrash()">
+                    <i class="fas fa-trash-alt"></i> Anggota Keluar
                 </a>
                 <div class="border-top my-2"></div>
                 <a href="logout.php" class="mobile-nav-item text-danger">
