@@ -70,7 +70,7 @@ $pelaksana = $structureData['pelaksana'];
                         <a href="#" class="util-link">Anggota</a>
                         <a href="#" class="util-link">Polri</a>
                         <a href="#" class="util-link">Masyarakat</a>
-                        <a href="login.php" class="util-link">Login Admin</a>
+                        <a href="login.php" class="util-link">Login</a>
                     </div>
                 </div>
                 

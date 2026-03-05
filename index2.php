@@ -66,7 +66,7 @@ $pelaksana = $structureData['pelaksana'];
                             <a href="#">Anggota</a>
                             <a href="#">Polri</a>
                             <a href="#">Masyarakat</a>
-                            <a href="login.php" class="fw-bold">Login Admin</a>
+                            <a href="login.php" class="fw-bold">Login</a>
                         </div>
                     </div>
                 </div>
@@ -360,7 +360,7 @@ $pelaksana = $structureData['pelaksana'];
                     <ul class="footer-links">
                         <li><a href="#">FAQ</a></li>
                         <li><a href="#kontak">Kontak Kami</a></li>
-                        <li><a href="login.php">Login Admin</a></li>
+                        <li><a href="login.php">Login</a></li>
                         <li><a href="#">Kebijakan Privasi</a></li>
                     </ul>
                 </div>

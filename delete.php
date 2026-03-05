@@ -1,7 +1,11 @@
 <?php
 session_start();
-if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
-    header("Location: login.php");
+if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true || ($_SESSION['user_role'] ?? '') !== 'admin') {
+    if (isset($_GET['ajax'])) {
+        echo json_encode(['status' => 'error', 'message' => 'Unauthorized']);
+    } else {
+        header("Location: login.php");
+    }
     exit();
 }
 

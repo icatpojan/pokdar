@@ -13,15 +13,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = $_POST['username'] ?? '';
     $password = $_POST['password'] ?? '';
 
-    // Hardcoded credentials for simplicity as requested
-    if ($username === 'admin' && $password === 'admin123') {
-        $_SESSION['admin_logged_in'] = true;
-        $_SESSION['admin_username'] = $username;
-        header("Location: admin.php");
-        exit();
-    } else {
-        $error = 'Username atau Password salah!';
+    // Check Admin data
+    $adminFile = 'data/admin.json';
+    if (file_exists($adminFile)) {
+        $adminData = json_decode(file_get_contents($adminFile), true) ?: [];
+        foreach ($adminData as $a) {
+            if ($a['username'] === $username && $a['password'] === $password) {
+                $_SESSION['admin_logged_in'] = true;
+                $_SESSION['admin_username'] = $username;
+                $_SESSION['user_role'] = 'admin';
+                header("Location: admin.php");
+                exit();
+            }
+        }
     }
+    
+    // Check Kasektor data
+    $kasektorFile = 'data/kasektor.json';
+    if (file_exists($kasektorFile)) {
+        $kasektorData = json_decode(file_get_contents($kasektorFile), true) ?: [];
+        foreach ($kasektorData as $k) {
+            if ($k['name'] === $username && $k['password'] === $password) {
+                $_SESSION['admin_logged_in'] = true; // Still allow access to admin.php
+                $_SESSION['admin_username'] = $username;
+                $_SESSION['user_role'] = 'kasektor';
+                $_SESSION['user_sector'] = $k['sector'] ?? '';
+                header("Location: admin.php");
+                exit();
+            }
+        }
+    }
+
+    $error = 'Username atau Password salah!';
 }
 ?>
 <!DOCTYPE html>
@@ -29,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Admin - Pokdar Kamtibmas</title>
+    <title>Login - Pokdar Kamtibmas</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -44,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <a href="index.php">
                             <img src="assets/image.png" alt="Logo" class="mb-3" style="height: 70px;">
                         </a>
-                        <h2 class="fw-bold h3 mb-2">Login Admin</h2>
+                        <h2 class="fw-bold h3 mb-2">Login</h2>
                         <p class="text-muted small">Silakan masuk untuk mengelola data keanggotaan.</p>
                     </div>
 

@@ -1,0 +1,16 @@
+[
+    {
+        "name": "fauzan",
+        "password": "fauzan",
+        "sector": "01-t",
+        "assessment": {
+            "kepemimpinan": 2,
+            "koordinasi": 4,
+            "laporan": 4,
+            "total": 10,
+            "komentar": "tidakk ada",
+            "updated_at": "2026-03-04T23:48:46.684Z"
+        },
+        "updated_at": "2026-03-04 23:48:23"
+    }
+]

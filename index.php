@@ -75,7 +75,7 @@ $pelaksana = $structureData['pelaksana'];
                         <?php if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true): ?>
                             <a href="admin.php" class="util-link">Dashboard</a>
                         <?php else: ?>
-                            <a href="login.php" class="util-link">Login Admin</a>
+                            <a href="login.php" class="util-link">Login</a>
                         <?php endif; ?>
                     </div>
                 </div>
