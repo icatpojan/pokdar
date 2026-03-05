@@ -2240,7 +2240,7 @@ $userSector = $_SESSION['user_sector'] ?? '';
             'welcome_text': 'Teks Selamat Datang',
             'title_primary': 'Judul Utama',
             'lead_text': 'Teks Penjelasan',
-            'video_link': 'Link Video YouTube',
+            'video_link': 'Link Video atau Iframe YouTube',
             'number': 'Angka Statistik',
             'label': 'Label Keterangan',
             'icon': 'Ikon (FontAwesome)',
@@ -2334,66 +2334,183 @@ $userSector = $_SESSION['user_sector'] ?? '';
             }
         };
 
+        // Utility to render fields recursively for the CMS
+        function renderRecursive(obj, currentKey, path = []) {
+            let fieldsHtml = "";
+            let keys = Object.keys(obj).filter(k => !['id', 'class', 'icon'].includes(k));
+            
+            // Handle lists of people (e.g. advisors, coordinators) as a grouped table
+            const childObjects = keys.filter(k => typeof obj[k] === 'object' && obj[k] !== null && !Array.isArray(obj[k]));
+            if (childObjects.length > 1) {
+                const firstChild = obj[childObjects[0]];
+                if (firstChild && typeof firstChild === 'object' && (firstChild.name || firstChild.position)) {
+                    fieldsHtml += `
+                        <div class="col-12 mb-5 pb-4 border-bottom border-light">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <label class="form-label fw-bold text-dark d-flex align-items-center gap-2 mb-0 h5">
+                                    <div class="bg-accent rounded-pill" style="width:12px; height:6px;"></div>
+                                    Daftar ${getLabel(currentKey)}
+                                </label>
+                            </div>
+                            <div class="cms-table-container">
+                                <table class="cms-table">
+                                    <thead><tr><th>Posisi</th><th>Nama</th><th>Foto</th><th class="text-end px-3">Aksi</th></tr></thead>
+                                    <tbody>
+                                        ${childObjects.map(k => {
+                                            const item = obj[k];
+                                            const itemPath = [...path, k].join('.');
+                                            return `
+                                                <tr>
+                                                    <td><div class="fw-bold">${item.position || getLabel(k)}</div></td>
+                                                    <td><div class="text-truncate" style="max-width: 250px;">${item.name || ""}</div></td>
+                                                    <td><img src="${item.image || 'assets/user.png'}?v=${Date.now()}" class="cms-thumb shadow-sm"></td>
+                                                    <td class="text-end px-3">
+                                                        <button type="button" class="cms-action-btn edit" onclick="editCmsItem('${window._currentCmsType || 'hero'}', '${itemPath}', null)"><i class="fas fa-edit"></i></button>
+                                                    </td>
+                                                </tr>
+                                            `;
+                                        }).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    `;
+                    keys = keys.filter(k => !childObjects.includes(k));
+                }
+            }
+
+            for (const key of keys) {
+                try {
+                    const label = getLabel(key);
+                    const val = obj[key];
+                    const fullPath = [...path, key];
+                    const dataPath = fullPath.join('.');
+
+                    if (Array.isArray(val)) {
+                        const isObjectArray = val.length > 0 && typeof val[0] === 'object';
+                        fieldsHtml += `
+                            <div class="col-12 mb-5 pb-4 border-bottom border-light">
+                                <div class="d-flex justify-content-between align-items-center mb-4">
+                                    <label class="form-label fw-bold text-dark d-flex align-items-center gap-3 mb-0 h5">
+                                        <div class="bg-accent rounded-pill" style="width:12px; height:6px;"></div>
+                                        ${label}
+                                    </label>
+                                    <button class="btn btn-dark btn-sm rounded-pill px-4 fw-bold shadow-sm" type="button" onclick="addItem(event, '${window._currentCmsType || 'hero'}', '${dataPath}')">
+                                        <i class="fas fa-plus me-1"></i> Tambah Item
+                                    </button>
+                                </div>
+                                <div class="cms-table-container">
+                                    ${isObjectArray ? (() => {
+                                        let vKeys = val.length > 0 ? Object.keys(val[0]).filter(k => k !== 'id' && (typeof val[0][k] !== 'object' || val[0][k] === null)) : [];
+                                        if (window._currentCmsType === 'hero' || key === 'buttons') vKeys = ['text', 'link'];
+                                        return `
+                                        <table class="cms-table">
+                                            <thead><tr>${vKeys.map(k => `<th>${getLabel(k)}</th>`).join('')}<th class="text-end px-3">Aksi</th></tr></thead>
+                                            <tbody>
+                                                ${val.map((item, i) => `
+                                                    <tr>
+                                                        ${vKeys.map(k => `<td><div class="text-truncate" style="max-width:200px;">${item[k] || ''}</div></td>`).join('')}
+                                                        <td class="text-end px-3">
+                                                            <div class="d-flex justify-content-end gap-2">
+                                                                <button type="button" class="cms-action-btn edit" onclick="editCmsItem('${window._currentCmsType || 'hero'}', '${dataPath}', ${i})"><i class="fas fa-edit"></i></button>
+                                                                <button type="button" class="cms-action-btn delete" onclick="removeItem(event, '${window._currentCmsType || 'hero'}', '${dataPath}', ${i})"><i class="fas fa-trash-alt"></i></button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                `).join('')}
+                                            </tbody>
+                                        </table>`;
+                                    })() : `
+                                    <div class="row g-3">
+                                        ${val.map((item, i) => `
+                                            <div class="col-md-6">
+                                                <div class="card border-0 shadow-sm rounded-4 p-3 bg-white d-flex align-items-center gap-3">
+                                                    <input type="text" class="form-control border-0 bg-light rounded-pill px-3" data-path="${dataPath}" data-index="${i}" value="${(item || '').toString().replace(/"/g, '&quot;')}">
+                                                    <button type="button" class="btn btn-link text-danger p-0" onclick="removeItem(event, '${window._currentCmsType || 'hero'}', '${dataPath}', ${i})"><i class="fas fa-times"></i></button>
+                                                </div>
+                                            </div>
+                                        `).join('')}
+                                    </div>`}
+                                </div>
+                            </div>
+                        `;
+                    } else if (typeof val === 'object' && val !== null) {
+                        fieldsHtml += `
+                            <div class="col-12">
+                                <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white border-top border-4 border-accent">
+                                    <label class="form-label fw-bold text-dark mb-3 text-uppercase small" style="letter-spacing:1px;">${label}</label>
+                                    <div class="row g-3">${renderRecursive(val, key, fullPath)}</div>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        const isRich = (key.includes('content') || key.includes('description') || key === 'full' || key.includes('news')) && (window._currentCmsType !== 'hero');
+                        const isLarge = isRich || (val || "").toString().length > 100 || key === 'lead_text' || key === 'title_primary';
+                        const colClass = (path.length > 0 || key === 'title_primary' || key === 'lead_text' || key === 'video_link' || key === 'welcome_text') ? "col-12" : "col-md-6";
+                        const isImage = key.toLowerCase().includes('image') || (val || "").toString().includes('assets/');
+
+                        fieldsHtml += `
+                            <div class="${colClass} mb-2">
+                                <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+                                    <label class="form-label fw-bold text-muted small text-uppercase mb-2" style="letter-spacing:0.5px;">${label}</label>
+                                    ${isImage ? `
+                                        <div class="d-flex align-items-center gap-3">
+                                            <div class="rounded-4 overflow-hidden border bg-light shadow-sm" style="width:100px; height:75px;">
+                                                <img src="${val}?v=${Date.now()}" class="w-100 h-100 object-fit-cover">
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <input type="text" class="form-control mb-2 border-0 bg-light rounded-pill px-3 fs-6" data-path="${dataPath}" value="${(val || "").toString()}">
+                                                <button type="button" class="btn btn-sm btn-outline-dark rounded-pill px-3" onclick="this.nextElementSibling.click()"><i class="fas fa-upload me-1"></i> Ganti Gambar</button>
+                                                <input type="file" class="d-none" accept="image/*" onchange="handleCMSImageUpload(this, '${window._currentCmsType || 'hero'}', '${dataPath}')">
+                                            </div>
+                                        </div>
+                                    ` : (isLarge ? 
+                                        `<textarea class="form-control border-0 bg-light rounded-4 p-3 fs-6 ${isRich ? 'summernote' : ''}" data-path="${dataPath}" data-is-rich="${isRich}" rows="3">${val}</textarea>` :
+                                        `<input type="text" class="form-control form-control-lg border-0 bg-light rounded-pill px-4 fs-6" data-path="${dataPath}" value="${(val || "").toString().replace(/"/g, '&quot;')}">`
+                                    )}
+                                </div>
+                            </div>
+                        `;
+                    }
+                } catch (e) {
+                    console.error("Error rendering key: " + key, e);
+                    fieldsHtml += `<div class="col-12 alert alert-danger">Error rendering ${key}</div>`;
+                }
+            }
+            return fieldsHtml;
+        }
+
         async function loadCMS(type) {
+            window._currentCmsType = type;
             const container = document.getElementById('cms-editor-container');
-            container.innerHTML = `
-                <div class="text-center py-5">
-                    <div class="spinner-border text-accent mb-3" role="status"></div>
-                    <p class="text-muted">Mengambil data ${type}...</p>
-                </div>
-            `;
+            container.innerHTML = `<div class="text-center py-5"><div class="spinner-border text-accent mb-3" role="status"></div><p class="text-muted">Mengambil data ${type}...</p></div>`;
 
             try {
                 const resp = await fetch(`data/${type}.json?v=${Date.now()}`);
                 const data = await resp.json();
 
-                // Mobile Sync
-                const activePill = document.querySelector('#cms-pills-tab [onclick*="loadCMS(\''+type+'\')"]');
+                // Sync UI (Tabs and Sidebar)
+                const activePill = document.querySelector(`#cms-pills-tab [onclick*="loadCMS('${type}')"]`);
                 if (activePill) {
-                    const pills = document.querySelectorAll('#cms-pills-tab .nav-link');
-                    pills.forEach(p => p.classList.remove('active'));
+                    document.querySelectorAll('#cms-pills-tab .nav-link').forEach(p => p.classList.remove('active'));
                     activePill.classList.add('active');
-                    if (document.getElementById('active-cms-pill-label')) {
-                        document.getElementById('active-cms-pill-label').innerText = activePill.innerText.trim();
-                    }
+                    if (document.getElementById('active-cms-pill-label')) document.getElementById('active-cms-pill-label').innerText = activePill.innerText.trim();
                 }
-
-                // Populate Mobile CMS Menu if empty
-                const mobileCmsNav = document.getElementById('mobile-cms-nav-list');
-                if (mobileCmsNav && mobileCmsNav.children.length === 0) {
-                    const pills = document.querySelectorAll('#cms-pills-tab .nav-link');
-                    pills.forEach(pill => {
-                        const icon = pill.querySelector('i').cloneNode(true);
-                        const text = pill.innerText.trim();
-                        const onclickStr = pill.getAttribute('onclick');
-                        
-                        const item = document.createElement('a');
-                        item.href = '#';
-                        item.className = 'mobile-nav-item' + (pill.classList.contains('active') ? ' active' : '');
-                        item.innerHTML = '';
-                        item.appendChild(icon);
-                        item.innerHTML += ' ' + text;
-                        item.onclick = (e) => {
-                            e.preventDefault();
-                            eval(onclickStr);
-                            const offcanvas = bootstrap.Offcanvas.getInstance(document.getElementById('offcanvasCmsMenu'));
-                            if (offcanvas) offcanvas.hide();
-                        };
-                        mobileCmsNav.appendChild(item);
-                    });
-                } else if (mobileCmsNav) {
-                    // Update active state in mobile menu
-                    mobileCmsNav.querySelectorAll('.mobile-nav-item').forEach(item => {
+                
+                // Mobile Menu Sync
+                const mobileMenu = document.getElementById('mobile-cms-nav-list');
+                if (mobileMenu) {
+                    mobileMenu.querySelectorAll('.mobile-nav-item').forEach(item => {
                         if (item.innerText.trim() === activePill?.innerText.trim()) item.classList.add('active');
                         else item.classList.remove('active');
                     });
                 }
-                
-                // ── Special CRUD: Jadwal Agenda Kegiatan ───────────
+
+                // ── Special Case: Jadwal Agenda ───────────────────
                 if (type === 'jadwal_kegiatan') {
                     window._jadwalData = Array.isArray(data) ? data : [];
                     
-                    // Ensureodal exists in body to avoid clipping
+                    // Initialize Modal if not exists
                     if (!document.getElementById('jadwalAgendaModal')) {
                         const mDiv = document.createElement('div');
                         mDiv.innerHTML = `
@@ -2410,110 +2527,83 @@ $userSector = $_SESSION['user_sector'] ?? '';
                                         <div class="modal-body px-4 pb-2 pt-3">
                                             <input type="hidden" id="jadwal-edit-index" value="-1">
                                             <div class="row g-3">
-                                                <div class="col-12 col-sm-6">
-                                                    <label class="form-label fw-semibold small">Hari / Tanggal <span class="text-danger">*</span></label>
-                                                    <input type="text" id="jadwal-f-haritgl" class="form-control rounded-3" placeholder="cth: Sabtu, 15 Maret 2026">
-                                                </div>
-                                                <div class="col-12 col-sm-6">
-                                                    <label class="form-label fw-semibold small">Jam</label>
-                                                    <input type="text" id="jadwal-f-jam" class="form-control rounded-3" placeholder="cth: 08:00 - 12:00 WIB">
-                                                </div>
-                                                <div class="col-12">
-                                                    <label class="form-label fw-semibold small">Keterangan / Judul Kegiatan <span class="text-danger">*</span></label>
-                                                    <input type="text" id="jadwal-f-keterangan" class="form-control rounded-3" placeholder="Nama kegiatan...">
-                                                </div>
-                                                <div class="col-12 col-sm-6">
-                                                    <label class="form-label fw-semibold small">Tempat</label>
-                                                    <input type="text" id="jadwal-f-tempat" class="form-control rounded-3" placeholder="Lokasi kegiatan">
-                                                </div>
-                                                <div class="col-12 col-sm-6">
-                                                    <label class="form-label fw-semibold small">Contact Person (CP)</label>
-                                                    <input type="text" id="jadwal-f-cp" class="form-control rounded-3" placeholder="Nama (No HP)">
-                                                </div>
+                                                <div class="col-12 col-sm-6"><label class="form-label fw-semibold small">Hari / Tanggal</label><input type="text" id="jadwal-f-haritgl" class="form-control rounded-3" placeholder="cth: Sabtu, 15 Maret 2026"></div>
+                                                <div class="col-12 col-sm-6"><label class="form-label fw-semibold small">Jam</label><input type="text" id="jadwal-f-jam" class="form-control rounded-3" placeholder="cth: 08:00 WIB"></div>
+                                                <div class="col-12"><label class="form-label fw-semibold small">Kegiatan</label><input type="text" id="jadwal-f-keterangan" class="form-control rounded-3" placeholder="Nama kegiatan..."></div>
+                                                <div class="col-12 col-sm-6"><label class="form-label fw-semibold small">Tempat</label><input type="text" id="jadwal-f-tempat" class="form-control rounded-3" placeholder="Lokasi"></div>
+                                                <div class="col-12 col-sm-6"><label class="form-label fw-semibold small">CP</label><input type="text" id="jadwal-f-cp" class="form-control rounded-3" placeholder="Kontak"></div>
                                             </div>
                                         </div>
                                         <div class="modal-footer border-0 px-4 pb-4 pt-2 gap-2">
                                             <button type="button" class="btn btn-outline-secondary rounded-3 px-4" data-bs-dismiss="modal">Batal</button>
                                             <button type="button" class="btn fw-bold rounded-3 text-white px-4" style="background:linear-gradient(135deg,#0d9488,#0f766e);" onclick="window._submitJadwalForm()">
-                                                <i class="fas fa-check me-2"></i><span id="jadwal-btn-label">Tambah Agenda</span>
+                                                <i class="fas fa-check me-2"></i>Simpan
                                             </button>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        `;
+                            </div>`;
                         document.body.appendChild(mDiv.firstElementChild);
                     }
 
                     window._renderJadwal = function() {
-                        const c = document.getElementById('cms-editor-container');
                         const events = window._jadwalData;
-                        c.innerHTML = `
+                        container.innerHTML = `
                         <div class="cms-animate-content">
                             <div class="d-flex justify-content-between align-items-center mb-4">
-                                <div>
-                                    <h2 class="fw-bold mb-0 text-dark" style="letter-spacing:-0.02em">Jadwal Agenda Kegiatan</h2>
-                                    <p class="text-muted mb-0 small">Kelola dan perbarui daftar agenda kegiatan yang tampil di halaman utama.</p>
-                                </div>
+                                <div><h2 class="fw-bold mb-0 text-dark">Jadwal Agenda</h2><p class="text-muted mb-0 small">Kelola daftar agenda kegiatan.</p></div>
                                 <div class="d-flex gap-2">
-                                    <button class="btn btn-dark rounded-pill px-4 fw-bold shadow-sm" onclick="window._saveJadwal()">
-                                        <i class="fas fa-save me-2"></i>Simpan
-                                    </button>
-                                    <button class="btn rounded-pill px-4 fw-bold shadow-sm text-white" style="background:linear-gradient(135deg,#0d9488,#0f766e);" onclick="window._openJadwalModal()">
-                                        <i class="fas fa-plus me-2"></i>Tambah Agenda
-                                    </button>
+                                    <button class="btn btn-dark rounded-pill px-4" onclick="window._saveJadwal()"><i class="fas fa-save me-2"></i>Simpan</button>
+                                    <button class="btn text-white rounded-pill px-4" style="background:#0d9488;" onclick="window._openJadwalModal()"><i class="fas fa-plus me-2"></i>Tambah</button>
                                 </div>
                             </div>
-
-                            <!-- Event Cards -->
-                            <div class="row g-3" id="jadwal-cards-container">
-                                ${events.length === 0 ? `<div class="col-12 text-center text-muted py-5"><i class="fas fa-calendar-times fa-2x mb-2 d-block opacity-50"></i>Belum ada agenda. Klik "Tambah Agenda" untuk mulai.</div>` :
+                            <div class="row g-3">
+                                ${events.length === 0 ? `<div class="col-12 text-center py-5">Belum ada agenda.</div>` :
                                 events.map((ev, i) => `
                                 <div class="col-12 col-md-6 col-xl-4">
-                                    <div class="border rounded-4 p-3 h-100 shadow-sm" style="border-color:#e2e8f0!important;background:#fff; transition: all 0.3s ease;">
+                                    <div class="card border-0 shadow-sm rounded-4 p-3 h-100">
                                         <div class="d-flex justify-content-between align-items-start mb-2">
-                                            <span class="badge rounded-pill px-3 py-2 fw-semibold" style="background:#f1f5f9;color:#475569;font-size:11px;">
-                                                <i class="far fa-calendar-alt me-1 text-accent"></i>${ev.hari_tgl || '—'}
-                                            </span>
+                                            <span class="badge bg-light text-dark rounded-pill">${ev.hari_tgl || '—'}</span>
                                             <div class="d-flex gap-1">
-                                                <button class="btn btn-sm btn-outline-primary rounded-3 border-0 bg-light" style="padding:6px 10px;" onclick="window._editJadwal(${i})" title="Edit"><i class="fas fa-edit" style="font-size:12px;"></i></button>
-                                                <button class="btn btn-sm btn-outline-danger rounded-3 border-0 bg-light-danger" style="padding:6px 10px; color:#ef4444;" onclick="window._deleteJadwal(${i})" title="Hapus"><i class="fas fa-trash-alt" style="font-size:12px;"></i></button>
+                                                <button class="btn btn-sm btn-light" onclick="window._editJadwal(${i})"><i class="fas fa-edit"></i></button>
+                                                <button class="btn btn-sm btn-light text-danger" onclick="window._deleteJadwal(${i})"><i class="fas fa-trash-alt"></i></button>
                                             </div>
                                         </div>
-                                        <h6 class="fw-bold mb-3 lh-sm" style="font-size:14px; min-height: 2.4em;">${ev.keterangan || '—'}</h6>
-                                        <div class="d-flex flex-column gap-2" style="font-size:12px;color:#64748b;">
-                                            <div class="d-flex align-items-center gap-2"><i class="far fa-clock text-accent" style="width:16px;"></i><span>${ev.jam || '—'}</span></div>
-                                            <div class="d-flex align-items-center gap-2"><i class="fas fa-map-marker-alt text-accent" style="width:16px;"></i><span>${ev.tempat || '—'}</span></div>
-                                            <div class="d-flex align-items-center gap-2"><i class="fas fa-id-badge text-accent" style="width:16px;"></i><span>CP: ${ev.cp || '—'}</span></div>
-                                        </div>
+                                        <h6 class="fw-bold mb-2">${ev.keterangan || '—'}</h6>
+                                        <div class="small text-muted"><i class="far fa-clock me-1"></i>${ev.jam || '—'}</div>
                                     </div>
                                 </div>`).join('')}
                             </div>
                         </div>`;
                     };
 
-                    window._saveJadwal = async function() {
-                        const result = await saveContent('jadwal_kegiatan', window._jadwalData);
-                        if (result && result.status === 'success') showToast('Jadwal agenda berhasil disimpan!', 'success');
+                    window._saveJadwal = async () => {
+                        const res = await saveContent('jadwal_kegiatan', window._jadwalData);
+                        if (res?.status === 'success') showToast('Jadwal Agenda diperbarui!');
                     };
-                    window._deleteJadwal = function(i) {
-                        if (!confirm('Hapus agenda ini?')) return;
-                        window._jadwalData.splice(i, 1);
-                        window._renderJadwal();
-                    };
-                    window._openJadwalModal = function() {
+                    window._deleteJadwal = (i) => { if(confirm('Hapus?')) { window._jadwalData.splice(i,1); window._renderJadwal(); } };
+                    window._openJadwalModal = () => {
                         const m = document.getElementById('jadwalAgendaModal');
-                        if (!m) return;
                         m.querySelector('#jadwal-edit-index').value = -1;
-                        ['jadwal-f-haritgl','jadwal-f-jam','jadwal-f-keterangan','jadwal-f-tempat','jadwal-f-cp'].forEach(id => m.querySelector('#'+id).value = '');
-                        m.querySelector('#jadwalModalLabel').innerHTML = '<i class="fas fa-calendar-plus me-2"></i>Tambah Agenda';
-                        m.querySelector('#jadwal-modal-subtitle').textContent = 'Isi detail agenda kegiatan baru';
-                        m.querySelector('#jadwal-btn-label').textContent = 'Tambah Agenda';
+                        ['haritgl','jam','keterangan','tempat','cp'].forEach(k => m.querySelector('#jadwal-f-'+k).value = '');
                         bootstrap.Modal.getOrCreateInstance(m).show();
                     };
-                    window._editJadwal = function(i) {
+                    window._submitJadwalForm = () => {
                         const m = document.getElementById('jadwalAgendaModal');
-                        if (!m) return;
+                        const idx = parseInt(m.querySelector('#jadwal-edit-index').value);
+                        const data = {
+                            hari_tgl: m.querySelector('#jadwal-f-haritgl').value,
+                            jam: m.querySelector('#jadwal-f-jam').value,
+                            keterangan: m.querySelector('#jadwal-f-keterangan').value,
+                            tempat: m.querySelector('#jadwal-f-tempat').value,
+                            cp: m.querySelector('#jadwal-f-cp').value
+                        };
+                        if (idx >= 0) window._jadwalData[idx] = data; else window._jadwalData.push(data);
+                        bootstrap.Modal.getInstance(m).hide();
+                        window._renderJadwal();
+                    };
+                    window._editJadwal = (i) => {
+                        const m = document.getElementById('jadwalAgendaModal');
                         const ev = window._jadwalData[i];
                         m.querySelector('#jadwal-edit-index').value = i;
                         m.querySelector('#jadwal-f-haritgl').value = ev.hari_tgl || '';
@@ -2521,429 +2611,42 @@ $userSector = $_SESSION['user_sector'] ?? '';
                         m.querySelector('#jadwal-f-keterangan').value = ev.keterangan || '';
                         m.querySelector('#jadwal-f-tempat').value = ev.tempat || '';
                         m.querySelector('#jadwal-f-cp').value = ev.cp || '';
-                        m.querySelector('#jadwalModalLabel').innerHTML = '<i class="fas fa-edit me-2"></i>Edit Agenda';
-                        m.querySelector('#jadwal-modal-subtitle').textContent = 'Ubah detail agenda kegiatan';
-                        m.querySelector('#jadwal-btn-label').textContent = 'Simpan Perubahan';
                         bootstrap.Modal.getOrCreateInstance(m).show();
                     };
-                    window._submitJadwalForm = function() {
-                        const m = document.getElementById('jadwalAgendaModal');
-                        const hari_tgl = m.querySelector('#jadwal-f-haritgl').value.trim();
-                        const jam = m.querySelector('#jadwal-f-jam').value.trim();
-                        const keterangan = m.querySelector('#jadwal-f-keterangan').value.trim();
-                        const tempat = m.querySelector('#jadwal-f-tempat').value.trim();
-                        const cp = m.querySelector('#jadwal-f-cp').value.trim();
-                        if (!hari_tgl || !keterangan) { showToast('Hari/Tanggal dan Keterangan wajib diisi.', 'warning'); return; }
-                        const idx = parseInt(m.querySelector('#jadwal-edit-index').value);
-                        const item = { hari_tgl, jam, keterangan, tempat, cp };
-                        if (idx >= 0) { window._jadwalData[idx] = item; }
-                        else { window._jadwalData.push(item); }
-                        bootstrap.Modal.getInstance(m)?.hide();
-                        window._renderJadwal();
-                    };
+
                     window._renderJadwal();
                     return;
                 }
-                // ── END: Jadwal special case ───────────────────────
 
+                // ── Default CMS Case ──────────────────────────────
                 let html = `
                     <div class="cms-animate-content">
                         <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-4 mb-4 cms-header-spacer">
                             <div class="pe-sm-5">
-                                <h2 class="fw-bold mb-0 text-dark cms-section-title" style="letter-spacing: -0.02em;">Manajemen ${getLabel(type)}</h2>
-                                <p class="text-muted mb-0 cms-section-subtitle">Oksigenasi dan kelola konten bagian ini dengan efisien.</p>
+                                <h2 class="fw-bold mb-0 text-dark cms-section-title" style="letter-spacing:-0.02em;">Manajemen ${getLabel(type)}</h2>
+                                <p class="text-muted mb-0 cms-section-subtitle">Kelola konten bagian ini dengan efisien.</p>
                             </div>
                             <div class="d-flex w-100 w-sm-auto">
-                                <button class="btn btn-dark rounded-pill px-4 fw-bold shadow-sm py-2 px-sm-4 btn-compact-mobile" onclick="saveCMS('${type}')">
-                                    <i class="fas fa-save me-2"></i> Simpan <span class="d-none d-sm-inline">Perubahan</span>
+                                <button class="btn btn-dark rounded-pill px-4 fw-bold shadow-sm py-2 px-sm-4" onclick="saveCMS('${type}')">
+                                    <i class="fas fa-save me-2"></i> Simpan Perubahan
                                 </button>
                             </div>
                         </div>
                         <form id="cms-form-${type}" class="cms-premium-form">
+                            <div class="row g-4 px-2">
+                                ${renderRecursive(data, type)}
+                            </div>
+                        </form>
+                    </div>
                 `;
 
-                function renderRecursive(obj, currentKey, path = []) {
-                    let fieldsHtml = "";
-                    
-                    // Special case: if this object contains children that are mostly objects/arrays,
-                    // let's see if we can render some of them as a group table for better consistency
-                    const keys = Object.keys(obj).filter(k => !['buttons', 'id', 'class', 'icon'].includes(k));
-                    const childObjects = keys.filter(k => typeof obj[k] === 'object' && obj[k] !== null && !Array.isArray(obj[k]));
-                    
-                    // If we have multiple child objects that look like "Person" records, group them
-                    if (childObjects.length > 1) {
-                        const firstChild = obj[childObjects[0]];
-                        if (firstChild && typeof firstChild === 'object' && (firstChild.name || firstChild.position)) {
-                            // Group these into a table!
-                            fieldsHtml += `
-                                    <div class="mb-5 pb-4 border-bottom border-light">
-                                        <div class="d-flex justify-content-between align-items-center mb-4">
-                                            <label class="form-label fw-bold text-dark d-flex align-items-center gap-2 gap-sm-3 mb-0 h5 cms-list-title">
-                                                <div class="bg-accent rounded-pill d-none d-sm-block" style="width:12px; height:6px;"></div>
-                                                Daftar ${getLabel(currentKey)}
-                                            </label>
-                                        </div>
-                                    <div class="cms-table-container">
-                                        <table class="cms-table">
-                                            <thead>
-                                                <tr>
-                                                    <th>Posisi</th>
-                                                    <th>Nama</th>
-                                                    <th>Foto</th>
-                                                    <th class="text-end">Aksi</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                ${childObjects.map(k => {
-                                                    const item = obj[k];
-                                                    const itemPath = [...path, k].join('.');
-                                                    const val = item.name || "";
-                                                    const pos = item.position || getLabel(k);
-                                                    const img = item.image || "assets/user.png";
-                                                    return `
-                                                        <tr>
-                                                            <td><div class="fw-bold">${pos}</div></td>
-                                                            <td><div class="text-truncate" style="max-width: 250px;">${val}</div></td>
-                                                            <td><img src="${img}?v=${Date.now()}" class="cms-thumb shadow-sm"></td>
-                                                            <td class="text-end">
-                                                                <button type="button" class="cms-action-btn edit" onclick="editCmsItem('${type}', '${itemPath}', null)" title="Edit">
-                                                                    <i class="fas fa-edit"></i>
-                                                                </button>
-                                                            </td>
-                                                        </tr>
-                                                    `;
-                                                }).join('')}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            `;
-                            // Remove processed keys from normal loop
-                            keys.forEach(k => { if (childObjects.includes(k)) delete keys[keys.indexOf(k)]; });
-                        }
-                    }
-
-                    for (const key of keys) {
-                        if (!key) continue;
-                        const label = getLabel(key);
-                        const val = obj[key];
-                        const fullPath = [...path, key];
-                        const dataPath = fullPath.join('.');
-
-                        if (Array.isArray(val)) {
-                            const isObjectArray = val.length > 0 && typeof val[0] === 'object';
-                            fieldsHtml += `
-                                <div class="mb-5 pb-4 border-bottom border-light">
-                                    <div class="d-flex justify-content-between align-items-center mb-4">
-                                        <label class="form-label fw-bold text-dark d-flex align-items-center gap-2 gap-sm-3 mb-0 h5 cms-list-title">
-                                            <div class="bg-accent rounded-pill d-none d-sm-block" style="width:12px; height:6px;"></div>
-                                            ${label}
-                                        </label>
-                                        <button class="btn btn-dark btn-sm rounded-pill px-4 fw-bold shadow-sm cms-add-btn btn-add-compact" type="button" onclick="addItem(event, '${type}', '${dataPath}')">
-                                            <i class="fas fa-plus me-1"></i> <span>Tambah Item</span>
-                                        </button>
-                                    </div>
-                                    ${isObjectArray ? (() => {
-                                        let visibleKeys = Object.keys(val[0]).filter(k => {
-                                            const v = val[0][k];
-                                            return k !== 'id' && k !== 'is_list' && (typeof v !== 'object' || v === null);
-                                        });
-
-                                        // Apply filters per content type for a cleaner list view
-                                        if (type === 'faq') visibleKeys = ['question'];
-                                        else if (type === 'news') visibleKeys = ['tag', 'title', 'image'];
-                                        else if (type === 'stats') visibleKeys = ['title', 'value', 'icon'];
-                                        else if (type === 'tentang') visibleKeys = ['title', 'icon'];
-                                        else if (type === 'contact') visibleKeys = ['label', 'value', 'icon'];
-
-                                        return `
-                                        <div class="cms-table-container">
-                                            <table class="cms-table">
-                                                <thead>
-                                                    <tr>
-                                                        ${visibleKeys.map(k => `<th>${getLabel(k)}</th>`).join('')}
-                                                        <th class="text-end">Aksi</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    ${val.map((item, i) => `
-                                                        <tr>
-                                                            ${visibleKeys.map(k => {
-                                                                const value = item[k] || '';
-                                                                const isItemImage = (k.toLowerCase().includes('image') || (value || "").toString().includes('assets/'));
-                                                                const isIcon = k === 'icon';
-                                                                return `
-                                                                    <td>
-                                                                        ${isItemImage ? `<img src="${value}?v=${Date.now()}" class="cms-thumb shadow-sm">` : 
-                                                                        (isIcon ? `<div class="bg-light rounded-3 d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;"><i class="${value} text-dark"></i></div>` :
-                                                                        `<div class="text-truncate" style="max-width: 200px;">${value}</div>`)}
-                                                                    </td>
-                                                                `;
-                                                            }).join('')}
-                                                            <td class="text-end">
-                                                                <div class="d-flex justify-content-end gap-2">
-                                                                    <button type="button" class="cms-action-btn edit" onclick="editCmsItem('${type}', '${dataPath}', ${i})" title="Edit">
-                                                                        <i class="fas fa-edit"></i>
-                                                                    </button>
-                                                                    <button type="button" class="cms-action-btn delete" onclick="removeItem(event, '${type}', '${dataPath}', ${i})" title="Hapus">
-                                                                        <i class="fas fa-trash-alt"></i>
-                                                                    </button>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    `).join('')}
-                                                </tbody>
-                                            </table>
-                                        </div>`;
-                                    })() : (() => {
-                                        const isAllImages = val.length > 0 && val.every(item => !item || item.toString().includes('assets/') || item.toString().includes('uploads/')) && val.some(item => item && (item.toString().includes('assets/') || item.toString().includes('uploads/')));
-                                        return `
-                                        <div id="array-container-${dataPath.replace(/\./g, '-')}" class="row g-3">
-                                            ${val.map((item, i) => {
-                                                const isActualImage = item && (item.toString().includes('assets/') || item.toString().includes('uploads/'));
-                                                if (isAllImages) {
-                                                    return `
-                                                    <div class="col-6 col-md-3 col-lg-2" id="item-${dataPath.replace(/\./g, '-')}-${i}">
-                                                        <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white h-100 position-relative">
-                                                            <div class="position-absolute top-0 end-0 p-2 d-flex gap-1 z-2">
-                                                                <button type="button" class="btn btn-light btn-sm rounded-circle shadow-sm p-0 d-flex align-items-center justify-content-center" style="width:28px; height:28px;" onclick="this.nextElementSibling.click()" title="Ganti">
-                                                                    <i class="fas fa-camera small"></i>
-                                                                </button>
-                                                                <input type="file" class="d-none" accept="image/*" onchange="handleCMSImageUpload(this, '${type}', '${dataPath}', ${i})">
-                                                                <button type="button" class="btn btn-danger btn-sm rounded-circle shadow-sm p-0 d-flex align-items-center justify-content-center" style="width:28px; height:28px;" onclick="removeItem(event, '${type}', '${dataPath}', ${i})" title="Hapus">
-                                                                    <i class="fas fa-times small"></i>
-                                                                </button>
-                                                            </div>
-                                                            <div class="ratio ratio-1x1 bg-light d-flex align-items-center justify-content-center">
-                                                                ${isActualImage ? 
-                                                                    `<img src="${item}?v=${Date.now()}" class="object-fit-contain p-3 w-100 h-100">` : 
-                                                                    `<div class="text-muted small text-center p-2"><i class="fas fa-image fa-2x mb-2 d-block opacity-25"></i>Pilih Gambar</div>`
-                                                                }
-                                                            </div>
-                                                            <input type="hidden" data-path="${dataPath}" data-index="${i}" value="${item}">
-                                                        </div>
-                                                    </div>`;
-                                                }
-                                                const isImage = (item.toString().includes('assets/') || item.toString().includes('uploads/'));
-                                                return `
-                                                <div class="col-md-6" id="item-${dataPath.replace(/\./g, '-')}-${i}">
-                                                    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white d-flex align-items-center gap-3 cms-card">
-                                                        ${isImage ? `
-                                                            <div class="rounded-3 overflow-hidden border shadow-sm" style="width: 60px; height: 45px; flex-shrink: 0;">
-                                                                <img src="${item}?v=${Date.now()}" class="w-100 h-100 object-fit-cover">
-                                                            </div>
-                                                        ` : ''}
-                                                        <div class="flex-grow-1">
-                                                            <input type="text" class="form-control border-0 bg-light rounded-pill px-3" 
-                                                                   data-path="${dataPath}" data-index="${i}" 
-                                                                   value="${item.toString().replace(/"/g, '&quot;')}">
-                                                        </div>
-                                                        <div class="d-flex gap-1">
-                                                            ${isImage ? `
-                                                                <button type="button" class="btn btn-link text-dark p-1 shadow-none" onclick="this.nextElementSibling.click()">
-                                                                    <i class="fas fa-upload"></i>
-                                                                </button>
-                                                                <input type="file" class="d-none" accept="image/*" onchange="handleCMSImageUpload(this, '${type}', '${dataPath}', ${i})">
-                                                            ` : ''}
-                                                            <button type="button" class="btn btn-link text-danger p-1 text-decoration-none shadow-none" onclick="removeItem(event, '${type}', '${dataPath}', ${i})">
-                                                                <i class="fas fa-times"></i>
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>`;
-                                            }).join('')}
-                                        </div>`;
-                                    })()}
-                                </div>
-                            `;
-                        } else if (typeof val === 'object' && val !== null) {
-                            fieldsHtml += `
-                                <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white border-top border-4 border-accent">
-                                    <label class="form-label fw-bold text-dark mb-3 text-uppercase small" style="letter-spacing: 1px;">${label}</label>
-                                    <div class="row g-3">
-                                        ${renderRecursive(val, key, fullPath)}
-                                    </div>
-                                </div>
-                            `;
-                        } else {
-                            const isRich = key.includes('content') || key.includes('description') || key.includes('text') || key.includes('answer') || key.includes('question') || key.includes('address');
-                            const isLarge = isRich || (val || "").toString().length > 100;
-                            const colClass = path.length > 0 ? "col-md-6" : "col-12";
-                            fieldsHtml += `
-                                <div class="${colClass} mb-4">
-                                    <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
-                                        <label class="form-label fw-bold text-muted small text-uppercase mb-2" style="letter-spacing: 0.5px;">${label}</label>
-                                        ${(key.toLowerCase().includes('image') || (val || "").toString().includes('assets/')) ? `
-                                            <div class="d-flex align-items-center gap-3">
-                                                <div class="rounded-4 overflow-hidden border bg-light shadow-sm" style="width: 100px; height: 75px;">
-                                                    <img src="${val}?v=${Date.now()}" class="w-100 h-100 object-fit-cover">
-                                                </div>
-                                                <div class="flex-grow-1">
-                                                    <input type="text" class="form-control mb-2 border-0 bg-light rounded-pill px-3 fs-6" data-path="${dataPath}" value="${(val || "").toString().replace(/"/g, '&quot;')}">
-                                                    <button type="button" class="btn btn-sm btn-outline-dark rounded-pill px-3" onclick="this.nextElementSibling.click()">
-                                                        <i class="fas fa-upload me-1"></i> Ganti Gambar
-                                                    </button>
-                                                    <input type="file" class="d-none" accept="image/*" onchange="handleCMSImageUpload(this, '${type}', '${dataPath}')">
-                                                </div>
-                                            </div>
-                                        ` : (isLarge ? 
-                                            `<textarea class="form-control border-0 bg-light rounded-4 p-3 fs-6 ${isRich ? 'summernote' : ''}" data-path="${dataPath}" data-is-rich="${isRich}" rows="4">${val}</textarea>` :
-                                            `<input type="text" class="form-control form-control-lg border-0 bg-light rounded-pill px-4 fs-6" data-path="${dataPath}" value="${(val || "").toString().replace(/"/g, '&quot;')}">`
-                                        )}
-                                    </div>
-                                </div>
-                            `;
-                        }
-                    }
-                    return fieldsHtml;
-                }
-
-                if (Array.isArray(data)) {
-                    const isObjectArray = data.length > 0 && typeof data[0] === 'object';
-                    html += `
-                        <div class="mb-5">
-                            <div class="d-flex justify-content-between align-items-center mb-4">
-                                <label class="form-label fw-bold text-dark d-flex align-items-center gap-2 gap-sm-3 mb-0 h5 cms-list-title">
-                                    <div class="bg-accent rounded-pill d-none d-sm-block" style="width:12px; height:6px;"></div>
-                                    Daftar ${getLabel(type)}
-                                </label>
-                                <button class="btn btn-dark btn-sm rounded-pill px-4 fw-bold shadow-sm cms-add-btn btn-add-compact" type="button" onclick="addItem(event, '${type}', '')">
-                                    <i class="fas fa-plus me-1"></i> <span>Tambah Item</span>
-                                </button>
-                            </div>
-                            ${isObjectArray ? (() => {
-                                let visibleKeys = Object.keys(data[0]).filter(k => {
-                                    const v = data[0][k];
-                                    return k !== 'id' && k !== 'is_list' && (typeof v !== 'object' || v === null);
-                                });
-
-                                // Apply filters per content type for a cleaner list view
-                                if (type === 'faq') visibleKeys = ['question'];
-                                else if (type === 'news') visibleKeys = ['tag', 'title', 'image'];
-                                else if (type === 'stats') visibleKeys = ['title', 'value', 'icon'];
-                                else if (type === 'tentang') visibleKeys = ['title', 'icon'];
-                                else if (type === 'contact') visibleKeys = ['label', 'value', 'icon'];
-                                else if (type === 'jadwal_kegiatan') visibleKeys = ['hari_tgl', 'keterangan', 'jam'];
-                                return `
-                                <div class="cms-table-container">
-                                    <table class="cms-table">
-                                        <thead>
-                                            <tr>
-                                                ${visibleKeys.map(k => `<th>${getLabel(k)}</th>`).join('')}
-                                                <th class="text-end">Aksi</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            ${data.map((item, i) => `
-                                                <tr>
-                                                    ${visibleKeys.map(k => {
-                                                        const value = item[k] || '';
-                                                        const isImage = (k.toLowerCase().includes('image') || (value || "").toString().includes('assets/'));
-                                                        const isIcon = k === 'icon';
-                                                        return `
-                                                            <td>
-                                                                ${isImage ? `<img src="${value}?v=${Date.now()}" class="cms-thumb shadow-sm">` : 
-                                                                (isIcon ? `<div class="bg-light rounded-3 d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;"><i class="${value} text-dark"></i></div>` :
-                                                                `<div class="text-truncate" style="max-width: 200px;">${value}</div>`)}
-                                                            </td>
-                                                        `;
-                                                    }).join('')}
-                                                    <td class="text-end">
-                                                        <div class="d-flex justify-content-end gap-2">
-                                                            <button type="button" class="cms-action-btn edit" onclick="editCmsItem('${type}', '', ${i})" title="Edit">
-                                                                <i class="fas fa-edit"></i>
-                                                            </button>
-                                                            <button type="button" class="cms-action-btn delete" onclick="removeItem(event, '${type}', '', ${i})" title="Hapus">
-                                                                <i class="fas fa-trash-alt"></i>
-                                                            </button>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            `).join('')}
-                                        </tbody>
-                                    </table>
-                                </div>`;
-                            })() : (() => {
-                                const isAllImages = data.length > 0 && data.every(item => !item || item.toString().includes('assets/') || item.toString().includes('uploads/')) && data.some(item => item && (item.toString().includes('assets/') || item.toString().includes('uploads/')));
-                                return `
-                                <div class="row g-3">
-                                    ${data.map((item, i) => {
-                                        const isActualImage = item && (item.toString().includes('assets/') || item.toString().includes('uploads/'));
-                                        if (isAllImages) {
-                                            return `
-                                            <div class="col-6 col-md-3 col-lg-2">
-                                                <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white h-100 position-relative">
-                                                    <div class="position-absolute top-0 end-0 p-2 d-flex gap-1 z-2">
-                                                        <button type="button" class="btn btn-light btn-sm rounded-circle shadow-sm p-0 d-flex align-items-center justify-content-center" style="width:28px; height:28px;" onclick="this.nextElementSibling.click()" title="Ganti">
-                                                            <i class="fas fa-camera small"></i>
-                                                        </button>
-                                                        <input type="file" class="d-none" accept="image/*" onchange="handleCMSImageUpload(this, '${type}', '')">
-                                                        <button type="button" class="btn btn-danger btn-sm rounded-circle shadow-sm p-0 d-flex align-items-center justify-content-center" style="width:28px; height:28px;" onclick="removeItem(event, '${type}', '', ${i})" title="Hapus">
-                                                            <i class="fas fa-times small"></i>
-                                                        </button>
-                                                    </div>
-                                                    <div class="ratio ratio-1x1 bg-light d-flex align-items-center justify-content-center">
-                                                        ${isActualImage ? 
-                                                            `<img src="${item}?v=${Date.now()}" class="object-fit-contain p-3 w-100 h-100">` : 
-                                                            `<div class="text-muted small text-center p-2"><i class="fas fa-image fa-2x mb-2 d-block opacity-25"></i>Pilih Gambar</div>`
-                                                        }
-                                                    </div>
-                                                    <input type="hidden" data-path="" data-index="${i}" value="${item}">
-                                                </div>
-                                            </div>`;
-                                        }
-                                        const isImage = (item.toString().includes('assets/') || item.toString().includes('uploads/'));
-                                        return `
-                                        <div class="col-md-6">
-                                            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white d-flex align-items-center gap-3 cms-card">
-                                                ${isImage ? `
-                                                    <div class="rounded-3 overflow-hidden border shadow-sm" style="width: 60px; height: 45px; flex-shrink: 0;">
-                                                        <img src="${item}?v=${Date.now()}" class="w-100 h-100 object-fit-cover">
-                                                    </div>
-                                                ` : ''}
-                                                <div class="flex-grow-1">
-                                                    <input type="text" class="form-control border-0 bg-light rounded-pill px-3" value="${item}" data-path="" data-index="${i}">
-                                                </div>
-                                                <div class="d-flex gap-1">
-                                                    ${isImage ? `
-                                                        <button type="button" class="btn btn-link text-dark p-1 shadow-none" onclick="this.nextElementSibling.click()">
-                                                            <i class="fas fa-upload"></i>
-                                                        </button>
-                                                        <input type="file" class="d-none" accept="image/*" onchange="handleCMSImageUpload(this, '${type}', '')">
-                                                    ` : ''}
-                                                    <button type="button" class="btn btn-link text-danger p-1 text-decoration-none shadow-none" onclick="removeItem(event, '${type}', '', ${i})">
-                                                        <i class="fas fa-times"></i>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    `}).join('')}
-                                </div>`;
-                            })()}
-                        </div>
-                    `;
-                } else {
-                    html += renderRecursive(data, type);
-                }
-                
-                html += `</form></div>`;
                 container.innerHTML = html;
 
-                // Initialize Summernote for direct forms
+                // Init Summernote
                 $(`#cms-form-${type} .summernote`).summernote({
-                    placeholder: 'Ketik konten di sini...',
-                    tabsize: 2,
-                    height: 150,
-                    toolbar: [
-                        ['style', ['bold', 'italic', 'underline', 'clear']],
-                        ['para', ['ul', 'ol', 'paragraph']],
-                        ['view', ['codeview']]
-                    ],
-                    callbacks: {
-                        onChange: function(contents, $editable) {
-                            $(this).val(contents);
-                        }
-                    }
+                    placeholder: 'Ketik konten di sini...', tabsize: 2, height: 150,
+                    toolbar: [['style', ['bold', 'italic', 'underline', 'clear']], ['para', ['ul', 'ol', 'paragraph']], ['view', ['codeview']]],
+                    callbacks: { onChange: function(contents) { $(this).val(contents); } }
                 });
 
             } catch (err) {
