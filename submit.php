@@ -2,6 +2,14 @@
 header('Content-Type: application/json');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Check if POST data is empty but content-length is large
+    // This happens when PHP discards the body because post_max_size is exceeded
+    $contentLength = (int)($_SERVER['CONTENT_LENGTH'] ?? 0);
+    if (empty($_POST) && $contentLength > 0) {
+        echo json_encode(['status' => 'error', 'message' => 'Ukuran file mungkin terlalu besar (Maksimum server terlampaui)']);
+        exit;
+    }
+
     $dataFile = 'data/pendaftaran.json';
     
     // Ensure file exists
@@ -11,11 +19,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Get current data
     $currentData = json_decode(file_get_contents($dataFile), true);
-    if (!is_array($currentData)) {
-        $currentData = [];
-    }
+    if (!is_array($currentData)) $currentData = [];
 
     // Collect data from POST
+    $full_name = $_POST['full_name'] ?? '';
+    if (empty($full_name)) {
+         echo json_encode(['status' => 'error', 'message' => 'Nama lengkap wajib diisi']);
+         exit;
+    }
     $newData = [
         'reg_number' => $_POST['reg_number'] ?? 'N/A',
         'full_name' => $_POST['full_name'] ?? 'N/A',

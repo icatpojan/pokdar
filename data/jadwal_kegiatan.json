@@ -1,37 +1,30 @@
 [
     {
-        "hari_tgl": "2026-03-06",
-        "jam": "17:00",
-        "keterangan": "Buka puasa Bersama",
-        "tempat": "cisauk Rumah kayu",
-        "cp": "0000987655"
-    },
-    {
-        "hari_tgl": "2026-03-15",
-        "jam": "08:00",
-        "keterangan": "Rapat Koordinasi Bulanan Pokdar Kamtibmas Resort Tangsel",
+        "hari_tgl": "Sabtu, 15 Maret 2026",
+        "jam": "08:00 - 12:00 ",
+        "keterangan": "Rapat Koordinasi Bulananr ",
         "tempat": "Aula Mapolres Tangerang Selatan",
         "cp": "Bpk. Andi (0812-xxxx-xxxx)"
     },
     {
-        "hari_tgl": "2026-03-23",
-        "jam": "09:00",
-        "keterangan": "Kegiatan Bakti Sosial dan Pengobatan Gratis untuk Warga",
+        "hari_tgl": "Minggu, 23 Maret 2026",
+        "jam": "09:00 - Selesai",
         "tempat": "Lapangan Kec. Serpong",
-        "cp": "Ibu Sari (0813-xxxx-xxxx)"
+        "cp": "Ibu Sari (0813-xxxx-xxxx)",
+        "keterangan": "Kegiatan Bakti Sosial dan Pengobatan Gratis untuk Warga"
     },
     {
-        "hari_tgl": "2026-03-26",
-        "jam": "19:30",
+        "hari_tgl": "Rabu, 26 Maret 2026",
+        "jam": "19:30 - 21:30",
         "keterangan": "Penyuluhan Kamtibmas dan Pencegahan Kenakalan Remaja",
         "tempat": "Polsek Pondok Aren",
         "cp": "Bpk. Budi (0815-xxxx-xxxx)"
     },
     {
-        "hari_tgl": "2026-03-12",
-        "jam": "22:51",
-        "keterangan": "apakekk",
-        "tempat": "dsad",
-        "cp": "dsaasd"
+        "hari_tgl": "jumat, 6 maret 2026",
+        "jam": "17.00 - selesai",
+        "keterangan": "Buka puasa Bersama",
+        "tempat": "cisauk Rumah kayu",
+        "cp": "0000987655"
     }
 ]

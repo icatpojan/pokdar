@@ -12,11 +12,11 @@
             "komentar": "tidakk ada",
             "updated_at": "2026-03-04T23:48:46.684Z"
         },
-        "updated_at": "2026-03-04 23:48:23"
+        "updated_at": "2026-03-05 23:47:21"
     },
     {
         "name": "karyadi",
-        "full_name": "karyadi",
+        "full_name": "Karyadi",
         "password": "karyadi",
         "sector": "02-p",
         "assessment": {
@@ -27,22 +27,14 @@
             "komentar": "",
             "updated_at": "2026-03-05T04:25:34.481Z"
         },
-        "updated_at": "2026-03-05 11:24:54"
+        "updated_at": "2026-03-06 02:18:06"
     },
     {
-        "name": "jurmiah",
-        "full_name": "Jurmiah",
-        "password": "jurmiah",
-        "sector": "01-t",
+        "name": "nandar",
+        "full_name": "NANDAR",
+        "password": "nandar",
+        "sector": "04-u",
         "assessment": null,
-        "updated_at": "2026-03-05 15:01:30"
-    },
-    {
-        "name": "dahlann",
-        "full_name": "Dahlan",
-        "password": "dahlann",
-        "sector": "01-c",
-        "assessment": null,
-        "updated_at": "2026-03-05 15:06:31"
+        "updated_at": "2026-03-06 02:09:28"
     }
 ]

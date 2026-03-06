@@ -128,7 +128,6 @@ $userSector = $_SESSION['user_sector'] ?? '';
 
         #cms-pills-tab .nav-link.active i {
             transform: scale(1.1);
-            color: #fff !important;
         }
 
         /* Top Nav Tabs */
@@ -263,7 +262,7 @@ $userSector = $_SESSION['user_sector'] ?? '';
             }
 
             .mobile-nav-item.active i {
-                color: #fff;
+                color: #fff !important;
             }
 
             .action-sheet-handle {
@@ -559,6 +558,8 @@ $userSector = $_SESSION['user_sector'] ?? '';
         /* Premium CMS Table Styles */
         .cms-table-container {
             border-radius: 16px;
+            max-height: 450px;
+            overflow-y: auto;
             overflow-x: auto;
             border: 1px solid #e5e7eb;
             background: #ffffff;
@@ -566,6 +567,14 @@ $userSector = $_SESSION['user_sector'] ?? '';
             /* Custom Scrollbar for premium feel */
             scrollbar-width: thin;
             scrollbar-color: #d1d5db transparent;
+        }
+
+        .cms-table-container thead th {
+            position: sticky;
+            top: 0;
+            background-color: #f8fafc;
+            z-index: 5;
+            box-shadow: inset 0 -1px 0 #e5e7eb;
         }
 
         .cms-table-container::-webkit-scrollbar {
@@ -581,7 +590,7 @@ $userSector = $_SESSION['user_sector'] ?? '';
 
         .cms-table {
             width: 100%;
-            min-width: unset; /* Allow mobile to be flexible */
+            min-width: 600px; 
             border-collapse: separate;
             border-spacing: 0;
             margin-bottom: 0;
@@ -589,7 +598,7 @@ $userSector = $_SESSION['user_sector'] ?? '';
 
         @media (min-width: 992px) {
             .cms-table {
-                min-width: 800px; /* Only force width on desktop */
+                min-width: 900px; 
             }
         }
 
@@ -612,8 +621,23 @@ $userSector = $_SESSION['user_sector'] ?? '';
         }
 
         @media (max-width: 768px) {
+            .cms-table thead th {
+                padding: 10px 12px;
+                font-size: 0.65rem;
+            }
             .cms-table tbody td {
-                padding: 12px 10px; /* Smaller padding on mobile */
+                padding: 8px 10px;
+                font-size: 0.75rem;
+            }
+            .btn-action-text {
+                padding: 4px 8px !important;
+                font-size: 9px !important;
+            }
+            .action-btns {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 2px;
+                justify-content: flex-end;
             }
         }
 
@@ -718,8 +742,23 @@ $userSector = $_SESSION['user_sector'] ?? '';
             <!-- Header Section -->
             <div class="row align-items-center mb-5 animate-up dashboard-header-row">
                 <div class="col-lg-7 mb-4 mb-lg-0 mobile-text-center">
-                    <h1 class="fw-bold display-5 dashboard-main-title">Dashboard Pengelola</h1>
-                    <p class="text-muted fs-5 mb-0 dashboard-subtitle">Selamat datang kembali! Kelola database anggota dan publikasi konten.</p>
+                    <?php
+                        $displayTitle = 'Dashboard Pengelola';
+                        $displaySubtitle = 'Selamat datang kembali! Kelola database anggota dan publikasi konten.';
+                        
+                        if ($userRole === 'admin') {
+                            $displayTitle = 'Dashboard Administrator';
+                            $displaySubtitle = 'Selamat datang kembali! Kelola database anggota dan publikasi konten.';
+                        } else if ($userRole === 'karesort') {
+                            $displayTitle = 'Dashboard Karesort';
+                            $displaySubtitle = 'Selamat datang, Karesort! Kelola data keanggotaan dan berikan persetujuan anggota.';
+                        } else if ($userRole === 'kasektor') {
+                            $displayTitle = 'Dashboard Kasektor';
+                            $displaySubtitle = 'Selamat datang, Kasektor! Kelola data keanggotaan di wilayah sektor Anda.';
+                        }
+                    ?>
+                    <h1 class="fw-bold display-5 dashboard-main-title"><?php echo $displayTitle; ?></h1>
+                    <p class="text-muted fs-5 mb-0 dashboard-subtitle"><?php echo $displaySubtitle; ?></p>
                 </div>
                 <div class="col-lg-5 text-center">
                     <div class="d-flex gap-3 justify-content-center justify-content-lg-end">
@@ -755,6 +794,11 @@ $userSector = $_SESSION['user_sector'] ?? '';
                         <li class="nav-item" role="presentation">
                             <button class="nav-link py-3 px-4" id="trash-tab" data-bs-toggle="tab" data-bs-target="#trash-section" type="button" role="tab" onclick="loadTrash()">Anggota Keluar</button>
                         </li>
+                        <?php if ($userRole === 'admin'): ?>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link py-3 px-4" id="akun-tab" data-bs-toggle="tab" data-bs-target="#akun-section" type="button" role="tab" onclick="loadAccounts()">Manajemen Akun</button>
+                        </li>
+                        <?php endif; ?>
                     </ul>
                 </div>
                 <div class="card-body p-4 bg-white">
@@ -781,6 +825,7 @@ $userSector = $_SESSION['user_sector'] ?? '';
                                         <button class="nav-link text-start" data-bs-toggle="pill" onclick="loadCMS('jadwal_kegiatan')"><i class="fas fa-calendar-alt me-2 me-lg-3 text-accent"></i> Jadwal Agenda</button>
                                         <button class="nav-link text-start" data-bs-toggle="pill" onclick="loadCMS('contact')"><i class="fas fa-address-book me-2 me-lg-3 text-accent"></i> Kontak & Media</button>
                                         <button class="nav-link text-start" data-bs-toggle="pill" onclick="loadCMS('stats')"><i class="fas fa-chart-bar me-2 me-lg-3 text-accent"></i> Statistik Utama</button>
+                                        <button class="nav-link text-start" data-bs-toggle="pill" onclick="loadCMS('registrasi')"><i class="fas fa-file-alt me-2 me-lg-3 text-accent"></i> Pendaftaran</button>
                                     </div>
                                 </div>
                                 <div class="col-lg-9">
@@ -892,8 +937,8 @@ $userSector = $_SESSION['user_sector'] ?? '';
                                             <th class="border-0 d-none d-md-table-cell">No Anggota</th>
                                             <th class="border-0">Nama Lengkap</th>
                                             <th class="border-0 d-none d-sm-table-cell">L/P</th>
-                                            <th class="border-0 d-none d-md-table-cell">Sektor</th>
-                                            <th class="border-0 d-none d-lg-table-cell">Telepon</th>
+                                            <th class="border-0">Telepon</th>
+                                            <th class="border-0">Lokasi</th>
                                             <th class="border-0">Status</th>
                                             <th class="border-0 text-end">Aksi</th>
                                         </tr>
@@ -985,6 +1030,59 @@ $userSector = $_SESSION['user_sector'] ?? '';
                             </div>
                         </div>
 
+                        <!-- Tab Manajemen Akun (Admin Only) -->
+                        <?php if ($userRole === 'admin'): ?>
+                        <div class="tab-pane fade" id="akun-section" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-4 role-header">
+                                <div>
+                                    <h4 class="fw-bold mb-1">Manajemen Akun</h4>
+                                    <p class="text-muted small mb-0">Kelola akun administrator dan karesort untuk akses sistem.</p>
+                                </div>
+                                <button class="btn btn-dark rounded-3 px-3 py-2 fw-bold shadow-sm d-flex align-items-center gap-2" onclick="openAccountModal()" style="font-size: 13px;">
+                                    <i class="fas fa-plus"></i> Tambah Akun
+                                </button>
+                            </div>
+
+                            <div class="row g-4 overflow-hidden">
+                                <!-- Admin Accounts -->
+                                <div class="col-lg-6">
+                                    <h6 class="fw-bold text-uppercase mb-3 small text-muted">Akun Administrator</h6>
+                                    <div class="table-responsive cms-table-container shadow-none border">
+                                        <table class="table cms-table align-middle border-0 mb-0">
+                                            <thead>
+                                                <tr class="small text-uppercase fw-bold text-muted">
+                                                    <th class="border-0">Username</th>
+                                                    <th class="border-0 text-end">Aksi</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="admin-account-table-body">
+                                                <!-- Loaded via JS -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <!-- Karesort Accounts -->
+                                <div class="col-lg-6">
+                                    <h6 class="fw-bold text-uppercase mb-3 small text-muted">Akun Karesort</h6>
+                                    <div class="table-responsive cms-table-container shadow-none border">
+                                        <table class="table cms-table align-middle border-0 mb-0">
+                                            <thead>
+                                                <tr class="small text-uppercase fw-bold text-muted">
+                                                    <th class="border-0">Username</th>
+                                                    <th class="border-0 text-end">Aksi</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="karesort-account-table-body">
+                                                <!-- Loaded via JS -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+
                     </div>
                 </div>
             </div>
@@ -1030,7 +1128,7 @@ $userSector = $_SESSION['user_sector'] ?? '';
                         
                         <!-- Right: Data Controls (becomes order-1 on mobile) -->
                         <div class="col-lg-4 p-4 order-1 order-lg-2">
-                            <form id="editMemberForm">
+                            <form id="editMemberForm" enctype="multipart/form-data">
                                 <input type="hidden" name="reg_number" id="m-reg-val">
                                 <input type="hidden" name="status" id="m-status-val">
 
@@ -1540,6 +1638,19 @@ $userSector = $_SESSION['user_sector'] ?? '';
                             noPdfMessage.classList.add('d-flex');
                         }
                     }
+                    
+                    // Update file status text
+                    const fileStatus = document.getElementById('m-file-status');
+                    if (fileStatus) {
+                        if (filePath && filePath !== 'N/A' && filePath !== '') {
+                            const fileName = filePath.split('/').pop();
+                            fileStatus.innerHTML = `<i class="fas fa-file-pdf me-2 text-primary"></i>Terlampir: <strong>${fileName}</strong>`;
+                            fileStatus.className = 'bg-primary-subtle text-primary p-2 rounded-3 mb-2 small border border-primary-subtle';
+                        } else {
+                            fileStatus.innerHTML = `<i class="fas fa-info-circle me-2 text-muted"></i>Tidak ada lampiran terunggah`;
+                            fileStatus.className = 'bg-light text-muted p-2 rounded-3 mb-2 small';
+                        }
+                    }
                 }
             });
 
@@ -1551,6 +1662,19 @@ $userSector = $_SESSION['user_sector'] ?? '';
                 
                 submitBtn.disabled = true;
                 submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Menyimpan...';
+
+                // Client-side file size check (2MB max for safety)
+                const maxSize = 2 * 1024 * 1024; 
+                const photoInput = e.target.querySelector('[name="photo"]');
+                const fileInput = e.target.querySelector('[name="reg_file"]');
+
+                if ((photoInput && photoInput.files[0] && photoInput.files[0].size > maxSize) || 
+                    (fileInput && fileInput.files[0] && fileInput.files[0].size > maxSize)) {
+                    showToast('Ukuran file terlalu besar! Maksimal 2MB.', 'error');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-save me-2 text-accent"></i> Simpan Data Saja';
+                    return;
+                }
 
                 try {
                     const resp = await fetch('update_member.php', {
@@ -2047,8 +2171,8 @@ $userSector = $_SESSION['user_sector'] ?? '';
             const btnApprove = document.getElementById('btn-rek-approve');
             const btnReject = document.getElementById('btn-rek-reject');
             
-            // Only show approve/reject for admins/kasektor on pending items in the 'khusus' tab
-            const canProcess = (window.USER_ROLE === 'admin' || window.USER_ROLE === 'kasektor') && (context === 'khusus');
+            // Only show approve/reject for admins/karesort on pending items in the 'khusus' tab
+            const canProcess = (window.USER_ROLE === 'admin' || window.USER_ROLE === 'karesort') && (context === 'khusus');
             
             if (rekStatus === '' || rekStatus === 'Rejected') {
                 btnSimpan.classList.remove('d-none');
@@ -2082,8 +2206,6 @@ $userSector = $_SESSION['user_sector'] ?? '';
 
         async function processRekomendasi(status) {
             const reg = document.getElementById('rek-reg-number').value;
-            const confirmMsg = status === 'Approved' ? 'Setujui anggota ini menjadi Anggota Penuh?' : 'Tolak ajuan anggota ini?';
-            if (!confirm(confirmMsg)) return;
 
             try {
                 const formData = new FormData();
@@ -2171,85 +2293,126 @@ $userSector = $_SESSION['user_sector'] ?? '';
 
             const accentColor = isKhusus ? '#f59e0b' : '#3b82f6';
 
+            const fullPoldaLogo = baseUrl + 'assets/polda.png';
+
             const cardHTML = `<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><title>Kartu Anggota - ${member.full_name || ''}</title>
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
             <style>
-                @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&display=swap');
+                @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap');
+                @import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@700;900&display=swap');
+                
                 * { margin:0; padding:0; box-sizing:border-box; }
-                body { font-family:'Outfit',sans-serif; background:#f1f5f9; display:flex; flex-direction:column; justify-content:center; align-items:center; min-height:100vh; }
-                .card { width:85.6mm; height:54mm; background:${cardBg}; border-radius:14px; position:relative; overflow:hidden; color:white; display:flex; padding:15px; box-shadow:0 20px 50px rgba(0,0,0,0.3); }
+                body { font-family:'Outfit',sans-serif; background:#f1f5f9; display:flex; flex-direction:column; justify-content:center; align-items:center; min-height:100vh; padding:20px; gap:20px; }
                 
-                /* Decorative patterns */
-                .card::before { content:''; position:absolute; top:-20%; right:-10%; width:150px; height:150px; background:${accentColor}; border-radius:50%; opacity:0.1; filter:blur(40px); }
-                .card::after { content:''; position:absolute; bottom:-20%; left:-10%; width:180px; height:180px; background:${accentColor}; border-radius:50%; opacity:0.08; filter:blur(50px); }
+                /* Standard CR80 Size Portrait: 54mm x 85.6mm */
+                .card-container { width:54mm; height:85.6mm; background:#facc15; border-radius:10px; position:relative; overflow:hidden; color:black; display:flex; flex-direction:column; box-shadow:0 10px 40px rgba(0,0,0,0.2); border:1px solid rgba(0,0,0,0.1); flex-shrink:0; }
                 
-                .left-panel { width:75px; display:flex; flex-direction:column; gap:8px; position:relative; z-index:2; }
-                .logo-box { width:45px; height:45px; background:white; padding:4px; border-radius:10px; box-shadow:0 4px 10px rgba(0,0,0,0.2); }
-                .logo-box img { width:100%; height:100%; object-fit:contain; }
+                /* Repeating Background Pattern */
+                .bg-pattern { position:absolute; top:0; left:0; width:100%; height:100%; opacity:0.1; pointer-events:none; 
+                    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='40'%3E%3Ctext x='10' y='25' font-family='Arial' font-size='10' font-weight='bold' fill='black'%3EPOKDAR KAMTIBMAS%3C/text%3E%3C/svg%3E");
+                    background-repeat: repeat; transform: rotate(-15deg) scale(1.5); }
+
+                .content-layer { position:relative; z-index:2; height:100%; display:flex; flex-direction:column; padding:10px 5px; }
                 
-                .photo-box { width:75px; height:95px; border-radius:10px; overflow:hidden; border:2px solid ${accentColor}; box-shadow:0 8px 15px rgba(0,0,0,0.3); margin-top:5px; }
-                .photo-box img { width:100%; height:100%; object-fit:cover; }
+                .header-logos { display:flex; justify-content:space-between; align-items:flex-start; padding:0 10px; margin-bottom:5px; }
+                .logo-img { height:14mm; object-fit:contain; }
                 
-                .right-panel { flex:1; padding-left:15px; display:flex; flex-direction:column; position:relative; z-index:2; }
-                .header { border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:5px; margin-bottom:8px; }
-                .org { font-size:6px; font-weight:600; text-transform:uppercase; letter-spacing:1px; opacity:0.7; }
-                .org-city { font-size:9px; font-weight:800; letter-spacing:0.5px; }
+                .header-text { text-align:center; margin-bottom:10px; line-height:1.2; }
+                .header-text .line-large { font-size:10px; font-weight:900; text-transform:uppercase; letter-spacing:0.2px; }
+                .header-text .line-small { font-size:8px; font-weight:800; text-transform:uppercase; margin-top:2px; }
                 
-                .member-name { font-size:13px; font-weight:900; text-transform:uppercase; margin-bottom:2px; line-height:1.2; word-break:break-word; }
+                .photo-area { flex:1; display:flex; justify-content:center; align-items:center; padding:5px 0; }
+                .photo-frame { width:34mm; height:45mm; border:2.5px solid #dc2626; border-radius:8px; padding:0; display:flex; align-items:center; justify-content:center; background:white; overflow:hidden; box-shadow:0 4px 10px rgba(0,0,0,0.2); }
+                .photo-frame img { width:100%; height:100%; object-fit:cover; }
                 
-                .type-badge { display:inline-flex; align-items:center; background:${isKhusus ? accentColor : 'rgba(255,255,255,0.1)'}; color:${isKhusus ? '#000' : '#fff'}; font-size:7px; font-weight:800; padding:2px 8px; border-radius:50px; margin-bottom:10px; text-transform:uppercase; letter-spacing:0.5px; }
+                .footer-area { display:flex; flex-direction:column; align-items:center; margin-top:auto; padding-bottom:5px; }
+                .member-name { font-size:15px; font-weight:900; text-transform:uppercase; text-align:center; line-height:1.1; margin-bottom:2px; word-break:break-word; padding:0 5px; }
+                .member-id { font-size:16px; font-weight:900; font-family:'Roboto Condensed', sans-serif; letter-spacing:1px; }
+
+                /* Back design */
+                .card-back { padding: 8px 10px; }
+                .attention-title { font-size:12px; font-weight:900; text-align:center; margin-bottom:5px; border-bottom:1.5px solid black; display:inline-block; width:100%; padding-bottom:2px; }
+                .point-list { list-style:none; padding:0; margin-bottom:8px; }
+                .point-list li { font-size:7.5px; font-weight:700; margin-bottom:4px; display:flex; gap:6px; line-height:1.2; text-align:justify; }
                 
-                .info-grid { display:grid; grid-template-columns:1fr; gap:5px; margin-bottom:auto; }
-                .info-item { display:flex; flex-direction:column; }
-                .info-label { font-size:5px; text-transform:uppercase; opacity:0.5; font-weight:700; letter-spacing:0.5px; }
-                .info-value { font-size:8px; font-weight:600; color:rgba(255,255,255,0.95); }
+                .signature-section { margin-top:auto; width:100%; display:flex; flex-direction:column; align-items:center; border-top:1px solid rgba(0,0,0,0.2); padding-top:6px; }
+                .sig-header { font-size:8px; font-weight:900; text-transform:uppercase; margin-bottom:6px; text-align:center; }
                 
-                .footer { margin-top:10px; background:rgba(0,0,0,0.2); padding:4px 10px; border-radius:6px; border:1px solid rgba(255,255,255,0.05); display:flex; justify-content:center; }
-                .id-number { font-family:'Courier New', monospace; font-size:9px; font-weight:800; letter-spacing:1.5px; }
-                
+                .sig-columns { display:flex; width:100%; justify-content:space-between; align-items:flex-start; gap:5px; }
+                .sig-box { flex:1; display:flex; flex-direction:column; align-items:center; text-align:center; }
+                .sig-title { font-size:5.5px; font-weight:900; text-transform:uppercase; line-height:1.2; height:18px; display:flex; align-items:center; justify-content:center; margin-bottom:2px; }
+                .qr-box { width:13mm; height:13mm; background:white; padding:1px; border:1px solid #ccc; margin-bottom:3px; }
+                .qr-box img { width:100%; height:100%; }
+                .sig-name { font-size:6.5px; font-weight:900; text-transform:uppercase; border-bottom:1px solid black; margin-bottom:1px; display:inline-block; }
+                .sig-no { font-size:5.5px; font-weight:800; text-transform:uppercase; }
+
                 @media print {
-                    body { background:white; }
-                    .card { box-shadow:none; -webkit-print-color-adjust: exact; }
+                    body { background:white; padding:0; gap:0; }
+                    .card-container { box-shadow:none; border:none; -webkit-print-color-adjust: exact; margin-bottom: 0px; page-break-after: always; }
+                    .card-container:last-child { page-break-after: avoid; }
                 }
             </style></head><body>
-            <div class="card">
-                <div class="left-panel">
-                    <div class="logo-box">
-                        <img src="${fullLogoSrc}" alt="Logo">
+            <!-- FRONT SIDE -->
+            <div class="card-container">
+                <div class="bg-pattern"></div>
+                <div class="content-layer">
+                    <div class="header-logos">
+                        <img src="${fullPoldaLogo}" class="logo-img" alt="Polda">
+                        <img src="${fullLogoSrc}" class="logo-img" alt="Logo">
                     </div>
-                    <div class="photo-box">
-                        <img src="${fullPhotoSrc}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2275%22 height=%2295%22><rect fill=%22%23334155%22 width=%2275%22 height=%2295%22 rx=%2210%22/><circle fill=%22%2364748b%22 cx=%2237%22 cy=%2235%22 r=%2215%22/><ellipse fill=%22%2364748b%22 cx=%2237%22 cy=%2280%22 rx=%2225%22 ry=%2215%22/></svg>'">
+                    <div class="header-text">
+                        <div class="line-large">POLRES TANGERANG SELATAN</div>
+                        <div class="line-large">POLSEK ${sectorName.toUpperCase()}</div>
+                        <div class="line-small">KELOMPOK SADAR KAMTIBMAS</div>
+                        <div class="line-large">BHAYANGKARA</div>
                     </div>
-                </div>
-                <div class="right-panel">
-                    <div class="header">
-                        <div class="org">Pokdar Kamtibmas</div>
-                        <div class="org-city">Kota Tangerang Selatan</div>
-                    </div>
-                    
-                    <div class="member-name">${member.full_name || '-'}</div>
-                    <div class="type-badge">${isKhusus ? '★ Anggota Khusus' : 'Anggota Biasa'}</div>
-                    
-                    <div class="info-grid">
-                        <div class="info-item">
-                            <span class="info-label">NIK</span>
-                            <span class="info-value">${member.nik || '-'}</span>
+                    <div class="photo-area">
+                        <div class="photo-frame">
+                            <img src="${fullPhotoSrc}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2275%22 height=%2295%22><rect fill=%22white%22 width=%2275%22 height=%2295%22/><circle fill=%22%23dc2626%22 cx=%2237%22 cy=%2235%22 r=%2215%22/><ellipse fill=%22%23dc2626%22 cx=%2237%22 cy=%2280%22 rx=%2225%22 ry=%2215%22/></svg>'">
                         </div>
-                        <div class="info-item">
-                            <span class="info-label">Sektor / Kelurahan</span>
-                            <span class="info-value">${sectorName} / ${subsectorName}</span>
-                        </div>
-                        ${member.position ? `
-                        <div class="info-item">
-                            <span class="info-label">Jabatan</span>
-                            <span class="info-value">${member.position}</span>
-                        </div>` : ''}
                     </div>
-                    
-                    <div class="footer">
-                        <div class="id-number">${member.no_anggota || member.reg_number}</div>
+                    <div class="footer-area">
+                        <div class="member-name">${member.full_name || '-'}</div>
+                        <div class="member-id">${(member.no_anggota || member.reg_number)}</div>
                     </div>
                 </div>
             </div>
+
+            <!-- BACK SIDE -->
+            <div class="card-container card-back">
+                <div class="bg-pattern"></div>
+                <div class="content-layer">
+                    <div class="attention-title">PERHATIAN :</div>
+                    <ul class="point-list">
+                        <li><span>1.</span><span>Kartu ini milik Polsek ${sectorName} dan hanya dapat dipergunakan oleh anggota Kamtibmas Polsek ${sectorName}</span></li>
+                        <li><span>2.</span><span>Kartu ini tidak dapat di pindah tangankan, apabila hilang/rusak segera melapor ke TAUD Polsek ${sectorName}</span></li>
+                        <li><span>3.</span><span>Barang siapa menemukan kartu ini harap mengirim ke : Polsek ${sectorName}<br>Jl. Ir. H. Juanda No. 70 Ciputat<br>Telp. (021) 7492187</span></li>
+                        <li><span>4.</span><span>Berlaku sampai ada perubahan.</span></li>
+                    </ul>
+                    <div class="signature-section">
+                        <div class="sig-header">KEPALA KEPOLISIAN SEKTOR ${sectorName.toUpperCase()}</div>
+                        <div class="sig-columns">
+                            <div class="sig-box">
+                                <div class="sig-title">KETUA POKDAR KAMTIBMAS<br>SEKTOR ${sectorName.toUpperCase()}</div>
+                                <div class="qr-box">
+                                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent('KETUA POKDAR KAMTIBMAS SEKTOR ' + sectorName + ' - ' + (isKhusus ? 'MULYADI WIDODO' : member.full_name))}">
+                                </div>
+                                <div class="sig-name">MULYADI WIDODO</div>
+                                <div class="sig-no">${sectorName.toUpperCase()} 1.01</div>
+                            </div>
+                            <div class="sig-box">
+                                <div class="sig-title">KEPALA KEPOLISIAN<br>SEKTOR ${sectorName.toUpperCase()}</div>
+                                <div class="qr-box">
+                                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent('KAPOLSEK ' + sectorName.toUpperCase() + ' - NRP 86062106')}">
+                                </div>
+                                <div class="sig-name">Dr. KEMAS M.S. ARIFIN, S.H.</div>
+                                <div class="sig-no">KOMISARIS POLISI NRP 86062106</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <script>window.onload = function() { setTimeout(() => { window.print(); }, 500); }<\/script>
             </body></html>`;
 
@@ -2504,6 +2667,9 @@ $userSector = $_SESSION['user_sector'] ?? '';
             'tentang': 'Tentang Kami',
             'sejarah': 'Sejarah & Timeline',
             'structure': 'Struktur Organisasi',
+            'registrasi': 'Pendaftaran & Formulir',
+            'template_doc': 'Formulir Pendaftaran',
+            'url': 'Link/Path Dokumen',
             'news': 'Berita & Pengumuman',
             'kegiatan': 'Galeri Kegiatan',
             'faq': 'Tanya Jawab (FAQ)',
@@ -2709,13 +2875,16 @@ $userSector = $_SESSION['user_sector'] ?? '';
                         const isRich = key === 'welcome_text' || ((key.includes('content') || key.includes('description') || key === 'full' || key.includes('news')) && (window._currentCmsType !== 'hero'));
                         const isLarge = isRich || (val || "").toString().length > 100 || key === 'lead_text' || key === 'title_primary';
                         const colClass = (path.length > 0 || key === 'title_primary' || key === 'lead_text' || key === 'video_link' || key === 'welcome_text') ? "col-12" : "col-md-6";
+                        const isDoc = (key.toLowerCase().includes('doc') || key.toLowerCase().includes('url') || val.toString().endsWith('.pdf') || val.toString().endsWith('.doc') || val.toString().endsWith('.docx'));
                         const isImage = key.toLowerCase().includes('image') || (val || "").toString().includes('assets/');
+                        
+                        if (dataPath === 'template_doc.name' && window._currentCmsType === 'registrasi') continue;
 
                         fieldsHtml += `
                             <div class="${colClass} mb-2">
                                 <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
                                     <label class="form-label fw-bold text-muted small text-uppercase mb-2" style="letter-spacing:0.5px;">${label}</label>
-                                    ${isImage ? `
+                                    ${(isImage && !isDoc) ? `
                                         <div class="d-flex align-items-center gap-3">
                                             <div class="rounded-4 overflow-hidden border bg-light shadow-sm" style="width:100px; height:75px;">
                                                 <img src="${val}?v=${Date.now()}" class="w-100 h-100 object-fit-cover">
@@ -2726,10 +2895,21 @@ $userSector = $_SESSION['user_sector'] ?? '';
                                                 <input type="file" class="d-none" accept="image/*" onchange="handleCMSImageUpload(this, '${window._currentCmsType || 'hero'}', '${dataPath}')">
                                             </div>
                                         </div>
+                                    ` : (isDoc ? `
+                                        <div class="d-flex flex-column gap-3">
+                                            <div class="rounded-4 overflow-hidden border bg-light shadow-sm" style="height: 400px;">
+                                                <iframe src="${val}" class="w-100 h-100 border-0"></iframe>
+                                            </div>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <input type="hidden" data-path="${dataPath}" value="${(val || "").toString()}">
+                                                <button type="button" class="btn btn-sm btn-outline-dark rounded-pill px-3" onclick="this.nextElementSibling.click()"><i class="fas fa-upload me-1"></i> Ganti Dokumen</button>
+                                                <input type="file" class="d-none" accept=".pdf,.doc,.docx" onchange="handleCMSImageUpload(this, '${window._currentCmsType || 'hero'}', '${dataPath}')">
+                                            </div>
+                                        </div>
                                     ` : (isLarge ? 
                                         `<textarea class="form-control border-0 bg-light rounded-4 p-3 fs-6 ${isRich ? 'summernote' : ''}" data-path="${dataPath}" data-is-rich="${isRich}" rows="3">${val}</textarea>` :
                                         `<input type="text" class="form-control form-control-lg border-0 bg-light rounded-pill px-4 fs-6" data-path="${dataPath}" value="${(val || "").toString().replace(/"/g, '&quot;')}">`
-                                    )}
+                                    ))}
                                 </div>
                             </div>
                         `;
@@ -3286,8 +3466,10 @@ $userSector = $_SESSION['user_sector'] ?? '';
                 showToast(err.message, 'error', 'Gagal Menyimpan');
                 console.error(err);
             } finally {
-                saveBtn.disabled = false;
-                saveBtn.innerHTML = originalBtnHtml;
+                if (saveBtn) {
+                    saveBtn.disabled = false;
+                    saveBtn.innerHTML = originalBtnHtml;
+                }
             }
         }
 
@@ -3384,6 +3566,7 @@ $userSector = $_SESSION['user_sector'] ?? '';
 
             for (const key in item) {
                 if (key === 'id' || key === 'icon' || key === 'class') continue;
+                if (window._currentCmsType === 'registrasi' && path.includes('template_doc') && key === 'name') continue;
 
                 const label = getLabel(key);
                 let val = item[key] || "";
@@ -3405,12 +3588,13 @@ $userSector = $_SESSION['user_sector'] ?? '';
                 }
 
                 const isLarge = isRich || isArray || (val || "").toString().length > 100;
+                const isDoc = (key.toLowerCase().includes('doc') || key.toLowerCase().includes('url') || val.toString().endsWith('.pdf') || val.toString().endsWith('.doc') || val.toString().endsWith('.docx'));
                 const isImage = (key.toLowerCase().includes('image') || (val || "").toString().includes('assets/'));
 
                 const html = `
                     <div class="col-12">
                         <label class="form-label fw-bold text-muted small text-uppercase mb-2">${label} ${isArray ? '(Daftar Poin)' : ''}</label>
-                        ${isImage ? `
+                        ${(isImage && !isDoc) ? `
                             <div class="d-flex align-items-center gap-3 p-3 bg-light rounded-4">
                                 <div class="rounded-4 overflow-hidden border bg-white shadow-sm" style="width: 120px; height: 90px; flex-shrink: 0;">
                                     <img src="${val}?v=${Date.now()}" id="modal-img-preview-${key}" class="w-100 h-100 object-fit-cover">
@@ -3423,10 +3607,23 @@ $userSector = $_SESSION['user_sector'] ?? '';
                                     <input type="file" class="d-none" accept="image/*" onchange="handleModalImageUpload(this, '${key}')">
                                 </div>
                             </div>
+                        ` : (isDoc ? `
+                            <div class="d-flex flex-column gap-3 p-3 bg-light rounded-4">
+                                <div class="rounded-4 overflow-hidden border bg-white shadow-sm" style="height: 300px;">
+                                    <iframe src="${val}" class="w-100 h-100 border-0"></iframe>
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <input type="hidden" name="${key}" value="${(val || "").toString().replace(/"/g, '&quot;')}">
+                                    <button type="button" class="btn btn-sm btn-dark rounded-pill px-4" onclick="this.nextElementSibling.click()">
+                                        <i class="fas fa-upload me-1"></i> Ganti Dokumen
+                                    </button>
+                                    <input type="file" class="d-none" accept=".pdf,.doc,.docx" onchange="handleModalImageUpload(this, '${key}')">
+                                </div>
+                            </div>
                         ` : (isLarge ? 
                             `<textarea class="form-control border-0 bg-light rounded-4 p-3 px-4 fs-6 ${isRich ? 'summernote' : ''}" name="${key}" rows="5" data-is-array="${isArray}" data-is-rich="${isRich}">${val}</textarea>` :
                             `<input type="text" class="form-control form-control-lg border-0 bg-light rounded-pill px-4 fs-6" name="${key}" value="${(val || "").toString().replace(/"/g, '&quot;')}">`
-                        )}
+                        ))}
                     </div>
                 `;
                 container.innerHTML += html;
@@ -3668,6 +3865,18 @@ $userSector = $_SESSION['user_sector'] ?? '';
                     const btn = this.querySelector('button[type="submit"]');
                     if (btn) btn.disabled = true;
 
+                    // Client-side file size check (2MB max for safety)
+                    const maxSize = 2 * 1024 * 1024; 
+                    const photoInput = this.querySelector('[name="photo"]');
+                    const fileInput = this.querySelector('[name="reg_file"]');
+
+                    if ((photoInput && photoInput.files[0] && photoInput.files[0].size > maxSize) || 
+                        (fileInput && fileInput.files[0] && fileInput.files[0].size > maxSize)) {
+                        showToast('Ukuran file terlalu besar! Maksimal 2MB.', 'error');
+                        if (btn) btn.disabled = false;
+                        return;
+                    }
+
                     try {
                         const resp = await fetch('submit.php', {
                             method: 'POST',
@@ -3727,8 +3936,8 @@ $userSector = $_SESSION['user_sector'] ?? '';
                         mobileCmsNav.appendChild(link);
                     });
                 }
-            } else {
-                // For Kasektor, hide specific admin tabs but ALLOW content management
+            } else if (window.USER_ROLE === 'kasektor' || window.USER_ROLE === 'karesort') {
+                // For Kasektor/Karesort, hide specific admin tabs but ALLOW content management
                 const adminOnlyTabs = ['kasektor-tab', 'trash-tab'];
                 adminOnlyTabs.forEach(id => {
                     const el = document.getElementById(id);
@@ -4071,6 +4280,143 @@ $userSector = $_SESSION['user_sector'] ?? '';
                 icon.className = 'fas fa-eye';
             }
         }
+        // --- Account Management functions ---
+        let allAccounts = { admin: [], karesort: [] };
+
+        async function loadAccounts() {
+            const adminBody = document.getElementById('admin-account-table-body');
+            const karesortBody = document.getElementById('karesort-account-table-body');
+            
+            adminBody.innerHTML = `<tr><td colspan="2" class="text-center py-3"><div class="spinner-border spinner-border-sm text-dark"></div></td></tr>`;
+            karesortBody.innerHTML = `<tr><td colspan="2" class="text-center py-3"><div class="spinner-border spinner-border-sm text-dark"></div></td></tr>`;
+
+            try {
+                const formData = new FormData();
+                formData.append('action', 'load');
+                const resp = await fetch('manage_accounts.php', { method: 'POST', body: formData });
+                const result = await resp.json();
+
+                if (result.status === 'success') {
+                    allAccounts.admin = result.admin;
+                    allAccounts.karesort = result.karesort;
+                    renderAccounts();
+                } else {
+                    showToast(result.message, 'error');
+                }
+            } catch (err) {
+                showToast('Gagal memuat data akun', 'error');
+            }
+        }
+
+        function renderAccounts() {
+            const adminBody = document.getElementById('admin-account-table-body');
+            const karesortBody = document.getElementById('karesort-account-table-body');
+
+            adminBody.innerHTML = allAccounts.admin.length === 0 
+                ? '<tr><td colspan="2" class="text-center py-3 text-muted small">Belum ada akun admin</td></tr>'
+                : allAccounts.admin.map((a, i) => `
+                    <tr>
+                        <td class="small fw-bold">${a.username}</td>
+                        <td class="text-end">
+                            <div class="action-btns">
+                                <button class="btn btn-dark btn-action-text" onclick="openAccountModal('admin', ${i})">EDIT</button>
+                                <button class="btn btn-outline-danger btn-action-text" onclick="deleteAccount('admin', ${i})">HAPUS</button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+
+            karesortBody.innerHTML = allAccounts.karesort.length === 0
+                ? '<tr><td colspan="2" class="text-center py-3 text-muted small">Belum ada akun karesort</td></tr>'
+                : allAccounts.karesort.map((a, i) => `
+                    <tr>
+                        <td class="small fw-bold">${a.username || a.name}</td>
+                        <td class="text-end">
+                            <div class="action-btns">
+                                <button class="btn btn-dark btn-action-text" onclick="openAccountModal('karesort', ${i})">EDIT</button>
+                                <button class="btn btn-outline-danger btn-action-text" onclick="deleteAccount('karesort', ${i})">HAPUS</button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+        }
+
+        function openAccountModal(type = '', index = -1) {
+            const modal = new bootstrap.Modal(document.getElementById('accountModal'));
+            document.getElementById('accountForm').reset();
+            document.getElementById('account-index').value = index;
+
+            if (index >= 0 && type) {
+                const acc = allAccounts[type][index];
+                document.getElementById('accountModalTitle').innerText = 'Edit Akun';
+                document.getElementById('account-type').value = type;
+                document.getElementById('account-type').disabled = true;
+                document.getElementById('account-username').value = acc.username || acc.name || '';
+                document.getElementById('account-password').value = acc.password || '';
+            } else {
+                document.getElementById('accountModalTitle').innerText = 'Tambah Akun';
+                document.getElementById('account-type').disabled = false;
+                document.getElementById('account-type').value = 'admin';
+            }
+            modal.show();
+        }
+
+        async function submitAccount() {
+            const type = document.getElementById('account-type').value;
+            const username = document.getElementById('account-username').value;
+            const password = document.getElementById('account-password').value;
+            const index = document.getElementById('account-index').value;
+
+            if (!username || !password) {
+                showToast('Username dan password wajib diisi', 'error');
+                return;
+            }
+
+            try {
+                const formData = new FormData();
+                formData.append('action', 'save');
+                formData.append('type', type);
+                formData.append('username', username);
+                formData.append('password', password);
+                formData.append('index', index);
+
+                const resp = await fetch('manage_accounts.php', { method: 'POST', body: formData });
+                const result = await resp.json();
+
+                if (result.status === 'success') {
+                    showToast('Data akun berhasil disimpan', 'success');
+                    bootstrap.Modal.getInstance(document.getElementById('accountModal')).hide();
+                    loadAccounts();
+                } else {
+                    showToast(result.message, 'error');
+                }
+            } catch (err) {
+                showToast('Gagal menyimpan data akun', 'error');
+            }
+        }
+
+        async function deleteAccount(type, index) {
+            if (!confirm('Anda yakin ingin menghapus akun ini?')) return;
+
+            try {
+                const formData = new FormData();
+                formData.append('action', 'delete');
+                formData.append('type', type);
+                formData.append('index', index);
+
+                const resp = await fetch('manage_accounts.php', { method: 'POST', body: formData });
+                const result = await resp.json();
+
+                if (result.status === 'success') {
+                    showToast('Akun berhasil dihapus', 'success');
+                    loadAccounts();
+                } else {
+                    showToast(result.message, 'error');
+                }
+            } catch (err) {
+                showToast('Gagal menghapus akun', 'error');
+            }
+        }
     </script>
         </main>
 
@@ -4409,6 +4755,11 @@ $userSector = $_SESSION['user_sector'] ?? '';
                 <a href="#" class="mobile-nav-item" onclick="switchAdminTab('trash-tab', 'Anggota Keluar', 'trash-alt', this); loadTrash()">
                     <i class="fas fa-trash-alt"></i> Anggota Keluar
                 </a>
+                <?php if ($userRole === 'admin'): ?>
+                <a href="#" class="mobile-nav-item" onclick="switchAdminTab('akun-tab', 'Manajemen Akun', 'user-gear', this); loadAccounts()">
+                    <i class="fas fa-user-gear"></i> Manajemen Akun
+                </a>
+                <?php endif; ?>
                 <div class="border-top my-2"></div>
                 <a href="logout.php" class="mobile-nav-item text-danger">
                     <i class="fas fa-sign-out-alt"></i> Keluar Sistem
@@ -4595,6 +4946,54 @@ $userSector = $_SESSION['user_sector'] ?? '';
                     <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Batal</button>
                     <button type="button" class="btn btn-primary rounded-pill px-4 fw-bold" onclick="savePenilaianKasektor()">
                         <i class="fas fa-save me-2"></i> Simpan Penilaian
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Account Modal -->
+    <div class="modal fade" id="accountModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="modal-header border-0 p-4 pb-0">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="bg-dark p-2 rounded-3 text-white">
+                            <i class="fas fa-user-gear fs-5"></i>
+                        </div>
+                        <h5 class="fw-bold mb-0" id="accountModalTitle">Tambah Akun</h5>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="accountForm">
+                        <input type="hidden" id="account-index" value="-1">
+                        <div class="mb-3">
+                            <label class="small fw-bold text-muted mb-1 text-uppercase">Tipe Akun</label>
+                            <select id="account-type" class="form-select bg-light border-0 rounded-3 px-3 py-2 fw-bold" required>
+                                <option value="admin">Administrator</option>
+                                <option value="karesort">Karesort</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="small fw-bold text-muted mb-1 text-uppercase">Username</label>
+                            <input type="text" id="account-username" class="form-control bg-light border-0 rounded-3 px-3 py-2 fw-bold" placeholder="Username untuk login..." required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="small fw-bold text-muted mb-1 text-uppercase">Password</label>
+                            <div class="input-group">
+                                <input type="password" id="account-password" class="form-control bg-light border-0 rounded-start-3 px-3 py-2 fw-bold" placeholder="Password akses..." required>
+                                <button class="btn btn-light border-0 rounded-end-3" type="button" onclick="togglePassword('account-password', this)">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer border-0 p-4 pt-0">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-dark rounded-pill px-4 fw-bold" onclick="submitAccount()">
+                        <i class="fas fa-save me-2"></i> Simpan Akun
                     </button>
                 </div>
             </div>

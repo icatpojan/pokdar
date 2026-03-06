@@ -22,5 +22,13 @@
         "description": "Langkah-langkah preventif yang dapat dilakukan oleh masyarakat...",
         "image": "assets/kegiatan/giat (1).jpg",
         "link": "#"
+    },
+    {
+        "id": 4,
+        "tag": "berita",
+        "title": "Bersilaturahmi sambil buka puasa bersama",
+        "description": "anggota pokdar kamtibmas kota tangerang selatan dalam upaya menngkatakn kekompakan diantara anggotanya dilakukan dengan kegiatan acara buka puasa bersama di rumah makan kayu",
+        "image": "",
+        "link": "#"
     }
 ]

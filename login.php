@@ -12,6 +12,10 @@ $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = $_POST['username'] ?? '';
     $password = $_POST['password'] ?? '';
+    $isAjax = isset($_POST['ajax']);
+
+    $loginSuccess = false;
+    $msg = '';
 
     // Check Admin data
     $adminFile = 'data/admin.json';
@@ -22,29 +26,65 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['admin_logged_in'] = true;
                 $_SESSION['admin_username'] = $username;
                 $_SESSION['user_role'] = 'admin';
-                header("Location: admin.php");
-                exit();
+                $loginSuccess = true;
+                break;
             }
         }
     }
     
     // Check Kasektor data
-    $kasektorFile = 'data/kasektor.json';
-    if (file_exists($kasektorFile)) {
-        $kasektorData = json_decode(file_get_contents($kasektorFile), true) ?: [];
-        foreach ($kasektorData as $k) {
-            if ($k['name'] === $username && $k['password'] === $password) {
-                $_SESSION['admin_logged_in'] = true; // Still allow access to admin.php
-                $_SESSION['admin_username'] = $username;
-                $_SESSION['user_role'] = 'kasektor';
-                $_SESSION['user_sector'] = $k['sector'] ?? '';
-                header("Location: admin.php");
-                exit();
+    if (!$loginSuccess) {
+        $kasektorFile = 'data/kasektor.json';
+        if (file_exists($kasektorFile)) {
+            $kasektorData = json_decode(file_get_contents($kasektorFile), true) ?: [];
+            foreach ($kasektorData as $k) {
+                if ($k['name'] === $username && $k['password'] === $password) {
+                    $_SESSION['admin_logged_in'] = true;
+                    $_SESSION['admin_username'] = $username;
+                    $_SESSION['user_role'] = 'kasektor';
+                    $_SESSION['user_sector'] = $k['sector'] ?? '';
+                    $loginSuccess = true;
+                    break;
+                }
             }
         }
     }
 
-    $error = 'Username atau Password salah!';
+    // Check Karesort data
+    if (!$loginSuccess) {
+        $karesortFile = 'data/karesort.json';
+        if (file_exists($karesortFile)) {
+            $karesortData = json_decode(file_get_contents($karesortFile), true) ?: [];
+            foreach ($karesortData as $kr) {
+                if ($kr['name'] === $username && $kr['password'] === $password) {
+                    $_SESSION['admin_logged_in'] = true;
+                    $_SESSION['admin_username'] = $username;
+                    $_SESSION['user_role'] = 'karesort';
+                    $_SESSION['user_sector'] = $kr['sector'] ?? 'all';
+                    $loginSuccess = true;
+                    break;
+                }
+            }
+        }
+    }
+
+    if ($loginSuccess) {
+        if ($isAjax) {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => true, 'message' => 'Login Berhasil!']);
+            exit();
+        }
+        header("Location: admin.php");
+        exit();
+    } else {
+        $msg = 'Username atau Password salah!';
+        if ($isAjax) {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'message' => $msg]);
+            exit();
+        }
+        $error = $msg;
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -57,6 +97,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
+    <style>
+        .login-status {
+            display: none;
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-weight: 600;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </head>
 <body class="bg-light">
     <div class="container">
@@ -71,13 +126,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <p class="text-muted small">Silakan masuk untuk mengelola data keanggotaan.</p>
                     </div>
 
+                    <div id="loginStatus" class="login-status"></div>
+
                     <?php if ($error): ?>
-                        <div class="alert alert-danger border-0 rounded-3 py-2 px-3 mb-4 small fw-bold">
+                        <div id="phpError" class="alert alert-danger border-0 rounded-3 py-2 px-3 mb-4 small fw-bold">
                             ⚠️ <?php echo $error; ?>
                         </div>
                     <?php endif; ?>
 
-                    <form action="login.php" method="POST">
+                    <form id="loginForm" action="login.php" method="POST">
                         <div class="mb-3">
                             <label class="form-label small fw-bold">Username</label>
                             <input type="text" name="username" class="form-control form-control-lg rounded-3 fs-6" placeholder="Masukkan username" required>
@@ -94,7 +151,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 </button>
                             </div>
                         </div>
-                        <button type="submit" class="btn btn-accent btn-lg w-100 rounded-pill fw-bold text-dark mb-4 py-2 fs-6">Masuk Sekarang</button>
+                        <button type="submit" id="btnLogin" class="btn btn-accent btn-lg w-100 rounded-pill fw-bold text-dark mb-4 py-2 fs-6">Masuk Sekarang</button>
                     </form>
 
                     <div class="text-center mt-2">
@@ -113,9 +170,55 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             const passwordInput = document.getElementById('passwordInput');
             const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
             passwordInput.setAttribute('type', type);
-            
-            // Toggle orientation of the eye icon (optional: change icon to eye-slash)
             this.classList.toggle('text-primary');
+        });
+
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const form = this;
+            const btn = document.getElementById('btnLogin');
+            const statusDiv = document.getElementById('loginStatus');
+            const phpError = document.getElementById('phpError');
+            
+            if (phpError) phpError.style.display = 'none';
+            
+            const formData = new FormData(form);
+            formData.append('ajax', '1');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Memproses...';
+            
+            fetch('login.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    statusDiv.innerHTML = '✅ ' + data.message;
+                    statusDiv.className = 'login-status bg-success-subtle text-success d-block';
+                    
+                    setTimeout(() => {
+                        statusDiv.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Redirecting...';
+                        setTimeout(() => {
+                            window.location.href = 'admin.php';
+                        }, 1000);
+                    }, 800);
+                } else {
+                    statusDiv.innerHTML = '⚠️ ' + data.message;
+                    statusDiv.className = 'login-status bg-danger-subtle text-danger d-block';
+                    btn.disabled = false;
+                    btn.innerHTML = 'Masuk Sekarang';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                statusDiv.innerHTML = '⚠️ Terjadi kesalahan sistem.';
+                statusDiv.className = 'login-status bg-danger-subtle text-danger d-block';
+                btn.disabled = false;
+                btn.innerHTML = 'Masuk Sekarang';
+            });
         });
     </script>
 </body>

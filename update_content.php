@@ -28,11 +28,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             $file = $_FILES['file'];
-            $targetDir = "assets/kegiatan/";
+            $targetDir = ($type === 'kegiatan') ? "assets/kegiatan/" : "assets/";
             if (!is_dir($targetDir)) mkdir($targetDir, 0777, true);
 
-            $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
-            $fileName = "giat_" . time() . "_" . rand(1000, 9999) . "." . $ext;
+            $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+            $allowedExts = ['jpg', 'jpeg', 'png', 'pdf', 'doc', 'docx'];
+            
+            if (!in_array($ext, $allowedExts)) {
+                echo json_encode(['status' => 'error', 'message' => 'Format file tidak diizinkan']);
+                exit();
+            }
+
+            $fileName = ($type === 'registrasi' ? "template_pendaftaran" : "giat_" . time() . "_" . rand(1000, 9999)) . "." . $ext;
             $targetPath = $targetDir . $fileName;
 
             if (move_uploaded_file($file['tmp_name'], $targetPath)) {
